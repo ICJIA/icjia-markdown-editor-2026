@@ -1,0 +1,57 @@
+{
+  "name": "icjia-markdown-editor",
+  "version": "1.0.0",
+  "description": "Accessible markdown editor for ICJIA researchers",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "typecheck": "nuxt typecheck",
+    "lint": "eslint .",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:a11y": "tsx tests/a11y/accessibility-audit.ts",
+    "test:a11y:fresh": "tsx tests/a11y/accessibility-audit.ts --fresh",
+    "test:a11y:review": "tsx tests/a11y/accessibility-audit.ts --review"
+  },
+  "dependencies": {
+    "@codemirror/commands": "^6.10.1",
+    "@codemirror/lang-markdown": "^6.5.0",
+    "@codemirror/language": "^6.12.1",
+    "@codemirror/language-data": "^6.5.2",
+    "@codemirror/search": "^6.6.0",
+    "@codemirror/state": "^6.5.4",
+    "@codemirror/view": "^6.39.11",
+    "@nuxt/ui": "^4.4.0",
+    "@vueuse/core": "^14.1.0",
+    "@vueuse/nuxt": "^14.1.0",
+    "highlight.js": "^11.11.1",
+    "markdown-it": "^14.1.0",
+    "markdown-it-anchor": "^9.2.0",
+    "markdown-it-footnote": "^4.0.0",
+    "nuxt": "^4.3.0",
+    "vue": "^3.5.27",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
+    "@iconify-json/heroicons": "^1.2.3",
+    "@iconify-json/lucide": "^1.2.87",
+    "@lezer/highlight": "^1.2.3",
+    "@nuxt/devtools": "^3.1.1",
+    "@nuxt/fonts": "^0.13.0",
+    "@nuxt/test-utils": "^3.23.0",
+    "playwright": "^1.58.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18",
+    "vue-tsc": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

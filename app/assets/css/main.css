@@ -1,0 +1,360 @@
+/**
+ * Global Styles for ICJIA Markdown Editor
+ * WCAG 2.1 AA compliant color scheme
+ */
+
+/* ============================================
+   CSS Custom Properties (Theme Variables)
+   ============================================ */
+
+:root {
+  /* Dark theme colors (default) */
+  --color-background: #0f172a;    /* slate-900 */
+  --color-surface: #1e293b;       /* slate-800 */
+  --color-border: #334155;        /* slate-700 */
+  --color-text: #f1f5f9;          /* slate-100 */
+  --color-text-muted: #94a3b8;    /* slate-400 */
+  --color-primary: #3b82f6;       /* blue-500 */
+  --color-focus: #60a5fa;         /* blue-400 */
+  --color-success: #22c55e;       /* green-500 */
+  --color-warning: #f59e0b;       /* amber-500 */
+  --color-error: #ef4444;         /* red-500 */
+  
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  
+  /* Border radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease;
+}
+
+/* Light theme overrides */
+.light {
+  --color-background: #ffffff;
+  --color-surface: #f8fafc;       /* slate-50 */
+  --color-border: #e2e8f0;        /* slate-200 */
+  --color-text: #0f172a;          /* slate-900 */
+  --color-text-muted: #64748b;    /* slate-500 */
+  --color-primary: #2563eb;       /* blue-600 */
+  --color-focus: #3b82f6;         /* blue-500 */
+}
+
+/* ============================================
+   Reset & Base Styles
+   ============================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  min-height: 100vh;
+}
+
+/* ============================================
+   Typography
+   ============================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: var(--color-focus);
+}
+
+code, pre {
+  font-family: var(--font-mono);
+}
+
+/* ============================================
+   Focus Styles (WCAG 2.4.7)
+   ============================================ */
+
+/* Default focus-visible style */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Remove default focus for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Button focus */
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Input focus */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -1px;
+  border-color: var(--color-primary);
+}
+
+/* Link focus */
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================
+   Accessibility Utilities
+   ============================================ */
+
+/* Screen reader only - visually hidden but accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip to focusable when focused */
+.sr-only-focusable:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================
+   Selection
+   ============================================ */
+
+::selection {
+  background-color: rgba(59, 130, 246, 0.3);
+  color: inherit;
+}
+
+/* ============================================
+   Scrollbar Styling
+   ============================================ */
+
+/* Webkit browsers */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 6px;
+  border: 3px solid var(--color-background);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) var(--color-background);
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  a {
+    text-decoration: none;
+    color: black;
+  }
+  
+  pre {
+    white-space: pre-wrap;
+    border: 1px solid #ccc;
+  }
+}
+
+/* ============================================
+   Highlight.js Theme Overrides
+   ============================================ */
+
+.hljs {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+}
+
+/* Dark mode code colors */
+.dark .hljs-keyword,
+.dark .hljs-selector-tag,
+.dark .hljs-literal,
+.dark .hljs-section,
+.dark .hljs-link {
+  color: #c792ea;
+}
+
+.dark .hljs-string,
+.dark .hljs-title,
+.dark .hljs-name,
+.dark .hljs-type,
+.dark .hljs-attribute,
+.dark .hljs-symbol,
+.dark .hljs-bullet,
+.dark .hljs-built_in,
+.dark .hljs-addition,
+.dark .hljs-variable,
+.dark .hljs-template-tag,
+.dark .hljs-template-variable {
+  color: #c3e88d;
+}
+
+.dark .hljs-comment,
+.dark .hljs-quote,
+.dark .hljs-deletion,
+.dark .hljs-meta {
+  color: #676e95;
+}
+
+.dark .hljs-number {
+  color: #f78c6c;
+}
+
+/* Light mode code colors */
+.light .hljs-keyword,
+.light .hljs-selector-tag,
+.light .hljs-literal,
+.light .hljs-section,
+.light .hljs-link {
+  color: #7c3aed;
+}
+
+.light .hljs-string,
+.light .hljs-title,
+.light .hljs-name,
+.light .hljs-type,
+.light .hljs-attribute,
+.light .hljs-symbol,
+.light .hljs-bullet,
+.light .hljs-built_in,
+.light .hljs-addition,
+.light .hljs-variable,
+.light .hljs-template-tag,
+.light .hljs-template-variable {
+  color: #166534; /* green-800 - WCAG AA compliant */
+}
+
+.light .hljs-comment,
+.light .hljs-quote,
+.light .hljs-deletion,
+.light .hljs-meta {
+  color: #94a3b8;
+}
+
+.light .hljs-number {
+  color: #ea580c;
+}

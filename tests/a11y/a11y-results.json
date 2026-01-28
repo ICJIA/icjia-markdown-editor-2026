@@ -1,0 +1,90 @@
+{
+  "timestamp": "2026-01-28T14:57:26.684Z",
+  "devServerUrl": "http://localhost:3002",
+  "summary": {
+    "totalViolations": 0,
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0,
+    "keyboardNavigation": {
+      "name": "Keyboard Navigation",
+      "passed": true,
+      "issues": []
+    },
+    "ariaLandmarks": {
+      "name": "ARIA Landmarks",
+      "passed": true,
+      "issues": []
+    },
+    "overallPass": true
+  },
+  "audits": [
+    {
+      "mode": "dark",
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "name": "Desktop (1920x1080)"
+      },
+      "violations": [],
+      "passes": 27,
+      "incomplete": 1
+    },
+    {
+      "mode": "dark",
+      "viewport": {
+        "width": 768,
+        "height": 1024,
+        "name": "Tablet (768x1024)"
+      },
+      "violations": [],
+      "passes": 27,
+      "incomplete": 1
+    },
+    {
+      "mode": "dark",
+      "viewport": {
+        "width": 375,
+        "height": 667,
+        "name": "Mobile (375x667)"
+      },
+      "violations": [],
+      "passes": 26,
+      "incomplete": 1
+    },
+    {
+      "mode": "light",
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "name": "Desktop (1920x1080)"
+      },
+      "violations": [],
+      "passes": 27,
+      "incomplete": 1
+    },
+    {
+      "mode": "light",
+      "viewport": {
+        "width": 768,
+        "height": 1024,
+        "name": "Tablet (768x1024)"
+      },
+      "violations": [],
+      "passes": 27,
+      "incomplete": 1
+    },
+    {
+      "mode": "light",
+      "viewport": {
+        "width": 375,
+        "height": 667,
+        "name": "Mobile (375x667)"
+      },
+      "violations": [],
+      "passes": 26,
+      "incomplete": 1
+    }
+  ]
+}
