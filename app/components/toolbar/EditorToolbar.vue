@@ -19,6 +19,7 @@ const {
 } = useEditor()
 
 const { openTableBuilder } = useTableBuilderModal()
+const { openModal: openDownloadModal } = useDownloadModal()
 
 const { copyMarkdown, copyHtml, downloadMarkdown, downloadHtml, uploadMarkdown, copyMarkdownSuccess, copyHtmlSuccess } = useExport()
 const { announce } = useAccessibility()
@@ -82,12 +83,18 @@ function handleCopyHtml() {
   copyHtml()
 }
 
-function handleDownloadMarkdown() {
-  downloadMarkdown()
+async function handleDownloadMarkdown() {
+  const filename = await openDownloadModal('markdown')
+  if (filename) {
+    downloadMarkdown(filename)
+  }
 }
 
-function handleDownloadHtml() {
-  downloadHtml()
+async function handleDownloadHtml() {
+  const filename = await openDownloadModal('html')
+  if (filename) {
+    downloadHtml(filename)
+  }
 }
 
 function handleUploadMarkdown() {
@@ -167,6 +174,7 @@ const headingItems = [
         <UDropdownMenu 
           :items="headingItems"
           :content="{ side: 'bottom', align: 'start', sideOffset: 8 }"
+          class="heading-dropdown"
         >
           <UButton
             icon="i-lucide-heading"
@@ -325,5 +333,27 @@ const headingItems = [
   .toolbar-spacer {
     min-width: 0.5rem;
   }
+}
+</style>
+
+<style>
+/* Heading dropdown menu styling - must be unscoped to target portal content */
+[data-radix-popper-content-wrapper] [role="menu"] {
+  background-color: #171717 !important;
+  border: 1px solid #404040 !important;
+  border-radius: 0.5rem !important;
+  padding: 0.5rem 0.75rem !important;
+  min-width: 180px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-radix-popper-content-wrapper] [role="menuitem"] {
+  padding: 0.5rem 0.75rem !important;
+  border-radius: 0.375rem !important;
+  margin: 0.125rem 0 !important;
+}
+
+[data-radix-popper-content-wrapper] [role="menuitem"]:hover {
+  background-color: #262626 !important;
 }
 </style>

@@ -1,16 +1,44 @@
 /**
- * Global Keyboard Shortcuts Composable
- * Handles app-level keyboard shortcuts that need access to composables
- * These shortcuts work when the editor has focus
+ * @fileoverview Global Keyboard Shortcuts Composable
+ * @description Handles application-level keyboard shortcuts that require access to composables.
+ * These shortcuts work when the editor has focus and provide quick access to common actions.
+ * 
+ * @module composables/useKeyboardShortcuts
+ * 
+ * Supported shortcuts:
+ * - Ctrl/Cmd + T: Open table builder
+ * - Ctrl/Cmd + S: Download markdown file
+ * - Ctrl/Cmd + Shift + C: Copy markdown to clipboard
+ * - Ctrl/Cmd + Shift + H: Copy HTML to clipboard
+ * - Ctrl/Cmd + O: Upload/open markdown file
+ * 
+ * @example
+ * ```typescript
+ * // In a component setup
+ * useKeyboardShortcuts() // Auto-initializes listeners on mount
+ * ```
  */
 
+/**
+ * Global keyboard shortcuts composable for handling app-level shortcuts.
+ * Automatically initializes keyboard listeners on mount and cleans up on unmount.
+ * 
+ * @returns {Object} Keyboard shortcut methods
+ * @returns {Function} returns.handleKeyDown - The keydown event handler
+ * @returns {Function} returns.init - Manually initialize keyboard listeners
+ * @returns {Function} returns.cleanup - Manually remove keyboard listeners
+ */
 export function useKeyboardShortcuts() {
   const { copyMarkdown, copyHtml, downloadMarkdown, uploadMarkdown } = useExport()
   const { announce } = useAccessibility()
   const { openTableBuilder } = useTableBuilderModal()
 
   /**
-   * Handle global keyboard shortcuts
+   * Handles global keyboard shortcut events.
+   * Processes modifier key combinations for various editor actions.
+   * 
+   * @param {KeyboardEvent} event - The keyboard event to handle
+   * @returns {void}
    */
   function handleKeyDown(event: KeyboardEvent) {
     const isMod = event.metaKey || event.ctrlKey
@@ -55,7 +83,10 @@ export function useKeyboardShortcuts() {
   }
   
   /**
-   * Initialize global keyboard listeners
+   * Initializes the global keyboard event listeners.
+   * Only runs on the client side (not during SSR).
+   * 
+   * @returns {void}
    */
   function init() {
     if (import.meta.client) {
@@ -64,7 +95,10 @@ export function useKeyboardShortcuts() {
   }
   
   /**
-   * Cleanup keyboard listeners
+   * Removes the global keyboard event listeners.
+   * Should be called on component unmount to prevent memory leaks.
+   * 
+   * @returns {void}
    */
   function cleanup() {
     if (import.meta.client) {
@@ -72,7 +106,10 @@ export function useKeyboardShortcuts() {
     }
   }
   
-  // Auto-initialize on mount, cleanup on unmount
+  /**
+   * Lifecycle hooks: Auto-initialize on mount, cleanup on unmount.
+   * Ensures keyboard listeners are properly managed.
+   */
   onMounted(init)
   onUnmounted(cleanup)
   

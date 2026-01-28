@@ -1,7 +1,20 @@
 /**
- * markdown-it Configuration
- * Configures the markdown parser with plugins and custom renderers
- * Security: raw HTML disabled, URLs validated
+ * @fileoverview markdown-it Configuration
+ * @description Configures the markdown parser with plugins and custom renderers.
+ * Security-focused: raw HTML is disabled and external links have rel="noopener".
+ * 
+ * @module utils/markdown/config
+ * @requires markdown-it
+ * @requires markdown-it-footnote
+ * @requires markdown-it-anchor
+ * @requires highlight.js
+ * 
+ * Features:
+ * - Syntax highlighting for 190+ languages via highlight.js
+ * - Footnote support via markdown-it-footnote
+ * - Heading anchors for navigation
+ * - External link security (rel="noopener noreferrer")
+ * - Lazy loading for images
  */
 
 import MarkdownIt from 'markdown-it'
@@ -11,7 +24,17 @@ import anchor from 'markdown-it-anchor'
 import hljs from 'highlight.js'
 
 /**
- * Create and configure markdown-it instance
+ * Creates and configures a markdown-it instance with all plugins and custom renderers.
+ * 
+ * Configuration:
+ * - Raw HTML disabled for security
+ * - XHTML-compliant output
+ * - Automatic line breaks
+ * - URL auto-linking
+ * - Typographic replacements (smart quotes, dashes)
+ * - Syntax highlighting for code blocks
+ * 
+ * @returns {MarkdownIt} Configured markdown-it instance
  */
 export function createMarkdownIt(): MarkdownIt {
   const md = new MarkdownIt({
@@ -84,11 +107,17 @@ export function createMarkdownIt(): MarkdownIt {
   return md
 }
 
-// Singleton instance for the application
+/**
+ * Singleton markdown-it instance for the application.
+ * @type {MarkdownIt | null}
+ */
 let mdInstance: MarkdownIt | null = null
 
 /**
- * Get or create the markdown-it instance
+ * Gets or creates the singleton markdown-it instance.
+ * Creates the instance on first call, returns cached instance thereafter.
+ * 
+ * @returns {MarkdownIt} The shared markdown-it instance
  */
 export function getMarkdownIt(): MarkdownIt {
   if (!mdInstance) {
@@ -98,7 +127,17 @@ export function getMarkdownIt(): MarkdownIt {
 }
 
 /**
- * Render markdown to HTML
+ * Renders markdown content to HTML using the configured parser.
+ * This is the main entry point for markdown rendering throughout the application.
+ * 
+ * @param {string} content - The markdown content to render
+ * @returns {string} The rendered HTML string
+ * 
+ * @example
+ * ```typescript
+ * const html = renderMarkdown('# Hello World')
+ * // Returns: '<h1>Hello World</h1>'
+ * ```
  */
 export function renderMarkdown(content: string): string {
   return getMarkdownIt().render(content)

@@ -1,13 +1,23 @@
 /**
- * Custom Markdown Keyboard Shortcuts
- * WCAG 2.1 AA compliant - all shortcuts documented and discoverable
+ * @fileoverview Custom Markdown Keyboard Shortcuts
+ * @description Provides custom keyboard bindings for markdown formatting.
+ * WCAG 2.1 AA compliant - all shortcuts are documented and discoverable.
+ * 
+ * @module utils/editor/keymaps
+ * @requires @codemirror/view
  */
 
 import type { KeyBinding } from '@codemirror/view'
 import type { EditorView } from '@codemirror/view'
 
 /**
- * Wrap selected text with before/after strings
+ * Wraps the selected text with before/after delimiter strings.
+ * Maintains the selection on the wrapped content.
+ * 
+ * @param {EditorView} view - The CodeMirror editor view
+ * @param {string} before - String to insert before selection
+ * @param {string} after - String to insert after selection
+ * @returns {boolean} Always returns true to indicate the command was handled
  */
 function wrapSelection(view: EditorView, before: string, after: string): boolean {
   const { state } = view
@@ -31,7 +41,11 @@ function wrapSelection(view: EditorView, before: string, after: string): boolean
 }
 
 /**
- * Insert text at cursor position
+ * Inserts text at the current cursor position.
+ * 
+ * @param {EditorView} view - The CodeMirror editor view
+ * @param {string} text - The text to insert
+ * @returns {boolean} Always returns true to indicate the command was handled
  */
 function insertAtCursor(view: EditorView, text: string): boolean {
   const { state } = view
@@ -47,7 +61,12 @@ function insertAtCursor(view: EditorView, text: string): boolean {
 }
 
 /**
- * Insert prefix at the start of the current line
+ * Inserts a prefix at the start of the current line.
+ * Useful for adding list markers, blockquote markers, etc.
+ * 
+ * @param {EditorView} view - The CodeMirror editor view
+ * @param {string} prefix - The prefix to insert at line start
+ * @returns {boolean} Always returns true to indicate the command was handled
  */
 function insertLinePrefix(view: EditorView, prefix: string): boolean {
   const { state } = view
@@ -63,7 +82,12 @@ function insertLinePrefix(view: EditorView, prefix: string): boolean {
 }
 
 /**
- * Insert or replace heading at current line
+ * Inserts or replaces a heading at the current line.
+ * If the line already has a heading, it replaces the existing heading level.
+ * 
+ * @param {EditorView} view - The CodeMirror editor view
+ * @param {number} level - The heading level (1-6)
+ * @returns {boolean} Always returns true to indicate the command was handled
  */
 function insertHeading(view: EditorView, level: number): boolean {
   const { state } = view
@@ -92,7 +116,11 @@ function insertHeading(view: EditorView, level: number): boolean {
 }
 
 /**
- * Insert a code block with optional language
+ * Inserts a fenced code block at the cursor position.
+ * If text is selected, it becomes the code block content.
+ * 
+ * @param {EditorView} view - The CodeMirror editor view
+ * @returns {boolean} Always returns true to indicate the command was handled
  */
 function insertCodeBlock(view: EditorView): boolean {
   const { state } = view
@@ -111,7 +139,12 @@ function insertCodeBlock(view: EditorView): boolean {
 }
 
 /**
- * Insert a link at cursor or wrap selection
+ * Inserts a markdown link at the cursor position.
+ * If text is selected, it becomes the link text.
+ * The "url" placeholder is selected for easy replacement.
+ * 
+ * @param {EditorView} view - The CodeMirror editor view
+ * @returns {boolean} Always returns true to indicate the command was handled
  */
 function insertLink(view: EditorView): boolean {
   const { state } = view
@@ -132,8 +165,22 @@ function insertLink(view: EditorView): boolean {
 }
 
 /**
- * Custom markdown keymap with all formatting shortcuts
- * Following the design spec requirements
+ * Custom markdown keymap with all formatting shortcuts.
+ * Follows the design specification requirements for keyboard accessibility.
+ * 
+ * Shortcuts include:
+ * - Mod+B: Bold
+ * - Mod+I: Italic
+ * - Mod+`: Inline code
+ * - Mod+Shift+`: Code block
+ * - Mod+1-6: Headings
+ * - Mod+Q: Blockquote
+ * - Mod+Shift+8: Bullet list
+ * - Mod+Shift+7: Numbered list
+ * - Mod+K: Insert link
+ * - Mod+-: Horizontal rule
+ * 
+ * @constant {KeyBinding[]}
  */
 export const markdownKeymap: KeyBinding[] = [
   // Text formatting
@@ -223,9 +270,14 @@ export const markdownKeymap: KeyBinding[] = [
 ]
 
 /**
- * Export keyboard shortcuts for use in the app
- * These are handled at the app level (not in CodeMirror)
- * because they need access to composables
+ * Interface for app-level keyboard shortcuts.
+ * These shortcuts are handled at the application level (not in CodeMirror)
+ * because they require access to Vue composables.
+ * 
+ * @interface AppShortcut
+ * @property {string} key - The key combination (using Mod for Cmd/Ctrl)
+ * @property {string} description - Human-readable description of the shortcut
+ * @property {string} action - The action identifier to invoke
  */
 export interface AppShortcut {
   key: string
@@ -233,6 +285,12 @@ export interface AppShortcut {
   action: string
 }
 
+/**
+ * Array of app-level keyboard shortcuts for documentation and help display.
+ * These shortcuts are handled by the useKeyboardShortcuts composable.
+ * 
+ * @constant {AppShortcut[]}
+ */
 export const appShortcuts: AppShortcut[] = [
   { key: 'Mod-t', description: 'Open table builder', action: 'openTableBuilder' },
   { key: 'Mod-s', description: 'Download markdown', action: 'downloadMarkdown' },

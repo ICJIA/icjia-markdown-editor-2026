@@ -1,10 +1,41 @@
 /**
- * Table Builder Utilities
- * Generates markdown table syntax from a visual table configuration
+ * @fileoverview Table Builder Utilities
+ * @description Generates markdown table syntax from a visual table configuration.
+ * Provides immutable operations for manipulating table structure.
+ * 
+ * @module utils/table-builder
+ * 
+ * @example
+ * ```typescript
+ * import { createEmptyTable, generateTableMarkdown, addRow } from './table-builder'
+ * 
+ * // Create a 3x3 table
+ * let table = createEmptyTable(3, 3)
+ * 
+ * // Add a row
+ * table = addRow(table)
+ * 
+ * // Generate markdown
+ * const markdown = generateTableMarkdown(table)
+ * ```
  */
 
+/**
+ * Column alignment types for markdown tables.
+ * @typedef {'left' | 'center' | 'right'} Alignment
+ */
 export type Alignment = 'left' | 'center' | 'right'
 
+/**
+ * Configuration object representing a markdown table structure.
+ * 
+ * @interface TableConfig
+ * @property {number} rows - Number of data rows (excluding header)
+ * @property {number} columns - Number of columns
+ * @property {string[]} headers - Array of header cell values
+ * @property {string[][]} cells - 2D array of cell values [row][column]
+ * @property {Alignment[]} alignments - Column alignment settings
+ */
 export interface TableConfig {
   rows: number
   columns: number
@@ -14,7 +45,27 @@ export interface TableConfig {
 }
 
 /**
- * Generate markdown table string from config
+ * Generates a markdown table string from a TableConfig object.
+ * Produces valid GitHub Flavored Markdown table syntax.
+ * 
+ * @param {TableConfig} config - The table configuration
+ * @returns {string} Markdown table syntax as a string
+ * 
+ * @example
+ * ```typescript
+ * const markdown = generateTableMarkdown({
+ *   rows: 2,
+ *   columns: 2,
+ *   headers: ['Name', 'Value'],
+ *   cells: [['A', '1'], ['B', '2']],
+ *   alignments: ['left', 'right']
+ * })
+ * // Returns:
+ * // | Name | Value |
+ * // | :--- | ---: |
+ * // | A | 1 |
+ * // | B | 2 |
+ * ```
  */
 export function generateTableMarkdown(config: TableConfig): string {
   const { headers, cells, alignments } = config
@@ -45,7 +96,13 @@ export function generateTableMarkdown(config: TableConfig): string {
 }
 
 /**
- * Create an empty table configuration with default headers and alignments
+ * Creates an empty table configuration with default values.
+ * Headers are named "Header 1", "Header 2", etc.
+ * All columns default to left alignment.
+ * 
+ * @param {number} rows - Number of data rows to create
+ * @param {number} cols - Number of columns to create
+ * @returns {TableConfig} A new table configuration object
  */
 export function createEmptyTable(rows: number, cols: number): TableConfig {
   return {
@@ -58,7 +115,11 @@ export function createEmptyTable(rows: number, cols: number): TableConfig {
 }
 
 /**
- * Add a row to the table (immutable)
+ * Adds a new empty row to the table.
+ * Returns a new TableConfig object (immutable operation).
+ * 
+ * @param {TableConfig} config - The current table configuration
+ * @returns {TableConfig} A new table configuration with the added row
  */
 export function addRow(config: TableConfig): TableConfig {
   const newCells = [...config.cells, Array(config.columns).fill('')]
@@ -70,7 +131,13 @@ export function addRow(config: TableConfig): TableConfig {
 }
 
 /**
- * Remove a row at index (immutable)
+ * Removes a row at the specified index.
+ * Returns the original config if only one row exists (minimum).
+ * Returns a new TableConfig object (immutable operation).
+ * 
+ * @param {TableConfig} config - The current table configuration
+ * @param {number} index - The zero-based index of the row to remove
+ * @returns {TableConfig} A new table configuration without the removed row
  */
 export function removeRow(config: TableConfig, index: number): TableConfig {
   if (config.rows <= 1) return config
@@ -83,7 +150,12 @@ export function removeRow(config: TableConfig, index: number): TableConfig {
 }
 
 /**
- * Add a column to the table (immutable)
+ * Adds a new empty column to the table.
+ * The new column is added at the end with default header and left alignment.
+ * Returns a new TableConfig object (immutable operation).
+ * 
+ * @param {TableConfig} config - The current table configuration
+ * @returns {TableConfig} A new table configuration with the added column
  */
 export function addColumn(config: TableConfig): TableConfig {
   const newHeaders = [...config.headers, `Header ${config.columns + 1}`]
@@ -99,7 +171,13 @@ export function addColumn(config: TableConfig): TableConfig {
 }
 
 /**
- * Remove a column at index (immutable)
+ * Removes a column at the specified index.
+ * Returns the original config if only one column exists (minimum).
+ * Returns a new TableConfig object (immutable operation).
+ * 
+ * @param {TableConfig} config - The current table configuration
+ * @param {number} index - The zero-based index of the column to remove
+ * @returns {TableConfig} A new table configuration without the removed column
  */
 export function removeColumn(config: TableConfig, index: number): TableConfig {
   if (config.columns <= 1) return config

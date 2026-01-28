@@ -1,0 +1,131 @@
+<script setup lang="ts">
+/**
+ * Download Modal Component
+ * Allows users to customize the filename before downloading
+ * WCAG 2.1 AA compliant with proper focus management
+ */
+
+const { isOpen, downloadType, filename, confirm, cancel, useDefault } = useDownloadModal()
+const { announce } = useAccessibility()
+
+const inputRef = ref<HTMLInputElement | null>(null)
+
+// Focus input when modal opens
+watch(isOpen, (open) => {
+  if (open) {
+    nextTick(() => {
+      inputRef.value?.focus()
+      inputRef.value?.select()
+    })
+    announce('Download dialog opened. Enter a filename or use the default.')
+  }
+})
+
+// Handle Enter key in input
+function handleKeydown(event: KeyboardEvent) {
+  if (event.key === 'Enter') {
+    event.preventDefault()
+    confirm()
+  } else if (event.key === 'Escape') {
+    event.preventDefault()
+    cancel()
+  }
+}
+
+const fileTypeLabel = computed(() => {
+  return downloadType.value === 'markdown' ? 'Markdown (.md)' : 'HTML (.html)'
+})
+
+const fileTypeIcon = computed(() => {
+  return downloadType.value === 'markdown' ? 'i-heroicons-document-text' : 'i-heroicons-code-bracket'
+})
+</script>
+
+<template>
+  <UModal
+    v-model:open="isOpen"
+    :ui="{
+      content: 'bg-neutral-900 dark:bg-neutral-900 border border-neutral-700 shadow-2xl max-w-md w-full',
+      header: 'border-b border-neutral-700 px-6 py-4',
+      body: 'px-6 py-5',
+      footer: 'border-t border-neutral-700 px-6 py-4'
+    }"
+  >
+    <template #header>
+      <div class="flex items-center gap-3">
+        <UIcon :name="fileTypeIcon" class="w-6 h-6 text-blue-400" />
+        <div>
+          <h2 id="download-modal-title" class="text-lg font-semibold text-neutral-100">
+            Download {{ fileTypeLabel }}
+          </h2>
+          <p class="text-sm text-neutral-400 mt-0.5">
+            Choose a filename for your download
+          </p>
+        </div>
+      </div>
+    </template>
+
+    <template #body>
+      <div class="space-y-4">
+        <div>
+          <label 
+            for="filename-input" 
+            class="block text-sm font-medium text-neutral-300 mb-2"
+          >
+            Filename
+          </label>
+          <input
+            id="filename-input"
+            ref="inputRef"
+            v-model="filename"
+            type="text"
+            class="w-full px-4 py-3 bg-neutral-800 border border-neutral-600 rounded-lg text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+            placeholder="Enter filename..."
+            autocomplete="off"
+            spellcheck="false"
+            @keydown="handleKeydown"
+          />
+          <p class="mt-2 text-xs text-neutral-500">
+            The correct extension will be added automatically if missing.
+          </p>
+        </div>
+      </div>
+    </template>
+
+    <template #footer>
+      <div class="flex items-center justify-between gap-3">
+        <UButton
+          variant="ghost"
+          color="neutral"
+          @click="cancel"
+        >
+          Cancel
+        </UButton>
+        
+        <div class="flex items-center gap-2">
+          <UButton
+            variant="soft"
+            color="neutral"
+            @click="useDefault"
+          >
+            Use Default
+          </UButton>
+          <UButton
+            color="primary"
+            @click="confirm"
+          >
+            <UIcon name="i-heroicons-arrow-down-tray" class="w-4 h-4 mr-1.5" />
+            Download
+          </UButton>
+        </div>
+      </div>
+    </template>
+  </UModal>
+</template>
+
+<style scoped>
+/* Ensure modal has solid background */
+:deep([role="dialog"]) {
+  background-color: #171717 !important;
+}
+</style>

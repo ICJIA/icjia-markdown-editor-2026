@@ -1,6 +1,17 @@
 /**
- * CodeMirror 6 Editor Configuration
- * Creates editor state with markdown support and accessibility features
+ * @fileoverview CodeMirror 6 Editor Configuration
+ * @description Creates and configures CodeMirror editor state with markdown support,
+ * syntax highlighting, keyboard shortcuts, and accessibility features.
+ * 
+ * @module utils/editor/config
+ * @requires @codemirror/view
+ * @requires @codemirror/state
+ * @requires @codemirror/lang-markdown
+ * @requires @codemirror/language-data
+ * @requires @codemirror/commands
+ * @requires @codemirror/search
+ * @requires @codemirror/autocomplete
+ * @requires @codemirror/language
  */
 
 import { EditorView, keymap, lineNumbers, highlightActiveLine, drawSelection, rectangularSelection, crosshairCursor } from '@codemirror/view'
@@ -15,20 +26,51 @@ import { darkTheme } from './theme-dark'
 import { lightTheme } from './theme-light'
 import { markdownKeymap } from './keymaps'
 
-// Compartments for dynamic configuration
+/**
+ * Compartment for dynamically switching between light and dark themes.
+ * @constant {Compartment}
+ */
 export const themeCompartment = new Compartment()
+
+/**
+ * Compartment for toggling line numbers visibility.
+ * @constant {Compartment}
+ */
 export const lineNumbersCompartment = new Compartment()
+
+/**
+ * Compartment for toggling read-only mode.
+ * @constant {Compartment}
+ */
 export const readOnlyCompartment = new Compartment()
 
 /**
- * Get theme extensions based on color mode
+ * Gets the appropriate theme extensions based on color mode.
+ * 
+ * @param {boolean} isDark - Whether to use dark theme
+ * @returns {Extension[]} CodeMirror theme extensions for the selected mode
  */
 export function getTheme(isDark: boolean) {
   return isDark ? darkTheme : lightTheme
 }
 
 /**
- * Create CodeMirror editor state with full configuration
+ * Creates a fully configured CodeMirror editor state.
+ * Includes markdown syntax support, keyboard shortcuts, history, and accessibility features.
+ * 
+ * @param {string} doc - The initial document content
+ * @param {(value: string) => void} onChange - Callback fired when document changes
+ * @param {boolean} [isDark=true] - Whether to use dark theme initially
+ * @returns {EditorState} Configured CodeMirror editor state
+ * 
+ * @example
+ * ```typescript
+ * const state = createEditorState(
+ *   '# Hello World',
+ *   (value) => console.log('Content changed:', value),
+ *   true // dark mode
+ * )
+ * ```
  */
 export function createEditorState(
   doc: string,
@@ -99,7 +141,12 @@ export function createEditorState(
 }
 
 /**
- * Update editor theme dynamically
+ * Updates the editor theme dynamically without recreating the editor.
+ * Uses the theme compartment for efficient reconfiguration.
+ * 
+ * @param {EditorView} view - The CodeMirror editor view
+ * @param {boolean} isDark - Whether to switch to dark theme
+ * @returns {void}
  */
 export function updateTheme(view: EditorView, isDark: boolean) {
   view.dispatch({
@@ -108,7 +155,11 @@ export function updateTheme(view: EditorView, isDark: boolean) {
 }
 
 /**
- * Toggle line numbers visibility
+ * Toggles line numbers visibility in the editor.
+ * 
+ * @param {EditorView} view - The CodeMirror editor view
+ * @param {boolean} show - Whether to show line numbers
+ * @returns {void}
  */
 export function toggleLineNumbers(view: EditorView, show: boolean) {
   view.dispatch({
@@ -117,7 +168,11 @@ export function toggleLineNumbers(view: EditorView, show: boolean) {
 }
 
 /**
- * Set read-only mode
+ * Sets the editor to read-only or editable mode.
+ * 
+ * @param {EditorView} view - The CodeMirror editor view
+ * @param {boolean} readOnly - Whether to enable read-only mode
+ * @returns {void}
  */
 export function setReadOnly(view: EditorView, readOnly: boolean) {
   view.dispatch({

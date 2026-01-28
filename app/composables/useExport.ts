@@ -1,24 +1,84 @@
 /**
- * Export Composable
- * Handles copying, downloading, and uploading markdown/HTML content
+ * @fileoverview Export Composable
+ * @description Handles copying content to clipboard, downloading files,
+ * and uploading markdown files. Provides feedback via screen reader announcements.
+ * 
+ * @module composables/useExport
+ * 
+ * @example
+ * ```typescript
+ * const { copyMarkdown, copyHtml, downloadMarkdown, downloadHtml, uploadMarkdown } = useExport()
+ * 
+ * // Copy current content to clipboard
+ * await copyMarkdown()
+ * 
+ * // Download as HTML file
+ * downloadHtml('my-document.html')
+ * 
+ * // Upload a markdown file
+ * const success = await uploadMarkdown()
+ * ```
  */
 
+/**
+ * Export composable for copying, downloading, and uploading content.
+ * Manages loading and success states for UI feedback.
+ * 
+ * @returns {Object} Export methods and state
+ * @returns {Function} returns.copyMarkdown - Copy markdown to clipboard
+ * @returns {Function} returns.copyHtml - Copy rendered HTML to clipboard
+ * @returns {Function} returns.downloadMarkdown - Download markdown file
+ * @returns {Function} returns.downloadHtml - Download styled HTML file
+ * @returns {Function} returns.uploadMarkdown - Upload and load a markdown file
+ * @returns {Readonly<Ref<boolean>>} returns.isCopyingMarkdown - Markdown copy in progress
+ * @returns {Readonly<Ref<boolean>>} returns.isCopyingHtml - HTML copy in progress
+ * @returns {Readonly<Ref<boolean>>} returns.copyMarkdownSuccess - Markdown copy succeeded
+ * @returns {Readonly<Ref<boolean>>} returns.copyHtmlSuccess - HTML copy succeeded
+ * @returns {Readonly<Ref<boolean>>} returns.isUploading - File upload in progress
+ */
 export function useExport() {
   const { content, setContent } = useEditor()
   const { renderedHtml } = useMarkdown()
   const { announce } = useAccessibility()
   
-  // Copy states
+  /**
+   * Flag indicating markdown copy is in progress.
+   * @type {Ref<boolean>}
+   */
   const isCopyingMarkdown = ref(false)
+  
+  /**
+   * Flag indicating HTML copy is in progress.
+   * @type {Ref<boolean>}
+   */
   const isCopyingHtml = ref(false)
+  
+  /**
+   * Flag indicating markdown was successfully copied.
+   * Resets to false after 2 seconds.
+   * @type {Ref<boolean>}
+   */
   const copyMarkdownSuccess = ref(false)
+  
+  /**
+   * Flag indicating HTML was successfully copied.
+   * Resets to false after 2 seconds.
+   * @type {Ref<boolean>}
+   */
   const copyHtmlSuccess = ref(false)
   
-  // Upload state
+  /**
+   * Flag indicating a file upload is in progress.
+   * @type {Ref<boolean>}
+   */
   const isUploading = ref(false)
   
   /**
-   * Copy markdown content to clipboard
+   * Copies the current markdown content to the clipboard.
+   * Announces success or failure to screen readers.
+   * Shows success state for 2 seconds.
+   * 
+   * @returns {Promise<boolean>} True if copy was successful, false otherwise
    */
   async function copyMarkdown(): Promise<boolean> {
     isCopyingMarkdown.value = true
@@ -44,7 +104,11 @@ export function useExport() {
   }
   
   /**
-   * Copy rendered HTML to clipboard
+   * Copies the rendered HTML content to the clipboard.
+   * Announces success or failure to screen readers.
+   * Shows success state for 2 seconds.
+   * 
+   * @returns {Promise<boolean>} True if copy was successful, false otherwise
    */
   async function copyHtml(): Promise<boolean> {
     isCopyingHtml.value = true
@@ -69,7 +133,12 @@ export function useExport() {
   }
   
   /**
-   * Download content as a file
+   * Downloads a Blob as a file by creating a temporary link and clicking it.
+   * Cleans up the URL object after download starts.
+   * 
+   * @param {Blob} blob - The blob to download
+   * @param {string} filename - The filename for the download
+   * @returns {void}
    */
   function downloadBlob(blob: Blob, filename: string): void {
     const url = URL.createObjectURL(blob)
@@ -83,7 +152,11 @@ export function useExport() {
   }
   
   /**
-   * Download markdown file
+   * Downloads the current content as a markdown file.
+   * Announces the download to screen readers.
+   * 
+   * @param {string} [filename='document.md'] - The filename for the download
+   * @returns {void}
    */
   function downloadMarkdown(filename = 'document.md'): void {
     const blob = new Blob([content.value], { type: 'text/markdown;charset=utf-8' })
@@ -92,7 +165,12 @@ export function useExport() {
   }
   
   /**
-   * Download HTML file with styling
+   * Downloads the rendered content as a styled HTML file.
+   * Includes GitHub markdown CSS for proper styling.
+   * Announces the download to screen readers.
+   * 
+   * @param {string} [filename='document.html'] - The filename for the download
+   * @returns {void}
    */
   function downloadHtml(filename = 'document.html'): void {
     const fullHtml = wrapHtmlDocument(renderedHtml.value)
@@ -102,7 +180,11 @@ export function useExport() {
   }
   
   /**
-   * Upload and load a markdown file
+   * Opens a file picker and loads the selected markdown file into the editor.
+   * Accepts .md, .markdown, and .txt files.
+   * Announces success or failure to screen readers.
+   * 
+   * @returns {Promise<boolean>} Resolves with true on success, false on cancel or error
    */
   function uploadMarkdown(): Promise<boolean> {
     return new Promise((resolve) => {
@@ -163,7 +245,12 @@ export function useExport() {
 }
 
 /**
- * Wrap HTML content in a full document with styling
+ * Wraps HTML content in a complete HTML document with styling.
+ * Includes GitHub markdown CSS for consistent rendering.
+ * Supports dark mode and print styling.
+ * 
+ * @param {string} content - The HTML content to wrap
+ * @returns {string} A complete HTML document as a string
  */
 function wrapHtmlDocument(content: string): string {
   return `<!DOCTYPE html>

@@ -35,6 +35,9 @@ onMounted(() => {
     <main class="main-content" role="main">
       <EditorLayout />
     </main>
+    
+    <!-- Modals -->
+    <DownloadModal />
   </div>
 </template>
 

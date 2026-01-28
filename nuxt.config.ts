@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { defineNuxtConfig } from 'nuxt/config'
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
@@ -54,7 +56,17 @@ export default defineNuxtConfig({
   
   typescript: {
     strict: true,
-    typeCheck: true,
+    typeCheck: 'build',  // Only run vue-tsc during build, not dev (avoids auto-import issues)
+  },
+
+  // Vite configuration - suppress Tailwind sourcemap warnings
+  vite: {
+    css: {
+      devSourcemap: true,
+    },
+    build: {
+      sourcemap: false,
+    },
   },
 
   // Ensure proper SSG behavior

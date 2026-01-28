@@ -514,3 +514,111 @@ button.toolbar-button-active {
 .light .hljs-number {
   color: #ea580c;
 }
+
+/* ============================================
+   Dropdown Menu Styles (Heading dropdown etc.)
+   ============================================ */
+
+/* Dropdown menu container - SOLID background with padding */
+/* Target all possible dropdown menu selectors */
+[role="menu"],
+[data-radix-menu-content],
+[data-radix-popper-content-wrapper] [role="menu"],
+[data-radix-popper-content-wrapper] > div,
+div[data-state="open"][role="menu"],
+div[data-side][role="menu"],
+.heading-dropdown [role="menu"],
+[data-radix-popper-content-wrapper] div[data-side] {
+  background-color: #0a0a0a !important;
+  background: #0a0a0a !important;
+  border: 1px solid #404040 !important;
+  border-radius: 0.5rem !important;
+  padding: 0.5rem 1rem !important;
+  min-width: 200px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.8), 0 8px 10px -6px rgba(0, 0, 0, 0.6) !important;
+  z-index: 9999 !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Ensure the group wrapper also has proper background */
+[role="menu"] [role="group"],
+[data-radix-menu-content] [role="group"] {
+  background-color: transparent !important;
+  padding: 0 !important;
+}
+
+/* Dropdown menu items */
+[role="menuitem"],
+[data-radix-menu-content] [role="menuitem"],
+div[role="menuitem"] {
+  padding: 0.625rem 1rem !important;
+  border-radius: 0.375rem !important;
+  margin: 0.125rem 0 !important;
+  cursor: pointer !important;
+  color: #f5f5f5 !important;
+  background-color: transparent !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 1rem !important;
+}
+
+[role="menuitem"]:hover,
+[role="menuitem"]:focus,
+[role="menuitem"][data-highlighted],
+div[role="menuitem"]:hover,
+div[role="menuitem"][data-highlighted] {
+  background-color: #262626 !important;
+  outline: none !important;
+}
+
+/* Keyboard shortcuts in dropdown */
+[role="menuitem"] kbd,
+[role="menuitem"] [class*="Kbd"],
+[role="menuitem"] span[class*="kbd"],
+div[role="menuitem"] kbd {
+  background-color: #333333 !important;
+  color: #a3a3a3 !important;
+  padding: 0.125rem 0.5rem !important;
+  border-radius: 0.25rem !important;
+  font-size: 0.75rem !important;
+  margin-left: auto !important;
+  border: 1px solid #404040 !important;
+}
+
+/* Light mode dropdown styles */
+.light [role="menu"],
+.light [data-radix-menu-content],
+.light [data-radix-popper-content-wrapper] [role="menu"],
+.light [data-radix-popper-content-wrapper] > div,
+.light div[data-state="open"][role="menu"],
+.light div[data-side][role="menu"],
+.light [data-radix-popper-content-wrapper] div[data-side] {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.light [role="menuitem"],
+.light div[role="menuitem"] {
+  color: #171717 !important;
+}
+
+.light [role="menuitem"]:hover,
+.light [role="menuitem"]:focus,
+.light [role="menuitem"][data-highlighted],
+.light div[role="menuitem"]:hover,
+.light div[role="menuitem"][data-highlighted] {
+  background-color: #f3f4f6 !important;
+}
+
+.light [role="menuitem"] kbd,
+.light [role="menuitem"] [class*="Kbd"],
+.light div[role="menuitem"] kbd {
+  background-color: #e5e7eb !important;
+  color: #6b7280 !important;
+  border: 1px solid #d1d5db !important;
+}

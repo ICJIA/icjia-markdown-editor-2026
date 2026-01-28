@@ -1,26 +1,71 @@
 /**
- * Scroll Synchronization Composable
- * Synchronizes scroll position between editor and preview panes
+ * @fileoverview Scroll Synchronization Composable
+ * @description Synchronizes scroll position between the editor and preview panes.
+ * Uses percentage-based synchronization for consistent behavior regardless of
+ * content height differences between the panes.
  * 
- * Uses percentage-based synchronization for consistent behavior
- * regardless of content height differences between panes.
+ * @module composables/useScrollSync
+ * 
+ * @example
+ * ```typescript
+ * const { enabled, init, toggle } = useScrollSync()
+ * 
+ * // Initialize with DOM elements
+ * init(editorEl, previewEl)
+ * 
+ * // Toggle sync on/off
+ * toggle()
+ * ```
  */
 
+/**
+ * Scroll synchronization composable for keeping editor and preview in sync.
+ * Prevents scroll loops by tracking the active scroll source.
+ * 
+ * @returns {Object} Scroll sync state and methods
+ * @returns {Ref<boolean>} returns.enabled - Whether scroll sync is enabled
+ * @returns {Ref<HTMLElement | null>} returns.editorElement - Reference to editor element
+ * @returns {Ref<HTMLElement | null>} returns.previewElement - Reference to preview element
+ * @returns {Function} returns.toggle - Toggle scroll sync on/off
+ * @returns {Function} returns.init - Initialize with DOM elements
+ * @returns {Function} returns.setupListeners - Set up scroll event listeners
+ */
 export function useScrollSync() {
+  /**
+   * Flag indicating if scroll synchronization is enabled.
+   * @type {Ref<boolean>}
+   */
   const enabled = ref(true)
   
-  // Track which pane is currently being scrolled to prevent loops
+  /**
+   * Tracks which pane initiated the current scroll to prevent infinite loops.
+   * @type {Ref<'editor' | 'preview' | null>}
+   */
   const activeScrollSource = ref<'editor' | 'preview' | null>(null)
   
-  // References to scroll containers
+  /**
+   * Reference to the editor scroll container element.
+   * @type {Ref<HTMLElement | null>}
+   */
   const editorElement = ref<HTMLElement | null>(null)
+  
+  /**
+   * Reference to the preview scroll container element.
+   * @type {Ref<HTMLElement | null>}
+   */
   const previewElement = ref<HTMLElement | null>(null)
   
-  // Debounce timeout for resetting scroll source
+  /**
+   * Timeout for resetting the active scroll source.
+   * @type {ReturnType<typeof setTimeout> | null}
+   */
   let resetTimeout: ReturnType<typeof setTimeout> | null = null
   
   /**
-   * Calculate scroll percentage of an element
+   * Calculates the scroll percentage of an element (0 to 1).
+   * 
+   * @param {HTMLElement} element - The element to calculate scroll percentage for
+   * @returns {number} The scroll percentage between 0 and 1
    */
   function getScrollPercentage(element: HTMLElement): number {
     const scrollTop = element.scrollTop
@@ -30,7 +75,12 @@ export function useScrollSync() {
   }
   
   /**
-   * Apply scroll percentage to an element
+   * Applies a scroll percentage to an element.
+   * Scrolls the element to the position corresponding to the given percentage.
+   * 
+   * @param {HTMLElement} element - The element to scroll
+   * @param {number} percentage - The target scroll percentage (0 to 1)
+   * @returns {void}
    */
   function setScrollPercentage(element: HTMLElement, percentage: number): void {
     const maxScroll = element.scrollHeight - element.clientHeight
@@ -40,7 +90,10 @@ export function useScrollSync() {
   }
   
   /**
-   * Handle editor scroll - sync to preview
+   * Handles editor scroll events and syncs to the preview pane.
+   * Ignores events if sync is disabled or preview is the active source.
+   * 
+   * @returns {void}
    */
   function handleEditorScroll(): void {
     if (!enabled.value) return
@@ -59,7 +112,10 @@ export function useScrollSync() {
   }
   
   /**
-   * Handle preview scroll - sync to editor
+   * Handles preview scroll events and syncs to the editor pane.
+   * Ignores events if sync is disabled or editor is the active source.
+   * 
+   * @returns {void}
    */
   function handlePreviewScroll(): void {
     if (!enabled.value) return
@@ -77,18 +133,31 @@ export function useScrollSync() {
   }
   
   /**
-   * Toggle scroll sync on/off
+   * Toggles scroll synchronization on or off.
+   * 
+   * @returns {void}
    */
   function toggle(): void {
     enabled.value = !enabled.value
   }
   
-  // Store listener references for proper cleanup
+  /**
+   * Reference to the editor scroll event listener for cleanup.
+   * @type {(() => void) | null}
+   */
   let editorListener: (() => void) | null = null
+  
+  /**
+   * Reference to the preview scroll event listener for cleanup.
+   * @type {(() => void) | null}
+   */
   let previewListener: (() => void) | null = null
   
   /**
-   * Set up scroll listeners on elements
+   * Sets up scroll event listeners on the editor and preview elements.
+   * Removes any existing listeners before adding new ones.
+   * 
+   * @returns {void}
    */
   function setupListeners(): void {
     // Clean up old listeners first
@@ -106,7 +175,10 @@ export function useScrollSync() {
   }
   
   /**
-   * Remove scroll listeners
+   * Removes scroll event listeners from the editor and preview elements.
+   * Called during cleanup or before setting up new listeners.
+   * 
+   * @returns {void}
    */
   function removeListeners(): void {
     if (editorElement.value && editorListener) {
@@ -120,8 +192,12 @@ export function useScrollSync() {
   }
   
   /**
-   * Initialize scroll sync with the actual DOM elements
-   * Call this after both elements are available
+   * Initializes scroll synchronization with the DOM elements.
+   * Should be called after both editor and preview elements are available.
+   * 
+   * @param {HTMLElement} editor - The editor scroll container element
+   * @param {HTMLElement} preview - The preview scroll container element
+   * @returns {void}
    */
   function init(editor: HTMLElement, preview: HTMLElement): void {
     editorElement.value = editor
@@ -129,14 +205,19 @@ export function useScrollSync() {
     setupListeners()
   }
   
-  // Watch for element changes and re-setup listeners
+  /**
+   * Watcher that re-sets up listeners when elements change.
+   * Ensures scroll sync works even if elements are replaced.
+   */
   watch([editorElement, previewElement], ([newEditor, newPreview]) => {
     if (newEditor && newPreview) {
       setupListeners()
     }
   }, { immediate: false })
   
-  // Cleanup on unmount
+  /**
+   * Lifecycle hook that cleans up listeners and timeouts on unmount.
+   */
   onUnmounted(() => {
     removeListeners()
     if (resetTimeout) clearTimeout(resetTimeout)

@@ -1,21 +1,58 @@
 /**
- * Markdown Composable
- * Handles markdown-to-HTML rendering with debouncing for performance
+ * @fileoverview Markdown Composable
+ * @description Handles markdown-to-HTML rendering with debouncing for performance.
+ * Provides computed properties for rendered HTML, plain text, and word count statistics.
+ * 
+ * @module composables/useMarkdown
+ * @requires ~/utils/markdown/config
+ * 
+ * @example
+ * ```typescript
+ * const { renderedHtml, wordCount, wordCountDisplay } = useMarkdown()
+ * 
+ * // Use rendered HTML in template
+ * // <div v-html="renderedHtml" />
+ * 
+ * // Display word count
+ * console.log(wordCountDisplay.value) // "1,234 words · 5,678 chars"
+ * ```
  */
 
 import { renderMarkdown } from '~/utils/markdown/config'
 
+/**
+ * Markdown composable for rendering and analyzing markdown content.
+ * Debounces content updates for better performance with large documents.
+ * 
+ * @returns {Object} Markdown rendering state and computed values
+ * @returns {ComputedRef<string>} returns.renderedHtml - Rendered HTML from markdown
+ * @returns {Readonly<Ref<boolean>>} returns.isRendering - Whether rendering is in progress
+ * @returns {ComputedRef<boolean>} returns.showRenderingIndicator - Show loading for large docs
+ * @returns {ComputedRef<string>} returns.plainText - Plain text with markdown stripped
+ * @returns {ComputedRef<Object>} returns.wordCount - Word count statistics object
+ * @returns {ComputedRef<string>} returns.wordCountDisplay - Formatted word count string
+ */
 export function useMarkdown() {
   const { content } = useEditor()
   
-  // Debounce content for performance on large documents
+  /**
+   * Debounced content for performance on large documents.
+   * Updates 150ms after content stops changing.
+   * @type {Ref<string>}
+   */
   const debouncedContent = refDebounced(content, 150)
   
-  // Track rendering state for very large documents
+  /**
+   * Flag indicating if a render is in progress for large documents.
+   * @type {Ref<boolean>}
+   */
   const isRendering = ref(false)
   
   /**
-   * Rendered HTML from markdown content
+   * Computed property that renders markdown content to HTML.
+   * Sets isRendering flag for documents > 50KB.
+   * 
+   * @type {ComputedRef<string>}
    */
   const renderedHtml = computed(() => {
     // Mark as rendering for large documents (> 50KB)
@@ -34,14 +71,20 @@ export function useMarkdown() {
   })
   
   /**
-   * Show loading indicator for very large documents (> 100KB)
+   * Computed property that determines if a loading indicator should be shown.
+   * Only shown for documents > 100KB during rendering.
+   * 
+   * @type {ComputedRef<boolean>}
    */
   const showRenderingIndicator = computed(() => {
     return isRendering.value && debouncedContent.value.length > 100000
   })
   
   /**
-   * Get plain text from current content (for word count, etc.)
+   * Computed property that extracts plain text from markdown content.
+   * Strips markdown syntax for accurate word counting.
+   * 
+   * @type {ComputedRef<string>}
    */
   const plainText = computed(() => {
     // Strip markdown syntax for accurate word count
@@ -60,7 +103,9 @@ export function useMarkdown() {
   })
   
   /**
-   * Word count statistics
+   * Computed property that provides comprehensive word count statistics.
+   * 
+   * @type {ComputedRef<{words: number, characters: number, charactersNoSpaces: number, lines: number, paragraphs: number}>}
    */
   const wordCount = computed(() => {
     const text = plainText.value.trim()
@@ -100,7 +145,10 @@ export function useMarkdown() {
   })
   
   /**
-   * Formatted display string for word count
+   * Computed property that formats word count for display in the UI.
+   * Format: "X words · Y chars"
+   * 
+   * @type {ComputedRef<string>}
    */
   const wordCountDisplay = computed(() => {
     const { words, characters } = wordCount.value

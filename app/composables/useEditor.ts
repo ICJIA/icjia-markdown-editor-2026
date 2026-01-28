@@ -1,11 +1,31 @@
 /**
- * Editor Composable
- * Manages CodeMirror state and provides editor actions
+ * @fileoverview Editor Composable
+ * @description Manages CodeMirror editor state and provides editor manipulation actions.
+ * This composable serves as the central state management for the markdown editor,
+ * handling content updates, cursor position tracking, and text manipulation operations.
+ * 
+ * @module composables/useEditor
+ * @requires @codemirror/view
+ * 
+ * @example
+ * ```typescript
+ * const { content, toggleBold, insertLink } = useEditor()
+ * 
+ * // Toggle bold formatting on selected text
+ * toggleBold()
+ * 
+ * // Insert a link at cursor
+ * insertLink('https://example.com', 'Example')
+ * ```
  */
 
 import type { EditorView } from '@codemirror/view'
 
-// Default content shown when no saved content exists in localStorage
+/**
+ * Default content shown when no saved content exists in localStorage.
+ * Contains a comprehensive markdown tutorial demonstrating all supported syntax.
+ * @constant {string}
+ */
 const DEFAULT_CONTENT = `# The Complete Markdown Tutorial
 
 Welcome to this comprehensive guide to Markdown[^1]! This tutorial covers everything you need to know to write beautiful, well-structured documents using Markdown syntax.
@@ -46,7 +66,7 @@ Markdown is a lightweight markup language that you can use to add formatting ele
 
 ### How This Editor Works
 
-This editor provides a **live preview** of your Markdown as you type. The left pane is where you write your Markdown, and the right pane shows the rendered output in real-time. Your work is automatically saved every 15 seconds[^autosave].
+This editor provides a **live preview** of your Markdown as you type. The left pane is where you write your Markdown, and the right pane shows the rendered output in real-time. Your work is automatically saved every 30 seconds[^autosave].
 
 [^autosave]: Auto-save uses your browser's localStorage. Your content persists even if you close the browser, but clearing browser data will erase saved content.
 
@@ -175,16 +195,39 @@ Images use similar syntax with an exclamation mark:
 
 \`\`\`markdown
 ![Alt text](image-url.jpg)
-![ICJIA Logo](https://icjia.illinois.gov/logo.png "ICJIA Logo")
+![Description of image](https://picsum.photos/600/300)
 \`\`\`
+
+**Live Image Examples:**
+
+Here's an actual embedded image from a placeholder service:
+
+![A beautiful landscape photograph](https://picsum.photos/seed/markdown/800/400)
+
+*The image above is loaded from picsum.photos - a free placeholder image service.*
+
+You can also specify exact dimensions:
+
+![Small placeholder image](https://picsum.photos/seed/demo/400/200)
 
 ### Images with Links
 
-Combine images and links:
+Combine images and links to make clickable images:
 
 \`\`\`markdown
-[![Alt text](image.jpg)](https://example.com)
+[![Click to visit ICJIA](https://picsum.photos/seed/icjia/300/150)](https://icjia.illinois.gov)
 \`\`\`
+
+**Result:** (Click the image below to visit ICJIA)
+
+[![Click to visit ICJIA](https://picsum.photos/seed/icjia/300/150)](https://icjia.illinois.gov)
+
+### Image Best Practices
+
+1. **Always include alt text** - Describes the image for screen readers
+2. **Use descriptive filenames** - Helps with SEO and accessibility
+3. **Consider image size** - Large images slow down page loading
+4. **Use HTTPS URLs** - Ensures images load on secure pages
 
 ---
 
@@ -699,7 +742,7 @@ Replace this text with your own bold, italic, and ~~strikethrough~~ examples.
 The **ICJIA Markdown Editor** is designed for researchers, writers, and anyone who needs a clean, accessible writing environment. Key features include:
 
 - **Real-time Preview** — See your formatted document as you type
-- **Auto-save** — Never lose your work (saves every 15 seconds)
+- **Auto-save** — Never lose your work (saves every 30 seconds)
 - **Accessibility** — WCAG 2.1 Level AA compliant
 - **Dark/Light Mode** — Easy on the eyes in any lighting
 - **Keyboard Shortcuts** — Speed up your workflow
@@ -716,31 +759,101 @@ The **ICJIA Markdown Editor** is designed for researchers, writers, and anyone w
 *This tutorial is automatically loaded when no saved content exists. Your edits are automatically saved to your browser's local storage.*
 `
 
-// Shared state across the application
-// Start with empty content - will be populated after localStorage check
+/**
+ * Shared reactive state for editor content across the application.
+ * Starts empty and is populated after localStorage check.
+ * @type {Ref<string>}
+ */
 const content = ref<string>('')
 
-// Flag to indicate if content has been initialized (localStorage checked)
+/**
+ * Flag indicating if content has been initialized after localStorage check.
+ * @type {Ref<boolean>}
+ */
 const isContentReady = ref(false)
 
+/**
+ * Reference to the CodeMirror EditorView instance.
+ * @type {Ref<EditorView | null>}
+ */
 const editorView = ref<EditorView | null>(null)
+
+/**
+ * Current cursor position in the editor.
+ * @type {Ref<{line: number, column: number}>}
+ */
 const cursorPosition = ref({ line: 1, column: 1 })
+
+/**
+ * Tracks whether content has been modified since last save.
+ * @type {Ref<boolean>}
+ */
 const isModified = ref(false)
+
+/**
+ * Stores the initial content state for modification tracking.
+ * @type {Ref<string>}
+ */
 const initialContent = ref('')
 
-// Store the default content for use when localStorage is empty
+/**
+ * Store the default content for use when localStorage is empty.
+ * @constant {string}
+ */
 const DEFAULT_CONTENT_VALUE = DEFAULT_CONTENT
 
+/**
+ * Editor composable for managing CodeMirror state and editor actions.
+ * Provides reactive state for content, cursor position, and modification status,
+ * along with methods for text manipulation and formatting.
+ * 
+ * @returns {Object} Editor state and action methods
+ * @returns {Readonly<Ref<string>>} returns.content - Current editor content (readonly)
+ * @returns {Readonly<Ref<EditorView | null>>} returns.editorView - CodeMirror view instance (readonly)
+ * @returns {Readonly<Ref<{line: number, column: number}>>} returns.cursorPosition - Current cursor position (readonly)
+ * @returns {Readonly<Ref<boolean>>} returns.isModified - Whether content is modified (readonly)
+ * @returns {Readonly<Ref<boolean>>} returns.isContentReady - Whether content is initialized (readonly)
+ * @returns {Function} returns.setEditorView - Set the editor view instance
+ * @returns {Function} returns.updateContent - Update content from editor
+ * @returns {Function} returns.setContent - Set content programmatically
+ * @returns {Function} returns.clearContent - Clear all editor content
+ * @returns {Function} returns.updateCursorPosition - Update cursor position
+ * @returns {Function} returns.initializeWithDefault - Initialize with default tutorial content
+ * @returns {Function} returns.markContentReady - Mark content as ready
+ * @returns {Function} returns.getDefaultContent - Get the default tutorial content
+ * @returns {Function} returns.insertText - Insert text at cursor
+ * @returns {Function} returns.wrapSelection - Wrap selection with delimiters
+ * @returns {Function} returns.replaceSelection - Replace current selection
+ * @returns {Function} returns.toggleBold - Toggle bold formatting
+ * @returns {Function} returns.toggleItalic - Toggle italic formatting
+ * @returns {Function} returns.toggleInlineCode - Toggle inline code formatting
+ * @returns {Function} returns.insertCodeBlock - Insert a code block
+ * @returns {Function} returns.insertLink - Insert a markdown link
+ * @returns {Function} returns.insertHeading - Insert a heading
+ * @returns {Function} returns.insertBlockquote - Insert a blockquote
+ * @returns {Function} returns.insertBulletList - Insert a bullet list item
+ * @returns {Function} returns.insertNumberedList - Insert a numbered list item
+ * @returns {Function} returns.insertHorizontalRule - Insert a horizontal rule
+ * @returns {Function} returns.focus - Focus the editor
+ */
 export function useEditor() {
   /**
-   * Set the editor view instance
+   * Sets the CodeMirror EditorView instance for the composable.
+   * Must be called after the editor is mounted to enable editor actions.
+   * 
+   * @param {EditorView} view - The CodeMirror EditorView instance
+   * @returns {void}
    */
   function setEditorView(view: EditorView) {
     editorView.value = view
   }
   
   /**
-   * Update content from editor
+   * Updates the editor content and tracks modification status.
+   * Called by the editor's change listener when content changes.
+   * 
+   * @param {string} newContent - The new content from the editor
+   * @returns {void}
    */
   function updateContent(newContent: string) {
     content.value = newContent
@@ -748,7 +861,13 @@ export function useEditor() {
   }
   
   /**
-   * Set content programmatically
+   * Sets the editor content programmatically.
+   * Optionally resets the modification tracking state.
+   * Updates the CodeMirror view if available.
+   * 
+   * @param {string} newContent - The content to set
+   * @param {boolean} [resetModified=true] - Whether to reset modification tracking
+   * @returns {void}
    */
   function setContent(newContent: string, resetModified = true) {
     content.value = newContent
@@ -771,14 +890,21 @@ export function useEditor() {
   }
   
   /**
-   * Clear editor content
+   * Clears all editor content by setting it to an empty string.
+   * Resets the modification state.
+   * 
+   * @returns {void}
    */
   function clearContent() {
     setContent('')
   }
   
   /**
-   * Initialize with default content (when no localStorage exists)
+   * Initializes the editor with the default tutorial content.
+   * Called when no saved content exists in localStorage.
+   * Marks content as ready after initialization.
+   * 
+   * @returns {void}
    */
   function initializeWithDefault() {
     setContent(DEFAULT_CONTENT_VALUE)
@@ -786,28 +912,43 @@ export function useEditor() {
   }
   
   /**
-   * Mark content as ready (after localStorage check)
+   * Marks the content as ready after the localStorage check is complete.
+   * This flag is used to prevent rendering before content is loaded.
+   * 
+   * @returns {void}
    */
   function markContentReady() {
     isContentReady.value = true
   }
   
   /**
-   * Get the default content
+   * Returns the default tutorial content.
+   * Useful for resetting the editor to its initial state.
+   * 
+   * @returns {string} The default markdown tutorial content
    */
   function getDefaultContent(): string {
     return DEFAULT_CONTENT_VALUE
   }
   
   /**
-   * Update cursor position
+   * Updates the tracked cursor position in the editor.
+   * Used to display line and column numbers in the UI.
+   * 
+   * @param {number} line - The current line number (1-based)
+   * @param {number} column - The current column number (1-based)
+   * @returns {void}
    */
   function updateCursorPosition(line: number, column: number) {
     cursorPosition.value = { line, column }
   }
   
   /**
-   * Insert text at current cursor position
+   * Inserts text at the current cursor position.
+   * Moves the cursor to the end of the inserted text.
+   * 
+   * @param {string} text - The text to insert
+   * @returns {boolean} True if successful, false if editor view is not available
    */
   function insertText(text: string): boolean {
     if (!editorView.value) return false
@@ -825,7 +966,21 @@ export function useEditor() {
   }
   
   /**
-   * Wrap current selection with before/after strings
+   * Wraps the current text selection with before/after delimiter strings.
+   * If no text is selected, the delimiters are inserted at the cursor position.
+   * The selection is maintained after wrapping.
+   * 
+   * @param {string} before - The string to insert before the selection
+   * @param {string} after - The string to insert after the selection
+   * @returns {boolean} True if successful, false if editor view is not available
+   * 
+   * @example
+   * // Wrap selection with bold markers
+   * wrapSelection('**', '**')
+   * 
+   * @example
+   * // Wrap selection with italic markers
+   * wrapSelection('_', '_')
    */
   function wrapSelection(before: string, after: string): boolean {
     if (!editorView.value) return false
@@ -851,7 +1006,11 @@ export function useEditor() {
   }
   
   /**
-   * Replace current selection with text
+   * Replaces the current text selection with the specified text.
+   * Moves the cursor to the end of the inserted text.
+   * 
+   * @param {string} text - The text to replace the selection with
+   * @returns {boolean} True if successful, false if editor view is not available
    */
   function replaceSelection(text: string): boolean {
     if (!editorView.value) return false
@@ -869,28 +1028,46 @@ export function useEditor() {
   }
   
   /**
-   * Toggle bold formatting
+   * Toggles bold formatting on the current selection.
+   * Wraps selected text with double asterisks (**).
+   * 
+   * @returns {boolean} True if successful, false if editor view is not available
    */
   function toggleBold(): boolean {
     return wrapSelection('**', '**')
   }
   
   /**
-   * Toggle italic formatting
+   * Toggles italic formatting on the current selection.
+   * Wraps selected text with underscores (_).
+   * 
+   * @returns {boolean} True if successful, false if editor view is not available
    */
   function toggleItalic(): boolean {
     return wrapSelection('_', '_')
   }
   
   /**
-   * Toggle inline code formatting
+   * Toggles inline code formatting on the current selection.
+   * Wraps selected text with backticks (`).
+   * 
+   * @returns {boolean} True if successful, false if editor view is not available
    */
   function toggleInlineCode(): boolean {
     return wrapSelection('`', '`')
   }
   
   /**
-   * Insert a code block
+   * Inserts a fenced code block at the cursor position.
+   * If text is selected, it becomes the code block content.
+   * Otherwise, placeholder text "code here" is inserted.
+   * 
+   * @param {string} [language=''] - The language identifier for syntax highlighting
+   * @returns {boolean} True if successful, false if editor view is not available
+   * 
+   * @example
+   * // Insert a JavaScript code block
+   * insertCodeBlock('javascript')
    */
   function insertCodeBlock(language = ''): boolean {
     if (!editorView.value) return false
@@ -911,7 +1088,17 @@ export function useEditor() {
   }
   
   /**
-   * Insert a link
+   * Inserts a markdown link at the cursor position.
+   * If text is selected, it becomes the link text.
+   * If no URL is provided, a placeholder URL is inserted.
+   * 
+   * @param {string} [url=''] - The URL for the link
+   * @param {string} [text=''] - The link text (uses selection or 'link text' if empty)
+   * @returns {boolean} True if successful, false if editor view is not available
+   * 
+   * @example
+   * // Insert a link with specific URL and text
+   * insertLink('https://example.com', 'Example Site')
    */
   function insertLink(url = '', text = ''): boolean {
     if (!editorView.value) return false
@@ -934,7 +1121,15 @@ export function useEditor() {
   }
   
   /**
-   * Insert a heading
+   * Inserts or replaces a heading on the current line.
+   * If the line already has a heading, it is replaced with the new level.
+   * 
+   * @param {number} level - The heading level (1-6)
+   * @returns {boolean} True if successful, false if level is invalid or editor view is not available
+   * 
+   * @example
+   * // Insert an H2 heading
+   * insertHeading(2)
    */
   function insertHeading(level: number): boolean {
     if (!editorView.value || level < 1 || level > 6) return false
@@ -969,7 +1164,10 @@ export function useEditor() {
   }
   
   /**
-   * Insert a blockquote
+   * Inserts a blockquote prefix at the start of the current line.
+   * Adds "> " at the beginning of the line where the cursor is located.
+   * 
+   * @returns {boolean} True if successful, false if editor view is not available
    */
   function insertBlockquote(): boolean {
     if (!editorView.value) return false
@@ -987,7 +1185,10 @@ export function useEditor() {
   }
   
   /**
-   * Insert a bullet list item
+   * Inserts a bullet list marker at the start of the current line.
+   * Adds "- " at the beginning of the line where the cursor is located.
+   * 
+   * @returns {boolean} True if successful, false if editor view is not available
    */
   function insertBulletList(): boolean {
     if (!editorView.value) return false
@@ -1005,7 +1206,10 @@ export function useEditor() {
   }
   
   /**
-   * Insert a numbered list item
+   * Inserts a numbered list marker at the start of the current line.
+   * Adds "1. " at the beginning of the line where the cursor is located.
+   * 
+   * @returns {boolean} True if successful, false if editor view is not available
    */
   function insertNumberedList(): boolean {
     if (!editorView.value) return false
@@ -1023,14 +1227,20 @@ export function useEditor() {
   }
   
   /**
-   * Insert a horizontal rule
+   * Inserts a horizontal rule (thematic break) at the cursor position.
+   * Adds newlines before and after the rule for proper markdown formatting.
+   * 
+   * @returns {boolean} True if successful, false if editor view is not available
    */
   function insertHorizontalRule(): boolean {
     return insertText('\n---\n')
   }
   
   /**
-   * Focus the editor
+   * Focuses the CodeMirror editor.
+   * Useful for returning focus after modal dialogs or toolbar interactions.
+   * 
+   * @returns {void}
    */
   function focus() {
     editorView.value?.focus()

@@ -1,22 +1,90 @@
 /**
- * Auto-save Composable
- * Saves editor content to localStorage every 15 seconds and on blur
- * Restores content on page load
+ * @fileoverview Auto-save Composable
+ * @description Manages automatic saving of editor content to localStorage.
+ * Provides periodic auto-save every 30 seconds, saves on window blur and before page unload,
+ * and restores previously saved content on page load.
+ * 
+ * @module composables/useAutoSave
+ * 
+ * @example
+ * ```typescript
+ * const { save, restore, lastSaveDisplay } = useAutoSave()
+ * 
+ * // Manually trigger a save
+ * save()
+ * 
+ * // Display last save time
+ * console.log(lastSaveDisplay.value) // "Saved just now" or "Saved 5m ago"
+ * ```
  */
 
+/**
+ * LocalStorage key for persisting editor content.
+ * @constant {string}
+ */
 const STORAGE_KEY = 'icjia-markdown-editor-autosave'
-const SAVE_INTERVAL = 15000 // 15 seconds
 
+/**
+ * Interval for automatic saves in milliseconds (30 seconds).
+ * @constant {number}
+ */
+const SAVE_INTERVAL = 30000 // 30 seconds
+
+/**
+ * Auto-save composable for persisting editor content to localStorage.
+ * Automatically saves content every 30 seconds, on window blur, and before page unload.
+ * Restores previously saved content when the editor initializes.
+ * 
+ * @returns {Object} Auto-save state and methods
+ * @returns {Function} returns.save - Manually save content to localStorage
+ * @returns {Function} returns.restore - Restore content from localStorage
+ * @returns {Function} returns.clear - Clear saved content from localStorage
+ * @returns {Function} returns.hasSavedContent - Check if saved content exists
+ * @returns {Function} returns.getSavedInfo - Get info about saved content
+ * @returns {Readonly<Ref<number | null>>} returns.lastSaveTime - Timestamp of last save
+ * @returns {ComputedRef<string | null>} returns.lastSaveDisplay - Human-readable last save time
+ * @returns {Readonly<Ref<boolean>>} returns.isSaving - Whether a save is in progress
+ * @returns {Readonly<Ref<boolean>>} returns.justSaved - Whether content was just saved
+ * @returns {Readonly<Ref<boolean>>} returns.showSaveIndicator - Whether to show save indicator
+ * @returns {Readonly<Ref<number>>} returns.countdownToSave - Seconds until next auto-save
+ * @returns {Readonly<Ref<boolean>>} returns.hasRestoredFromStorage - Whether content was restored
+ * @returns {Readonly<Ref<boolean>>} returns.storageAvailable - Whether localStorage is available
+ * @returns {Readonly<Ref<boolean>>} returns.isContentReady - Whether content is initialized
+ */
 export function useAutoSave() {
   const { content, setContent, initializeWithDefault, markContentReady, isContentReady } = useEditor()
   const { announce } = useAccessibility()
   
+  /**
+   * Timestamp of the last successful save operation.
+   * @type {Ref<number | null>}
+   */
   const lastSaveTime = ref<number | null>(null)
+  
+  /**
+   * Flag indicating if a save operation is currently in progress.
+   * @type {Ref<boolean>}
+   */
   const isSaving = ref(false)
+  
+  /**
+   * Flag indicating if content was successfully restored from localStorage.
+   * @type {Ref<boolean>}
+   */
   const hasRestoredFromStorage = ref(false)
+  
+  /**
+   * Flag indicating if localStorage is available in this browser.
+   * @type {Ref<boolean>}
+   */
   const storageAvailable = ref(true)
   
-  // Check if localStorage is available
+  /**
+   * Checks if localStorage is available and functional.
+   * Tests by attempting to set and remove a test value.
+   * 
+   * @returns {boolean} True if localStorage is available, false otherwise
+   */
   function checkStorageAvailability(): boolean {
     try {
       const testKey = '__storage_test__'
@@ -28,7 +96,13 @@ export function useAutoSave() {
     }
   }
   
-  // Save content to localStorage
+  /**
+   * Saves the current editor content to localStorage.
+   * Updates the save indicator and countdown timer.
+   * Announces storage full errors to screen readers.
+   * 
+   * @returns {boolean} True if save was successful, false otherwise
+   */
   function save(): boolean {
     if (!storageAvailable.value) return false
     
@@ -72,7 +146,13 @@ export function useAutoSave() {
     }
   }
   
-  // Restore content from localStorage
+  /**
+   * Restores editor content from localStorage.
+   * Sets the editor content and marks it as ready.
+   * Updates the lastSaveTime from the stored data.
+   * 
+   * @returns {boolean} True if restore was successful, false otherwise
+   */
   function restore(): boolean {
     if (!storageAvailable.value) return false
     
@@ -95,7 +175,12 @@ export function useAutoSave() {
     }
   }
   
-  // Check if there's saved content available
+  /**
+   * Checks if there is saved content available in localStorage.
+   * Validates that the content is non-empty.
+   * 
+   * @returns {boolean} True if valid saved content exists, false otherwise
+   */
   function hasSavedContent(): boolean {
     if (!storageAvailable.value) return false
     
@@ -110,7 +195,12 @@ export function useAutoSave() {
     }
   }
   
-  // Get info about saved content
+  /**
+   * Retrieves information about the saved content.
+   * Returns the save timestamp and word count for UI display.
+   * 
+   * @returns {{ savedAt: Date, wordCount: number } | null} Info object or null if no saved content
+   */
   function getSavedInfo(): { savedAt: Date; wordCount: number } | null {
     if (!storageAvailable.value) return null
     
@@ -131,7 +221,12 @@ export function useAutoSave() {
     }
   }
   
-  // Clear saved content
+  /**
+   * Clears all saved content from localStorage.
+   * Resets the lastSaveTime to null.
+   * 
+   * @returns {void}
+   */
   function clear(): void {
     if (!storageAvailable.value) return
     
@@ -143,13 +238,25 @@ export function useAutoSave() {
     }
   }
   
-  // Trigger for updating the time display
+  /**
+   * Trigger for forcing reactivity updates on time display.
+   * Incremented periodically to update relative time strings.
+   * @type {Ref<number>}
+   */
   const timeUpdateTrigger = ref(0)
   
-  // Update time display every 30 seconds
+  /**
+   * Interval reference for updating the time display.
+   * @type {ReturnType<typeof setInterval> | null}
+   */
   let timeUpdateInterval: ReturnType<typeof setInterval> | null = null
   
-  // Format last save time for display
+  /**
+   * Computed property that formats the last save time for display.
+   * Returns human-readable strings like "Saved just now" or "Saved 5m ago".
+   * 
+   * @type {ComputedRef<string | null>}
+   */
   const lastSaveDisplay = computed(() => {
     // Include trigger to force reactivity updates
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -171,24 +278,48 @@ export function useAutoSave() {
     }
   })
   
-  // Track when a save just completed for visual feedback
+  /**
+   * Flag for visual feedback when content was just saved.
+   * @type {Ref<boolean>}
+   */
   const justSaved = ref(false)
   
-  // Track whether to show the save indicator (green dot)
+  /**
+   * Flag controlling visibility of the save indicator (green dot).
+   * @type {Ref<boolean>}
+   */
   const showSaveIndicator = ref(false)
   
-  // Countdown to next save (in seconds)
+  /**
+   * Countdown timer to next auto-save in seconds.
+   * @type {Ref<number>}
+   */
   const countdownToSave = ref(SAVE_INTERVAL / 1000)
   
-  // Interval for countdown timer
+  /**
+   * Interval reference for the countdown timer.
+   * @type {ReturnType<typeof setInterval> | null}
+   */
   let countdownInterval: ReturnType<typeof setInterval> | null = null
   
-  // Timeout for hiding the indicator
+  /**
+   * Timeout reference for hiding the save indicator.
+   * @type {ReturnType<typeof setTimeout> | null}
+   */
   let hideIndicatorTimeout: ReturnType<typeof setTimeout> | null = null
   
-  // Auto-save interval
+  /**
+   * Interval reference for the auto-save timer.
+   * @type {ReturnType<typeof setInterval> | null}
+   */
   let saveInterval: ReturnType<typeof setInterval> | null = null
   
+  /**
+   * Starts the auto-save interval and countdown timer.
+   * Saves every 30 seconds if content is non-empty.
+   * 
+   * @returns {void}
+   */
   function startAutoSave() {
     if (saveInterval) return
     
@@ -199,7 +330,7 @@ export function useAutoSave() {
       }
     }, 1000)
     
-    // Save every 15 seconds regardless of content changes
+    // Save every 30 seconds regardless of content changes
     // This ensures continuous protection of user work
     saveInterval = setInterval(() => {
       // Only save if there's actual content (not empty)
@@ -212,6 +343,12 @@ export function useAutoSave() {
     }, SAVE_INTERVAL)
   }
   
+  /**
+   * Stops the auto-save interval and countdown timer.
+   * Cleans up all interval references.
+   * 
+   * @returns {void}
+   */
   function stopAutoSave() {
     if (saveInterval) {
       clearInterval(saveInterval)
@@ -223,7 +360,10 @@ export function useAutoSave() {
     }
   }
   
-  // Initialize on mount
+  /**
+   * Lifecycle hook that initializes auto-save on component mount.
+   * Checks storage availability, restores saved content, and sets up listeners.
+   */
   onMounted(() => {
     storageAvailable.value = checkStorageAvailability()
     
@@ -256,7 +396,10 @@ export function useAutoSave() {
     }
   })
   
-  // Cleanup on unmount
+  /**
+   * Lifecycle hook that cleans up auto-save on component unmount.
+   * Stops intervals and removes event listeners.
+   */
   onUnmounted(() => {
     stopAutoSave()
     if (timeUpdateInterval) {
