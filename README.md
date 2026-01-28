@@ -8,10 +8,12 @@ A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. Designe
 - **Dark/Light Mode** - Easy on the eyes with dark mode default and system preference detection
 - **Keyboard Shortcuts** - Speed up your workflow with comprehensive shortcuts
 - **Table Builder** - Visual table creation modal (Cmd/Ctrl+T)
-- **Auto-save** - Never lose your work (saves every 15 seconds to localStorage)
-- **Export Options** - Copy as Markdown, copy as HTML, or download files
+- **Auto-save** - Never lose your work (saves every 30 seconds to localStorage with visual indicator)
+- **Export Options** - Copy as Markdown, copy as HTML, or download files with custom filenames
+- **Footnote Support** - Full footnote syntax with automatic numbering and back-references
 - **Accessibility First** - WCAG 2.1 Level AA compliant with full keyboard navigation and screen reader support
 - **Static Deployment** - Deploy anywhere as a static site (Netlify-ready)
+- **Fully Documented** - Comprehensive JSDoc comments on all composables and utilities
 
 ## Documentation
 
@@ -48,14 +50,15 @@ A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. Designe
 - [x] Upload Markdown file
 - [x] Word count and character count in status bar
 
-### Phase 3: Advanced Features - IN PROGRESS
+### Phase 3: Advanced Features - COMPLETE
 
 - [x] Table builder modal with visual grid editor
 - [x] Footnote support via markdown-it-footnote
-- [x] Auto-save to localStorage (every 15 seconds)
-- [ ] Image insertion modal with placeholder option
-- [ ] Link insertion modal
-- [ ] Find & Replace functionality
+- [x] Auto-save to localStorage (every 30 seconds with countdown indicator)
+- [x] Download modal with custom filename support
+- [x] HTML export with styled document wrapper
+- [x] Comprehensive JSDoc documentation for all composables and utilities
+- [x] Save indicator with visual feedback (green dot on save)
 
 ### Phase 4: Accessibility & Polish - PENDING
 
@@ -63,6 +66,9 @@ A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. Designe
 - [ ] Screen reader testing (VoiceOver, NVDA)
 - [ ] Keyboard navigation refinement
 - [ ] Help modal with shortcuts reference
+- [ ] Image insertion modal with placeholder option
+- [ ] Link insertion modal with URL validation
+- [ ] Find & Replace functionality
 - [ ] Error handling improvements
 - [ ] Loading state refinements
 
@@ -131,14 +137,30 @@ npx serve dist
 |--------|-----|---------------|
 | Bold | ⌘ + B | Ctrl + B |
 | Italic | ⌘ + I | Ctrl + I |
-| Inline Code | ⌘ + E | Ctrl + E |
+| Inline Code | ⌘ + ` | Ctrl + ` |
+| Code Block | ⌘ + Shift + ` | Ctrl + Shift + ` |
 | Heading 1-6 | ⌘ + 1-6 | Ctrl + 1-6 |
-| Block Quote | ⌘ + ' | Ctrl + ' |
+| Block Quote | ⌘ + Q | Ctrl + Q |
+| Bullet List | ⌘ + Shift + 8 | Ctrl + Shift + 8 |
+| Numbered List | ⌘ + Shift + 7 | Ctrl + Shift + 7 |
 | Insert Table | ⌘ + T | Ctrl + T |
 | Insert Link | ⌘ + K | Ctrl + K |
+| Horizontal Rule | ⌘ + - | Ctrl + - |
 | Copy Markdown | ⌘ + Shift + C | Ctrl + Shift + C |
 | Copy HTML | ⌘ + Shift + H | Ctrl + Shift + H |
-| Download | ⌘ + Shift + S | Ctrl + Shift + S |
+| Download | ⌘ + S | Ctrl + S |
+| Open File | ⌘ + O | Ctrl + O |
+
+## Code Documentation
+
+All composables and utility files include comprehensive JSDoc documentation:
+
+- **File-level documentation** with `@fileoverview` and `@module` tags
+- **Function documentation** with `@param`, `@returns`, and `@example` tags
+- **Type documentation** for interfaces, types, and constants
+- **WCAG compliance notes** in theme files with color contrast ratios
+
+This documentation enables better IDE intellisense, easier onboarding for new developers, and serves as inline reference for the codebase.
 
 ## Accessibility
 
@@ -171,13 +193,25 @@ dist
 icjia-markdown-editor-2026/
 ├── app/
 │   ├── components/
-│   │   ├── editor/         # Editor, Preview, Layout
-│   │   ├── modals/         # Table Builder, etc.
-│   │   ├── toolbar/        # Toolbar buttons and groups
-│   │   └── ui/             # Header, ColorToggle, SkipLink
-│   ├── composables/        # Vue composables
+│   │   ├── editor/         # EditorPane, PreviewPane, EditorLayout
+│   │   ├── modals/         # TableBuilderModal, DownloadModal
+│   │   ├── toolbar/        # EditorToolbar, ToolbarButton, ToolbarDivider
+│   │   └── ui/             # AppHeader, ColorModeToggle, SkipLink
+│   ├── composables/        # Vue composables (fully documented with JSDoc)
+│   │   ├── useAccessibility.ts   # Screen reader announcements, focus trap
+│   │   ├── useAutoSave.ts        # localStorage persistence
+│   │   ├── useDownloadModal.ts   # Download filename modal state
+│   │   ├── useEditor.ts          # Editor state and text manipulation
+│   │   ├── useExport.ts          # Copy/download functionality
+│   │   ├── useKeyboardShortcuts.ts # Global keyboard shortcuts
+│   │   ├── useMarkdown.ts        # Markdown rendering and stats
+│   │   ├── useScrollSync.ts      # Editor/preview scroll sync
+│   │   └── useTableBuilderModal.ts # Table builder state
 │   ├── pages/              # Nuxt pages
-│   └── utils/              # Utility functions
+│   └── utils/              # Utility functions (fully documented with JSDoc)
+│       ├── editor/         # CodeMirror config, themes, keymaps
+│       ├── markdown/       # markdown-it configuration
+│       └── table-builder.ts # Table generation utilities
 ├── documentation/          # Project documentation
 ├── public/                 # Static assets
 ├── tests/                  # Test files
