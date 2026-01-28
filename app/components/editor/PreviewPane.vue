@@ -6,6 +6,7 @@
  */
 
 const { renderedHtml, showRenderingIndicator } = useMarkdown()
+const { isContentReady } = useEditor()
 const previewRef = ref<HTMLElement | null>(null)
 
 /**
@@ -47,25 +48,33 @@ defineExpose({
 
 <template>
   <div class="preview-pane">
-    <div 
-      v-if="showRenderingIndicator"
-      class="rendering-indicator"
-      role="status"
-      aria-live="polite"
-    >
+    <!-- Loading state while checking localStorage -->
+    <div v-if="!isContentReady" class="loading-state">
       <UIcon name="i-heroicons-arrow-path" class="animate-spin" />
-      Rendering...
+      <span>Loading...</span>
     </div>
     
-    <div 
-      ref="previewRef"
-      class="preview-content markdown-body"
-      role="region"
-      aria-label="Markdown preview"
-      aria-live="polite"
-      tabindex="0"
-      v-html="renderedHtml"
-    />
+    <template v-else>
+      <div 
+        v-if="showRenderingIndicator"
+        class="rendering-indicator"
+        role="status"
+        aria-live="polite"
+      >
+        <UIcon name="i-heroicons-arrow-path" class="animate-spin" />
+        Rendering...
+      </div>
+      
+      <div 
+        ref="previewRef"
+        class="preview-content markdown-body"
+        role="region"
+        aria-label="Markdown preview"
+        aria-live="polite"
+        tabindex="0"
+        v-html="renderedHtml"
+      />
+    </template>
   </div>
 </template>
 
@@ -77,6 +86,16 @@ defineExpose({
   background: var(--color-background, #0f172a);
   overflow: hidden;
   position: relative;
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 100%;
+  color: var(--color-text-muted, #94a3b8);
+  font-size: 0.875rem;
 }
 
 .rendering-indicator {

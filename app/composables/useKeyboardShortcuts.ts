@@ -7,14 +7,23 @@
 export function useKeyboardShortcuts() {
   const { copyMarkdown, copyHtml, downloadMarkdown, uploadMarkdown } = useExport()
   const { announce } = useAccessibility()
-  
+  const { openTableBuilder } = useTableBuilderModal()
+
   /**
    * Handle global keyboard shortcuts
    */
   function handleKeyDown(event: KeyboardEvent) {
     const isMod = event.metaKey || event.ctrlKey
     const isShift = event.shiftKey
-    
+
+    // Ctrl/Cmd + T - Open table builder modal
+    if (isMod && !isShift && event.key.toLowerCase() === 't') {
+      event.preventDefault()
+      openTableBuilder()
+      announce('Table builder opened')
+      return
+    }
+
     // Ctrl/Cmd + S - Download markdown (prevent browser save dialog)
     if (isMod && !isShift && event.key === 's') {
       event.preventDefault()

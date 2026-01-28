@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 /**
  * Global Styles for ICJIA Markdown Editor
  * WCAG 2.1 AA compliant color scheme
@@ -149,7 +151,21 @@ a:focus-visible {
    Accessibility Utilities
    ============================================ */
 
-/* Screen reader only - visually hidden but accessible */
+/* Global Fix: Ensure all dialogs are centered fixed overlays (Nuxt UI v4 fallback) */
+[role="dialog"] {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 9999 !important;
+  background: var(--color-surface, #1e293b) !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  border-radius: 0.5rem !important;
+  max-width: 90vw !important;
+  max-height: 90vh !important;
+  overflow: auto !important;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -283,6 +299,146 @@ a:focus-visible {
 /* ============================================
    Highlight.js Theme Overrides
    ============================================ */
+
+/* ============================================
+   Tooltip Styles (Global Override)
+   ============================================ */
+
+/* Force solid background and generous padding on ALL tooltips */
+[role="tooltip"],
+[data-state="delayed-open"],
+[data-state="instant-open"],
+[data-radix-popper-content-wrapper] > div,
+[data-radix-popper-content-wrapper] [role="tooltip"],
+div[data-state="delayed-open"],
+div[data-state="instant-open"] {
+  background-color: #0f172a !important;
+  background: #0f172a !important;
+  color: #ffffff !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid #334155 !important;
+  z-index: 99999 !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Light mode tooltip adjustments */
+.light [role="tooltip"],
+.light [data-state="delayed-open"],
+.light [data-state="instant-open"],
+.light [data-radix-popper-content-wrapper] > div,
+.light [data-radix-popper-content-wrapper] [role="tooltip"],
+.light div[data-state="delayed-open"],
+.light div[data-state="instant-open"],
+html.light [role="tooltip"],
+:root.light [role="tooltip"] {
+  background-color: #1e293b !important;
+  background: #1e293b !important;
+  color: #ffffff !important;
+  border: 1px solid #475569 !important;
+}
+
+/* Tooltip arrow styling */
+[data-radix-popper-content-wrapper] svg,
+[role="tooltip"] svg {
+  fill: #0f172a !important;
+}
+
+.light [data-radix-popper-content-wrapper] svg,
+.light [role="tooltip"] svg {
+  fill: #1e293b !important;
+}
+
+/* ============================================
+   Toolbar Styles
+   ============================================ */
+
+/* Toolbar button - elevated 3D look with padding */
+.toolbar-button,
+button.toolbar-button,
+.toolbar-button.btn,
+[class*="UButton"].toolbar-button {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: 1px solid #64748b !important;
+  /* Multi-layered shadow for strong 3D depth */
+  box-shadow: 
+    0 1px 0 rgba(255, 255, 255, 0.2) inset,
+    0 -2px 0 rgba(0, 0, 0, 0.3) inset,
+    0 3px 6px rgba(0, 0, 0, 0.35),
+    0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  background: linear-gradient(to bottom, #475569 0%, #334155 50%, #1e293b 100%) !important;
+  border-radius: 6px !important;
+  /* Add horizontal padding for less cramped look */
+  padding: 8px 10px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+}
+
+.toolbar-button:hover:not(:disabled),
+button.toolbar-button:hover:not(:disabled) {
+  transform: translateY(-2px) !important;
+  border-color: #94a3b8 !important;
+  box-shadow: 
+    0 1px 0 rgba(255, 255, 255, 0.25) inset,
+    0 -2px 0 rgba(0, 0, 0, 0.3) inset,
+    0 6px 12px rgba(0, 0, 0, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.25) !important;
+  background: linear-gradient(to bottom, #64748b 0%, #475569 50%, #334155 100%) !important;
+}
+
+.toolbar-button:active:not(:disabled),
+button.toolbar-button:active:not(:disabled) {
+  transform: translateY(1px) !important;
+  box-shadow: 
+    0 3px 6px rgba(0, 0, 0, 0.5) inset,
+    0 1px 1px rgba(255, 255, 255, 0.05) !important;
+  background: linear-gradient(to bottom, #1e293b 0%, #0f172a 100%) !important;
+  border-color: #334155 !important;
+}
+
+.toolbar-button-active,
+button.toolbar-button-active {
+  background: linear-gradient(to bottom, #3b82f6, #1d4ed8) !important;
+  color: white !important;
+  border-color: #2563eb !important;
+  box-shadow: 
+    0 1px 0 rgba(255, 255, 255, 0.4) inset,
+    0 3px 6px rgba(0, 0, 0, 0.4) inset !important;
+}
+
+/* Light mode specific adjustments for 3D look */
+.light .toolbar-button,
+.light button.toolbar-button {
+  border-color: #94a3b8 !important;
+  box-shadow: 
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 -2px 0 rgba(0, 0, 0, 0.08) inset,
+    0 3px 6px rgba(0, 0, 0, 0.12),
+    0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  background: linear-gradient(to bottom, #ffffff 0%, #f8fafc 50%, #e2e8f0 100%) !important;
+}
+
+.light .toolbar-button:hover:not(:disabled),
+.light button.toolbar-button:hover:not(:disabled) {
+  border-color: #64748b !important;
+  background: linear-gradient(to bottom, #ffffff 0%, #f1f5f9 50%, #cbd5e1 100%) !important;
+  box-shadow: 
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 -2px 0 rgba(0, 0, 0, 0.1) inset,
+    0 6px 12px rgba(0, 0, 0, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.light .toolbar-button:active:not(:disabled),
+.light button.toolbar-button:active:not(:disabled) {
+  background: linear-gradient(to bottom, #cbd5e1 0%, #e2e8f0 100%) !important;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2) inset !important;
+}
 
 .hljs {
   background: var(--color-surface) !important;

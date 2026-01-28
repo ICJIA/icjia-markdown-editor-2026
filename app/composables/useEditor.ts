@@ -6,223 +6,730 @@
 import type { EditorView } from '@codemirror/view'
 
 // Default content shown when no saved content exists in localStorage
-const DEFAULT_CONTENT = `# Welcome to ICJIA Markdown Editor
+const DEFAULT_CONTENT = `# The Complete Markdown Tutorial
 
-Start typing your markdown content here. This editor is fully **accessible** and supports all standard markdown features.
+Welcome to this comprehensive guide to Markdown[^1]! This tutorial covers everything you need to know to write beautiful, well-structured documents using Markdown syntax.
 
-## Features Overview
+[^1]: Markdown was created by John Gruber in 2004 as a lightweight markup language designed for easy readability and conversion to HTML.
 
-This editor provides a comprehensive set of tools for creating and editing markdown documents:
+---
 
-- **Bold** and *italic* text formatting
-- [Links](https://icjia.illinois.gov) to external resources
-- Code blocks with syntax highlighting
-- Tables for structured data
-- Blockquotes for citations
-- Ordered and unordered lists
-- Headings (H1-H6)
-- Horizontal rules
-- And much more!
+## Table of Contents
 
-## Getting Started
+1. [Introduction to Markdown](#introduction-to-markdown)
+2. [Text Formatting](#text-formatting)
+3. [Headings](#headings)
+4. [Links and Images](#links-and-images)
+5. [Lists](#lists)
+6. [Blockquotes](#blockquotes)
+7. [Code](#code)
+8. [Tables](#tables)
+9. [Horizontal Rules](#horizontal-rules)
+10. [Footnotes](#footnotes)
+11. [Advanced Tips](#advanced-tips)
 
-### Basic Text Formatting
+---
 
-You can make text **bold** by wrapping it with double asterisks, or *italic* by using single underscores. For \`inline code\`, use backticks.
+## Introduction to Markdown
 
-### Creating Links
+Markdown is a lightweight markup language that you can use to add formatting elements to plaintext documents. Created by John Gruber in 2004, Markdown is now one of the world's most popular markup languages[^2].
 
-Links are created using the format \`[text](url)\`. For example: [Visit ICJIA](https://icjia.illinois.gov)
+[^2]: According to GitHub statistics, Markdown is used in over 90% of README files and documentation across millions of repositories.
 
-### Adding Images
+### Why Use Markdown?
 
-Images use a similar syntax: \`![alt text](image-url)\`
+- **Simplicity**: Easy to learn and read in its raw form
+- **Portability**: Works across all platforms and applications
+- **Flexibility**: Converts easily to HTML, PDF, and other formats
+- **Future-proof**: Plain text files last forever
+- **Widely supported**: Used by GitHub, Reddit, Stack Overflow, and many more
 
-## Code Examples
+### How This Editor Works
 
-### JavaScript
+This editor provides a **live preview** of your Markdown as you type. The left pane is where you write your Markdown, and the right pane shows the rendered output in real-time. Your work is automatically saved every 15 seconds[^autosave].
 
-\`\`\`javascript
-function greet(name) {
-  return \`Hello, \${name}!\`;
-}
+[^autosave]: Auto-save uses your browser's localStorage. Your content persists even if you close the browser, but clearing browser data will erase saved content.
 
-// Using the function
-const message = greet('World');
-console.log(message); // Output: Hello, World!
+---
+
+## Text Formatting
+
+### Bold Text
+
+To make text **bold**, wrap it with double asterisks or double underscores:
+
+\`\`\`markdown
+**This is bold text**
+__This is also bold text__
 \`\`\`
 
-### Python
+**Result:** **This is bold text**
 
-\`\`\`python
-def calculate_statistics(data):
-    """Calculate basic statistics for a dataset."""
-    n = len(data)
-    mean = sum(data) / n
-    variance = sum((x - mean) ** 2 for x in data) / n
-    std_dev = variance ** 0.5
-    return {
-        'count': n,
-        'mean': mean,
-        'variance': variance,
-        'std_dev': std_dev
-    }
+### Italic Text
+
+To make text *italic*, wrap it with single asterisks or single underscores:
+
+\`\`\`markdown
+*This is italic text*
+_This is also italic text_
 \`\`\`
 
-### SQL
+**Result:** *This is italic text*
 
-\`\`\`sql
-SELECT 
-    county_name,
-    COUNT(*) as incident_count,
-    AVG(response_time) as avg_response
-FROM incidents
-WHERE year = 2024
-GROUP BY county_name
-ORDER BY incident_count DESC
-LIMIT 10;
+### Bold and Italic Combined
+
+You can combine bold and italic for ***extra emphasis***:
+
+\`\`\`markdown
+***Bold and italic***
+___Also bold and italic___
+**_Another way_**
 \`\`\`
 
-## Tables
+**Result:** ***Bold and italic***
 
-Tables are useful for presenting structured data:
+### Strikethrough
 
-| Feature | Status | Priority |
-|---------|--------|----------|
-| Dark Mode | ✅ Complete | High |
-| Auto-save | ✅ Complete | High |
-| Export HTML | ✅ Complete | Medium |
-| Table Builder | 🔄 In Progress | Medium |
-| Image Upload | ⏳ Planned | Low |
+To ~~strikethrough~~ text, wrap it with double tildes:
 
-## Accessibility Features
+\`\`\`markdown
+~~This text is crossed out~~
+\`\`\`
 
-This editor is designed to meet **WCAG 2.1 Level AA** standards:
+**Result:** ~~This text is crossed out~~
 
-1. **Full keyboard navigation** - All features accessible via keyboard
-2. **Screen reader support** - Proper ARIA labels and announcements
-3. **High contrast colors** - 4.5:1 contrast ratio for text
-4. **Visible focus indicators** - Clear focus states on all interactive elements
-5. **Skip links** - Quick navigation to main content
-6. **Semantic HTML** - Proper heading hierarchy and landmarks
+### Inline Code
 
-### Keyboard Shortcuts
+For \`inline code\`, wrap text with backticks:
 
-| Action | Shortcut |
-|--------|----------|
-| Bold | Ctrl/⌘ + B |
-| Italic | Ctrl/⌘ + I |
-| Link | Ctrl/⌘ + K |
-| Heading 1-6 | Ctrl/⌘ + 1-6 |
-| Save | Ctrl/⌘ + S |
-| Copy Markdown | Ctrl/⌘ + Shift + C |
-| Copy HTML | Ctrl/⌘ + Shift + H |
+\`\`\`markdown
+Use the \`console.log()\` function for debugging.
+\`\`\`
 
-## Blockquotes
+**Result:** Use the \`console.log()\` function for debugging.
 
-Use blockquotes to highlight important information or citations:
+---
 
-> "The measure of intelligence is the ability to change."
-> — Albert Einstein
+## Headings
 
-Blockquotes can also contain multiple paragraphs:
+Markdown supports six levels of headings, created using hash symbols (\`#\`):
 
-> This is the first paragraph of a multi-paragraph blockquote.
->
-> This is the second paragraph. You can include **formatting** and [links](https://example.com) inside blockquotes as well.
+\`\`\`markdown
+# Heading 1 (Largest)
+## Heading 2
+### Heading 3
+#### Heading 4
+##### Heading 5
+###### Heading 6 (Smallest)
+\`\`\`
+
+### Best Practices for Headings
+
+1. **Use only one H1** per document (typically the title)
+2. **Don't skip levels** — go from H2 to H3, not H2 to H4
+3. **Keep headings descriptive** — they should summarize the content
+4. **Use sentence case** — capitalize only the first word
+
+> **Tip:** Proper heading hierarchy is essential for accessibility. Screen readers use headings to navigate documents, so a logical structure helps all users[^wcag].
+
+[^wcag]: WCAG 2.1 Level AA requires a logical heading structure. This editor is designed to meet these accessibility standards.
+
+---
+
+## Links and Images
+
+### Basic Links
+
+Create links using the format \`[text](url)\`:
+
+\`\`\`markdown
+[Visit ICJIA](https://icjia.illinois.gov)
+[Google](https://www.google.com "Google Homepage")
+\`\`\`
+
+**Result:** [Visit ICJIA](https://icjia.illinois.gov)
+
+The optional title (in quotes) appears on hover.
+
+### Reference-Style Links
+
+For cleaner documents, use reference-style links:
+
+\`\`\`markdown
+Check out [ICJIA][1] for criminal justice research.
+Also see [our publications][pubs].
+
+[1]: https://icjia.illinois.gov
+[pubs]: https://icjia.illinois.gov/publications
+\`\`\`
+
+### Email Links
+
+\`\`\`markdown
+Contact us at <email@example.com>
+\`\`\`
+
+### Images
+
+Images use similar syntax with an exclamation mark:
+
+\`\`\`markdown
+![Alt text](image-url.jpg)
+![ICJIA Logo](https://icjia.illinois.gov/logo.png "ICJIA Logo")
+\`\`\`
+
+### Images with Links
+
+Combine images and links:
+
+\`\`\`markdown
+[![Alt text](image.jpg)](https://example.com)
+\`\`\`
+
+---
 
 ## Lists
 
 ### Unordered Lists
 
+Create unordered lists with \`-\`, \`*\`, or \`+\`:
+
+\`\`\`markdown
 - First item
 - Second item
-  - Nested item 1
-  - Nested item 2
+  - Nested item (indent with 2 spaces)
+  - Another nested item
+- Third item
+\`\`\`
+
+**Result:**
+
+- First item
+- Second item
+  - Nested item (indent with 2 spaces)
+  - Another nested item
 - Third item
 
 ### Ordered Lists
+
+Create ordered lists with numbers:
+
+\`\`\`markdown
+1. First step
+2. Second step
+   1. Sub-step A
+   2. Sub-step B
+3. Third step
+\`\`\`
+
+**Result:**
 
 1. First step
 2. Second step
    1. Sub-step A
    2. Sub-step B
 3. Third step
-4. Fourth step
 
-### Task Lists
+> **Note:** The actual numbers don't matter! Markdown will auto-number them correctly.
 
-- [x] Complete Phase 1: Foundation
-- [x] Complete Phase 2: Core Features
-- [ ] Complete Phase 3: Advanced Features
-- [ ] Complete Phase 4: Testing & Polish
-- [ ] Complete Phase 5: Launch
+### Task Lists (Checkboxes)
 
-## Research Applications
+Create interactive task lists:
 
-The ICJIA Markdown Editor is designed specifically for criminal justice researchers who need to:
+\`\`\`markdown
+- [x] Completed task
+- [x] Another completed task
+- [ ] Incomplete task
+- [ ] Future task
+\`\`\`
 
-### Write Reports
+**Result:**
 
-Create comprehensive research reports with proper formatting, citations, and data presentation. The real-time preview ensures your document looks exactly as intended.
+- [x] Completed task
+- [x] Another completed task
+- [ ] Incomplete task
+- [ ] Future task
 
-### Draft Policy Briefs
+### Definition Lists
 
-Develop policy recommendations with clear structure and professional formatting. Export to HTML for easy distribution or integration with content management systems.
+Some Markdown processors support definition lists:
 
-### Document Findings
+\`\`\`markdown
+Term 1
+: Definition of term 1
 
-Record research findings with code examples, statistical outputs, and detailed methodology descriptions. Syntax highlighting makes technical content more readable.
-
-## Technical Specifications
-
-### Performance Targets
-
-- First Contentful Paint: < 1.5s
-- Largest Contentful Paint: < 2.5s
-- Time to Interactive: < 3.0s
-- Cumulative Layout Shift: < 0.1
-- Total Bundle Size: < 500KB (gzipped)
-
-### Browser Support
-
-| Browser | Minimum Version |
-|---------|----------------|
-| Chrome | 90+ |
-| Firefox | 88+ |
-| Safari | 14+ |
-| Edge | 90+ |
-
-### Screen Reader Support
-
-- VoiceOver (macOS/iOS)
-- NVDA (Windows)
-- JAWS (Windows)
+Term 2
+: Definition of term 2
+\`\`\`
 
 ---
 
-## Auto-Save Feature
+## Blockquotes
 
-Your work is automatically saved to your browser's local storage every 15 seconds. The save status is displayed in the status bar at the bottom of the editor.
+Create blockquotes using the \`>\` character:
 
-**Note:** If you see "Saved just now" or a similar message, your content is being preserved automatically. This default content only appears when there is no previously saved content.
+\`\`\`markdown
+> This is a blockquote.
+> It can span multiple lines.
+\`\`\`
+
+**Result:**
+
+> This is a blockquote.
+> It can span multiple lines.
+
+### Nested Blockquotes
+
+\`\`\`markdown
+> First level quote
+>> Nested quote
+>>> Deeply nested quote
+\`\`\`
+
+**Result:**
+
+> First level quote
+>> Nested quote
+>>> Deeply nested quote
+
+### Blockquotes with Other Elements
+
+> **Important Notice**
+>
+> Blockquotes can contain other Markdown elements:
+>
+> - Lists work here
+> - *Formatting* **works** too
+>
+> \`\`\`javascript
+> // Even code blocks!
+> console.log("Hello from a blockquote!");
+> \`\`\`
+
+### Famous Quotes
+
+> "The only way to do great work is to love what you do."
+> — Steve Jobs
+
+> "In the middle of difficulty lies opportunity."
+> — Albert Einstein
 
 ---
 
-> **Tip:** Scroll through this document to test the scroll synchronization feature. The editor and preview panes should scroll together, keeping your position in sync!
+## Code
+
+### Inline Code
+
+Use single backticks for inline code:
+
+\`\`\`markdown
+The \`Array.map()\` method creates a new array.
+\`\`\`
+
+**Result:** The \`Array.map()\` method creates a new array.
+
+### Code Blocks
+
+Use triple backticks for multi-line code blocks. Specify the language after the opening backticks for syntax highlighting[^highlight]:
+
+[^highlight]: This editor uses highlight.js for syntax highlighting, supporting over 190 programming languages.
+
+#### JavaScript Example
+
+\`\`\`javascript
+// Calculate factorial recursively
+function factorial(n) {
+  if (n <= 1) return 1;
+  return n * factorial(n - 1);
+}
+
+// Arrow function version
+const factorialArrow = (n) => n <= 1 ? 1 : n * factorialArrow(n - 1);
+
+// Usage
+console.log(factorial(5));  // Output: 120
+console.log(factorialArrow(5));  // Output: 120
+\`\`\`
+
+#### Python Example
+
+\`\`\`python
+from dataclasses import dataclass
+from typing import List
+import statistics
+
+@dataclass
+class DataAnalysis:
+    """A class for performing basic statistical analysis."""
+    data: List[float]
+    
+    def mean(self) -> float:
+        """Calculate the arithmetic mean."""
+        return statistics.mean(self.data)
+    
+    def median(self) -> float:
+        """Calculate the median value."""
+        return statistics.median(self.data)
+    
+    def std_dev(self) -> float:
+        """Calculate standard deviation."""
+        return statistics.stdev(self.data) if len(self.data) > 1 else 0.0
+    
+    def summary(self) -> dict:
+        """Return a summary of all statistics."""
+        return {
+            'count': len(self.data),
+            'mean': self.mean(),
+            'median': self.median(),
+            'std_dev': self.std_dev(),
+            'min': min(self.data),
+            'max': max(self.data)
+        }
+
+# Example usage
+analysis = DataAnalysis([23, 45, 67, 89, 12, 34, 56, 78, 90, 11])
+print(analysis.summary())
+\`\`\`
+
+#### SQL Example
+
+\`\`\`sql
+-- Criminal justice data analysis query
+WITH incident_stats AS (
+    SELECT 
+        county_name,
+        incident_type,
+        COUNT(*) as total_incidents,
+        AVG(response_time_minutes) as avg_response,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY response_time_minutes) as median_response
+    FROM public.incidents
+    WHERE report_year = 2024
+      AND status = 'CLOSED'
+    GROUP BY county_name, incident_type
+)
+SELECT 
+    county_name,
+    incident_type,
+    total_incidents,
+    ROUND(avg_response, 2) as avg_response_min,
+    ROUND(median_response, 2) as median_response_min
+FROM incident_stats
+WHERE total_incidents >= 10
+ORDER BY total_incidents DESC
+LIMIT 25;
+\`\`\`
+
+#### CSS Example
+
+\`\`\`css
+/* Modern CSS with custom properties */
+:root {
+  --primary-color: #3b82f6;
+  --secondary-color: #10b981;
+  --text-color: #1f2937;
+  --background-color: #f9fafb;
+  --border-radius: 0.5rem;
+  --transition-speed: 0.2s;
+}
+
+.card {
+  background: var(--background-color);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: transform var(--transition-speed) ease,
+              box-shadow var(--transition-speed) ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+\`\`\`
+
+#### Bash/Shell Example
+
+\`\`\`bash
+#!/bin/bash
+# Automated backup script with logging
+
+BACKUP_DIR="/var/backups"
+SOURCE_DIR="/var/www/html"
+DATE=$(date +%Y-%m-%d_%H-%M-%S)
+LOG_FILE="/var/log/backup.log"
+
+# Create backup with compression
+tar -czf "\${BACKUP_DIR}/backup_\${DATE}.tar.gz" "\${SOURCE_DIR}" 2>> "\${LOG_FILE}"
+
+# Check if backup was successful
+if [ $? -eq 0 ]; then
+    echo "[\${DATE}] Backup completed successfully" >> "\${LOG_FILE}"
+    
+    # Remove backups older than 30 days
+    find "\${BACKUP_DIR}" -name "backup_*.tar.gz" -mtime +30 -delete
+else
+    echo "[\${DATE}] Backup FAILED" >> "\${LOG_FILE}"
+    exit 1
+fi
+\`\`\`
 
 ---
 
-*This is the end of the default content. Start editing to create your own markdown document!*
+## Tables
+
+### Basic Table Syntax
+
+Create tables using pipes (\`|\`) and hyphens (\`-\`):
+
+\`\`\`markdown
+| Header 1 | Header 2 | Header 3 |
+|----------|----------|----------|
+| Cell 1   | Cell 2   | Cell 3   |
+| Cell 4   | Cell 5   | Cell 6   |
+\`\`\`
+
+**Result:**
+
+| Header 1 | Header 2 | Header 3 |
+|----------|----------|----------|
+| Cell 1   | Cell 2   | Cell 3   |
+| Cell 4   | Cell 5   | Cell 6   |
+
+### Column Alignment
+
+Control alignment with colons in the separator row:
+
+\`\`\`markdown
+| Left | Center | Right |
+|:-----|:------:|------:|
+| L    | C      | R     |
+| 1    | 2      | 3     |
+\`\`\`
+
+**Result:**
+
+| Left | Center | Right |
+|:-----|:------:|------:|
+| L    | C      | R     |
+| 1    | 2      | 3     |
+
+### Real-World Table Example
+
+| Feature | Status | Priority | Est. Completion |
+|:--------|:------:|:--------:|----------------:|
+| Dark Mode | ✅ Complete | High | — |
+| Auto-save | ✅ Complete | High | — |
+| Export HTML | ✅ Complete | Medium | — |
+| Table Builder | ✅ Complete | Medium | — |
+| Footnotes | ✅ Complete | Medium | — |
+| Find & Replace | 🔄 In Progress | Medium | Q2 2026 |
+| Image Upload | ⏳ Planned | Low | Q3 2026 |
+| Collaboration | 💡 Proposed | Low | TBD |
+
+### Data Table Example
+
+| County | Population | Crime Rate | Change |
+|:-------|----------:|:----------:|-------:|
+| Cook | 5,150,233 | 4.2% | -0.3% |
+| DuPage | 922,921 | 1.8% | -0.1% |
+| Lake | 696,535 | 2.1% | +0.2% |
+| Will | 690,743 | 2.4% | -0.2% |
+| Kane | 516,522 | 2.0% | -0.4% |
+
+> **Tip:** Use the Table Builder (Cmd/Ctrl + T) for an easier way to create tables!
+
+---
+
+## Horizontal Rules
+
+Create horizontal rules (dividers) with three or more hyphens, asterisks, or underscores:
+
+\`\`\`markdown
+---
+***
+___
+\`\`\`
+
+All three produce the same result:
+
+---
+
+Use horizontal rules to separate major sections of your document.
+
+---
+
+## Footnotes
+
+Footnotes allow you to add references and additional information without cluttering your main text[^syntax].
+
+[^syntax]: Footnotes use a caret and bracket syntax: \`[^identifier]\` for the reference and \`[^identifier]: text\` for the definition.
+
+### Creating Footnotes
+
+\`\`\`markdown
+Here is a statement that needs a citation[^1].
+
+[^1]: This is the footnote content. It will appear at the bottom.
+\`\`\`
+
+### Multi-line Footnotes
+
+\`\`\`markdown
+Here's a complex topic[^complex].
+
+[^complex]: This footnote has multiple paragraphs.
+
+    Indent subsequent paragraphs with spaces.
+    
+    You can even include code blocks!
+\`\`\`
+
+### Footnote Examples in Context
+
+Research shows that accessible design benefits everyone, not just users with disabilities[^universal]. The principles of universal design[^ud] have been widely adopted in web development, with WCAG guidelines serving as the primary standard[^wcag-ref].
+
+[^universal]: Studies by Microsoft and the W3C have demonstrated that accessibility features like captions, keyboard navigation, and high contrast modes are regularly used by people without disabilities.
+
+[^ud]: Universal Design is a framework for designing products and environments to be usable by all people, to the greatest extent possible, without the need for adaptation.
+
+[^wcag-ref]: The Web Content Accessibility Guidelines (WCAG) 2.1 are published by the World Wide Web Consortium (W3C) and provide the international standard for web accessibility.
+
+---
+
+## Advanced Tips
+
+### Escaping Special Characters
+
+Use backslash to escape Markdown characters:
+
+\`\`\`markdown
+\\*This won't be italic\\*
+\\# This won't be a heading
+\`\`\`
+
+**Result:** \\*This won't be italic\\*
+
+### Line Breaks
+
+- End a line with two spaces for a soft break
+- Use a blank line for a paragraph break
+- Use \`<br>\` for an explicit line break (if HTML is enabled)
+
+### Keyboard Shortcuts
+
+This editor supports many keyboard shortcuts for faster writing:
+
+| Action | Mac | Windows/Linux |
+|:-------|:---:|:-------------:|
+| Bold | ⌘ + B | Ctrl + B |
+| Italic | ⌘ + I | Ctrl + I |
+| Link | ⌘ + K | Ctrl + K |
+| Inline Code | ⌘ + E | Ctrl + E |
+| Heading 1-6 | ⌘ + 1-6 | Ctrl + 1-6 |
+| Blockquote | ⌘ + ' | Ctrl + ' |
+| Insert Table | ⌘ + T | Ctrl + T |
+| Copy Markdown | ⌘ + Shift + C | Ctrl + Shift + C |
+| Copy HTML | ⌘ + Shift + H | Ctrl + Shift + H |
+| Download | ⌘ + Shift + S | Ctrl + Shift + S |
+
+### Combining Elements
+
+You can nest and combine Markdown elements:
+
+> **Pro Tip:** Create complex documents by combining elements:
+>
+> 1. Start with a **bold** heading
+> 2. Add *emphasized* details
+> 3. Include \`code snippets\` where needed
+> 4. Reference sources with footnotes[^combo]
+>
+> | Element | Can Contain |
+> |:--------|:------------|
+> | Blockquote | Lists, code, tables |
+> | List Item | Bold, italic, links |
+> | Table Cell | Most inline elements |
+
+[^combo]: This demonstrates how multiple Markdown features can work together in a single blockquote.
+
+---
+
+## Practice Section
+
+Now it's your turn! Try editing this section to practice what you've learned:
+
+### Your Turn: Basic Formatting
+
+Replace this text with your own bold, italic, and ~~strikethrough~~ examples.
+
+### Your Turn: Create a List
+
+1. Replace this
+2. With your own
+3. Custom list
+
+### Your Turn: Add a Code Block
+
+\`\`\`
+// Replace this with code in your favorite language
+\`\`\`
+
+### Your Turn: Build a Table
+
+| Replace | This | Table |
+|---------|------|-------|
+| With    | Your | Own   |
+
+---
+
+## Resources and Further Reading
+
+- [Markdown Guide](https://www.markdownguide.org) — Comprehensive Markdown reference
+- [CommonMark Spec](https://commonmark.org) — The standardized Markdown specification
+- [GitHub Flavored Markdown](https://github.github.com/gfm/) — GitHub's Markdown extensions
+- [ICJIA Research Hub](https://icjia.illinois.gov) — Criminal justice research and publications
+
+---
+
+## About This Editor
+
+The **ICJIA Markdown Editor** is designed for researchers, writers, and anyone who needs a clean, accessible writing environment. Key features include:
+
+- **Real-time Preview** — See your formatted document as you type
+- **Auto-save** — Never lose your work (saves every 15 seconds)
+- **Accessibility** — WCAG 2.1 Level AA compliant
+- **Dark/Light Mode** — Easy on the eyes in any lighting
+- **Keyboard Shortcuts** — Speed up your workflow
+- **Export Options** — Download as Markdown or copy as HTML
+
+---
+
+> **Congratulations!** You've completed the Markdown tutorial. Start editing above or clear this content to begin your own document.
+>
+> *Happy writing!* ✍️
+
+---
+
+*This tutorial is automatically loaded when no saved content exists. Your edits are automatically saved to your browser's local storage.*
 `
 
 // Shared state across the application
-const content = ref<string>(DEFAULT_CONTENT)
+// Start with empty content - will be populated after localStorage check
+const content = ref<string>('')
+
+// Flag to indicate if content has been initialized (localStorage checked)
+const isContentReady = ref(false)
 
 const editorView = ref<EditorView | null>(null)
 const cursorPosition = ref({ line: 1, column: 1 })
 const isModified = ref(false)
-const initialContent = ref(content.value)
+const initialContent = ref('')
+
+// Store the default content for use when localStorage is empty
+const DEFAULT_CONTENT_VALUE = DEFAULT_CONTENT
 
 export function useEditor() {
   /**
@@ -268,6 +775,28 @@ export function useEditor() {
    */
   function clearContent() {
     setContent('')
+  }
+  
+  /**
+   * Initialize with default content (when no localStorage exists)
+   */
+  function initializeWithDefault() {
+    setContent(DEFAULT_CONTENT_VALUE)
+    isContentReady.value = true
+  }
+  
+  /**
+   * Mark content as ready (after localStorage check)
+   */
+  function markContentReady() {
+    isContentReady.value = true
+  }
+  
+  /**
+   * Get the default content
+   */
+  function getDefaultContent(): string {
+    return DEFAULT_CONTENT_VALUE
   }
   
   /**
@@ -513,6 +1042,7 @@ export function useEditor() {
     editorView: readonly(editorView),
     cursorPosition: readonly(cursorPosition),
     isModified: readonly(isModified),
+    isContentReady: readonly(isContentReady),
     
     // Setters
     setEditorView,
@@ -520,6 +1050,9 @@ export function useEditor() {
     setContent,
     clearContent,
     updateCursorPosition,
+    initializeWithDefault,
+    markContentReady,
+    getDefaultContent,
     
     // Editor actions
     insertText,

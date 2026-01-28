@@ -8,7 +8,7 @@ const STORAGE_KEY = 'icjia-markdown-editor-autosave'
 const SAVE_INTERVAL = 15000 // 15 seconds
 
 export function useAutoSave() {
-  const { content, setContent } = useEditor()
+  const { content, setContent, initializeWithDefault, markContentReady, isContentReady } = useEditor()
   const { announce } = useAccessibility()
   
   const lastSaveTime = ref<number | null>(null)
@@ -42,11 +42,23 @@ export function useAutoSave() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
       lastSaveTime.value = Date.now()
       
-      // Visual feedback - brief "just saved" indicator
+      // Visual feedback - show green dot briefly
       justSaved.value = true
-      setTimeout(() => {
+      showSaveIndicator.value = true
+      
+      // Reset countdown to next save
+      countdownToSave.value = SAVE_INTERVAL / 1000
+      
+      // Clear any existing timeout
+      if (hideIndicatorTimeout) {
+        clearTimeout(hideIndicatorTimeout)
+      }
+      
+      // Hide the green dot after 2 seconds
+      hideIndicatorTimeout = setTimeout(() => {
+        showSaveIndicator.value = false
         justSaved.value = false
-      }, 1500)
+      }, 2000)
       
       return true
     } catch (e) {
@@ -73,6 +85,7 @@ export function useAutoSave() {
         setContent(data.content, true)
         hasRestoredFromStorage.value = true
         lastSaveTime.value = data.savedAt || Date.now()
+        markContentReady()
         return true
       }
       return false
@@ -161,15 +174,40 @@ export function useAutoSave() {
   // Track when a save just completed for visual feedback
   const justSaved = ref(false)
   
+  // Track whether to show the save indicator (green dot)
+  const showSaveIndicator = ref(false)
+  
+  // Countdown to next save (in seconds)
+  const countdownToSave = ref(SAVE_INTERVAL / 1000)
+  
+  // Interval for countdown timer
+  let countdownInterval: ReturnType<typeof setInterval> | null = null
+  
+  // Timeout for hiding the indicator
+  let hideIndicatorTimeout: ReturnType<typeof setTimeout> | null = null
+  
   // Auto-save interval
   let saveInterval: ReturnType<typeof setInterval> | null = null
   
   function startAutoSave() {
     if (saveInterval) return
     
+    // Start countdown timer (updates every second)
+    countdownInterval = setInterval(() => {
+      if (countdownToSave.value > 0) {
+        countdownToSave.value--
+      }
+    }, 1000)
+    
+    // Save every 15 seconds regardless of content changes
+    // This ensures continuous protection of user work
     saveInterval = setInterval(() => {
+      // Only save if there's actual content (not empty)
       if (content.value.trim().length > 0) {
         save()
+      } else {
+        // Reset countdown even if not saving (no content)
+        countdownToSave.value = SAVE_INTERVAL / 1000
       }
     }, SAVE_INTERVAL)
   }
@@ -178,6 +216,10 @@ export function useAutoSave() {
     if (saveInterval) {
       clearInterval(saveInterval)
       saveInterval = null
+    }
+    if (countdownInterval) {
+      clearInterval(countdownInterval)
+      countdownInterval = null
     }
   }
   
@@ -190,6 +232,9 @@ export function useAutoSave() {
       if (hasSavedContent()) {
         restore()
         announce('Previous work restored from auto-save')
+      } else {
+        // No saved content - initialize with default
+        initializeWithDefault()
       }
       
       // Start auto-save interval
@@ -205,6 +250,9 @@ export function useAutoSave() {
       
       // Save before page unload
       window.addEventListener('beforeunload', save)
+    } else {
+      // Storage not available - still initialize with default
+      initializeWithDefault()
     }
   })
   
@@ -214,6 +262,10 @@ export function useAutoSave() {
     if (timeUpdateInterval) {
       clearInterval(timeUpdateInterval)
       timeUpdateInterval = null
+    }
+    if (hideIndicatorTimeout) {
+      clearTimeout(hideIndicatorTimeout)
+      hideIndicatorTimeout = null
     }
     window.removeEventListener('blur', save)
     window.removeEventListener('beforeunload', save)
@@ -229,7 +281,10 @@ export function useAutoSave() {
     lastSaveDisplay,
     isSaving: readonly(isSaving),
     justSaved: readonly(justSaved),
+    showSaveIndicator: readonly(showSaveIndicator),
+    countdownToSave: readonly(countdownToSave),
     hasRestoredFromStorage: readonly(hasRestoredFromStorage),
     storageAvailable: readonly(storageAvailable),
+    isContentReady,
   }
 }

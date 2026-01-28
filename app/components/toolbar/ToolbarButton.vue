@@ -21,18 +21,13 @@ const emit = defineEmits<{
   (e: 'click'): void
 }>()
 
-// Format tooltip text with shortcut
-const tooltipText = computed(() => {
-  if (props.shortcut) {
-    // Convert Mod to platform-specific key
-    const isMac = typeof navigator !== 'undefined' && navigator.platform.includes('Mac')
-    const shortcut = props.shortcut
-      .replace('Mod', isMac ? '⌘' : 'Ctrl')
-      .replace('Shift', isMac ? '⇧' : 'Shift')
-      .replace('Alt', isMac ? '⌥' : 'Alt')
-    return `${props.label} (${shortcut})`
-  }
-  return props.label
+// Split shortcut into array for Nuxt UI kbds prop
+const keyboardShortcuts = computed(() => {
+  if (!props.shortcut) return []
+  return props.shortcut.split('+').map(key => {
+    if (key === 'Mod') return 'meta'
+    return key
+  })
 })
 
 function handleClick() {
@@ -43,15 +38,22 @@ function handleClick() {
 </script>
 
 <template>
-  <UTooltip :text="tooltipText" :delay-duration="300">
+  <UTooltip
+    :text="label"
+    :kbds="keyboardShortcuts"
+    :content="{ side: 'top', sideOffset: 8 }"
+  >
     <UButton
       :icon="icon"
       :aria-label="label"
       :disabled="disabled"
-      :class="{ 'toolbar-button-active': active }"
-      variant="ghost"
+      :class="[
+        'toolbar-button',
+        { 'toolbar-button-active': active }
+      ]"
+      variant="soft"
       color="neutral"
-      size="xs"
+      size="sm"
       square
       @click="handleClick"
     />
@@ -59,8 +61,5 @@ function handleClick() {
 </template>
 
 <style scoped>
-.toolbar-button-active {
-  background: var(--color-primary, #3b82f6) !important;
-  color: white !important;
-}
+/* Scoped styles removed in favor of global .toolbar-button styles in main.css */
 </style>

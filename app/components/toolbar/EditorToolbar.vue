@@ -18,6 +18,8 @@ const {
   insertLink,
 } = useEditor()
 
+const { openTableBuilder } = useTableBuilderModal()
+
 const { copyMarkdown, copyHtml, downloadMarkdown, downloadHtml, uploadMarkdown, copyMarkdownSuccess, copyHtmlSuccess } = useExport()
 const { announce } = useAccessibility()
 
@@ -157,19 +159,26 @@ const headingItems = [
     
     <!-- Headings group -->
     <div class="toolbar-group" role="group" aria-label="Headings">
-      <UDropdownMenu 
-        :items="headingItems"
-        :content="{ side: 'bottom', align: 'start', sideOffset: 8 }"
+      <UTooltip
+        text="Headings"
+        :kbds="['meta', '1-6']"
+        :content="{ side: 'top', sideOffset: 8 }"
       >
-        <UButton
-          icon="i-lucide-heading"
-          aria-label="Insert heading"
-          variant="ghost"
-          color="neutral"
-          size="xs"
-          square
-        />
-      </UDropdownMenu>
+        <UDropdownMenu 
+          :items="headingItems"
+          :content="{ side: 'bottom', align: 'start', sideOffset: 8 }"
+        >
+          <UButton
+            icon="i-lucide-heading"
+            aria-label="Insert heading"
+            class="toolbar-button"
+            variant="soft"
+            color="neutral"
+            size="sm"
+            square
+          />
+        </UDropdownMenu>
+      </UTooltip>
     </div>
     
     <ToolbarDivider />
@@ -219,13 +228,19 @@ const headingItems = [
     <!-- Insert group -->
     <div class="toolbar-group" role="group" aria-label="Insert">
       <ToolbarButton 
+        icon="i-heroicons-table-cells" 
+        label="Insert table" 
+        shortcut="Mod+T"
+        @click="openTableBuilder" 
+      />
+      <ToolbarButton 
         icon="i-heroicons-link" 
         label="Insert link" 
         shortcut="Mod+K"
         @click="handleLink" 
       />
     </div>
-    
+
     <!-- Spacer to push export buttons to the right -->
     <div class="toolbar-spacer" />
     
@@ -271,12 +286,12 @@ const headingItems = [
 .editor-toolbar {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.5rem 1rem;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
   background: var(--color-surface, #1e293b);
   border-bottom: 1px solid var(--color-border, #334155);
   flex-wrap: nowrap;
-  min-height: 2.75rem;
+  min-height: 3.5rem;
   overflow-x: auto;
   overflow-y: visible;
 }
@@ -290,7 +305,7 @@ const headingItems = [
 .toolbar-group {
   display: flex;
   align-items: center;
-  gap: 0.125rem;
+  gap: 0.375rem;
   flex-shrink: 0;
 }
 

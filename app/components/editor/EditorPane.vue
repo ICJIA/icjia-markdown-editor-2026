@@ -9,7 +9,7 @@ import { EditorView } from '@codemirror/view'
 import { createEditorState, updateTheme } from '~/utils/editor/config'
 
 const colorMode = useColorMode()
-const { setEditorView, updateContent, content } = useEditor()
+const { setEditorView, updateContent, content, isContentReady } = useEditor()
 const { announce } = useAccessibility()
 
 // Container ref for mounting CodeMirror
@@ -76,7 +76,14 @@ defineExpose({
 
 <template>
   <div class="editor-pane">
+    <!-- Loading state while checking localStorage -->
+    <div v-if="!isContentReady" class="loading-state">
+      <UIcon name="i-heroicons-arrow-path" class="animate-spin" />
+      <span>Loading...</span>
+    </div>
+    
     <div 
+      v-show="isContentReady"
       ref="editorContainer"
       id="main-editor"
       class="editor-container"
@@ -92,6 +99,16 @@ defineExpose({
   height: 100%;
   background: var(--color-surface, #1e293b);
   overflow: hidden;
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 100%;
+  color: var(--color-text-muted, #94a3b8);
+  font-size: 0.875rem;
 }
 
 .editor-container {

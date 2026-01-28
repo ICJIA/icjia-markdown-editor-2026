@@ -17,10 +17,10 @@ provide('announce', announce)
     <div id="app">
       <!-- Skip link - first focusable element (WCAG 2.4.1) -->
       <SkipLink />
-      
+
       <!-- Route announcer for SPA navigation -->
       <NuxtRouteAnnouncer />
-      
+
       <!-- Page content -->
       <NuxtPage />
     </div>

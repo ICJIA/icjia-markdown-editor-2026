@@ -6,9 +6,18 @@
  */
 
 const { wordCountDisplay, wordCount } = useMarkdown()
+const { isTableBuilderOpen, closeTableBuilder } = useTableBuilderModal()
+const { insertText } = useEditor()
+const { announce } = useAccessibility()
+
+function handleTableInsert(markdown: string) {
+  insertText('\n' + markdown + '\n')
+  closeTableBuilder()
+  announce('Table inserted')
+}
 
 // Initialize auto-save functionality
-const { lastSaveDisplay, isSaving, justSaved } = useAutoSave()
+const { isSaving, showSaveIndicator, countdownToSave, isContentReady } = useAutoSave()
 
 // Initialize scroll synchronization
 const { enabled: scrollSyncEnabled, toggle: toggleScrollSync, init: initScrollSync } = useScrollSync()
@@ -103,7 +112,14 @@ const viewModeLabel = computed(() => {
   <div class="editor-layout">
     <!-- Formatting Toolbar -->
     <EditorToolbar />
-    
+
+    <!-- Table Builder Modal -->
+    <TableBuilderModal
+      :open="isTableBuilderOpen"
+      @close="closeTableBuilder"
+      @insert="handleTableInsert"
+    />
+
     <!-- Main editor area -->
     <div class="editor-main">
       <div 
@@ -146,14 +162,20 @@ const viewModeLabel = computed(() => {
         <span class="word-count" :title="`${wordCount.lines} lines, ${wordCount.paragraphs} paragraphs`">
           {{ wordCountDisplay }}
         </span>
-        <span 
-          v-if="lastSaveDisplay" 
-          class="save-status" 
-          :class="{ saving: isSaving, 'just-saved': justSaved }"
-        >
-          <UIcon v-if="isSaving" name="i-heroicons-arrow-path" class="animate-spin" />
-          <UIcon v-else-if="justSaved" name="i-heroicons-check-circle" class="save-check" />
-          {{ isSaving ? 'Saving...' : lastSaveDisplay }}
+        <span class="save-status">
+          <template v-if="isSaving">
+            <UIcon name="i-heroicons-arrow-path" class="animate-spin" />
+            <span>Saving...</span>
+          </template>
+          <template v-else-if="showSaveIndicator">
+            <span class="save-indicator">
+              <span class="save-dot" />
+              <span>Saved</span>
+            </span>
+          </template>
+          <template v-else>
+            <span class="countdown">Next save: {{ countdownToSave }}s</span>
+          </template>
         </span>
       </div>
       
@@ -279,13 +301,35 @@ const viewModeLabel = computed(() => {
   color: var(--color-primary, #3b82f6);
 }
 
-.save-status.just-saved {
-  opacity: 1;
-  color: #22c55e;
+.countdown {
+  color: var(--color-text-muted, #94a3b8);
+  font-variant-numeric: tabular-nums;
 }
 
-.save-check {
-  color: #22c55e;
+.save-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.save-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #22c55e;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.9);
+  }
 }
 
 .animate-spin {
