@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Tour module styles */
+@import "~/modules/tour/styles/tour.css";
+
 /**
  * Global Styles for ICJIA Markdown Editor
  * WCAG 2.1 AA compliant color scheme

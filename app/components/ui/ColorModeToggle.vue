@@ -27,12 +27,81 @@ const label = computed(() => isDark.value ? 'Switch to light mode' : 'Switch to 
 </script>
 
 <template>
-  <UButton
-    :icon="icon"
+  <button
+    type="button"
+    class="color-mode-button"
     :aria-label="label"
-    variant="ghost"
-    color="neutral"
-    size="md"
     @click="toggleColorMode"
-  />
+  >
+    <UIcon :name="icon" class="mode-icon" />
+    <span class="mode-label">{{ isDark ? 'Dark' : 'Light' }}</span>
+  </button>
 </template>
+
+<style scoped>
+/* Color mode button - polished gradient button (slate/gray tones) */
+.color-mode-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #64748b 0%, #475569 50%, #64748b 100%);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 
+    0 1px 3px rgba(100, 116, 139, 0.3),
+    0 4px 6px -2px rgba(100, 116, 139, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.color-mode-button:hover {
+  background: linear-gradient(135deg, #475569 0%, #334155 50%, #475569 100%);
+  box-shadow: 
+    0 2px 8px rgba(100, 116, 139, 0.4),
+    0 6px 12px -2px rgba(100, 116, 139, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.color-mode-button:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 1px 2px rgba(100, 116, 139, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.color-mode-button:focus-visible {
+  outline: 2px solid #94a3b8;
+  outline-offset: 2px;
+}
+
+.mode-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+}
+
+.mode-label {
+  min-width: 2.5rem;
+  text-align: left;
+}
+
+/* Dark mode - slightly lighter gradient for contrast */
+.dark .color-mode-button {
+  background: linear-gradient(135deg, #94a3b8 0%, #64748b 50%, #94a3b8 100%);
+  color: #1e293b;
+  box-shadow: 
+    0 1px 3px rgba(148, 163, 184, 0.3),
+    0 4px 8px -2px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.dark .color-mode-button:hover {
+  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 50%, #cbd5e1 100%);
+}
+</style>

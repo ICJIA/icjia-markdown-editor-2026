@@ -148,7 +148,7 @@ const headingItems = [
 <template>
   <div class="editor-toolbar" role="toolbar" aria-label="Formatting toolbar">
     <!-- Text formatting group -->
-    <div class="toolbar-group" role="group" aria-label="Text formatting">
+    <div class="toolbar-group" role="group" aria-label="Text formatting" data-tour="formatting">
       <ToolbarButton 
         icon="i-heroicons-bold" 
         label="Bold" 
@@ -172,7 +172,7 @@ const headingItems = [
     <ToolbarDivider />
     
     <!-- Headings group -->
-    <div class="toolbar-group" role="group" aria-label="Headings">
+    <div class="toolbar-group" role="group" aria-label="Headings" data-tour="headings">
       <UDropdownMenu 
         :items="headingItems"
         :content="{ side: 'bottom', align: 'start', sideOffset: 8 }"
@@ -199,7 +199,7 @@ const headingItems = [
     <ToolbarDivider />
     
     <!-- Block formatting group -->
-    <div class="toolbar-group" role="group" aria-label="Block formatting">
+    <div class="toolbar-group" role="group" aria-label="Block formatting" data-tour="blocks">
       <ToolbarButton 
         icon="i-heroicons-chat-bubble-bottom-center-text" 
         label="Block quote" 
@@ -223,7 +223,7 @@ const headingItems = [
     <ToolbarDivider />
     
     <!-- List formatting group -->
-    <div class="toolbar-group" role="group" aria-label="Lists">
+    <div class="toolbar-group" role="group" aria-label="Lists" data-tour="lists">
       <ToolbarButton 
         icon="i-heroicons-list-bullet" 
         label="Bullet list" 
@@ -241,7 +241,7 @@ const headingItems = [
     <ToolbarDivider />
     
     <!-- Insert group -->
-    <div class="toolbar-group" role="group" aria-label="Insert">
+    <div class="toolbar-group" role="group" aria-label="Insert" data-tour="insert">
       <ToolbarButton 
         icon="i-heroicons-table-cells" 
         label="Insert table" 
@@ -259,7 +259,7 @@ const headingItems = [
     <ToolbarDivider />
     
     <!-- Scroll sync toggle - highly visible with text label -->
-    <div class="toolbar-group" role="group" aria-label="Scroll sync">
+    <div class="toolbar-group" role="group" aria-label="Scroll sync" data-tour="scroll-sync">
       <button
         type="button"
         :aria-label="`Scroll sync: ${scrollSyncEnabled ? 'enabled' : 'disabled'}. Click to toggle.`"
@@ -275,7 +275,7 @@ const headingItems = [
     
     <!-- Save indicator - only appears briefly when saved -->
     <Transition name="fade">
-      <div v-if="showSaveIndicator" class="toolbar-group" role="status" aria-label="Save status">
+      <div v-if="showSaveIndicator" class="toolbar-group" role="status" aria-label="Save status" data-tour="auto-save">
         <span class="save-indicator" aria-live="polite">
           <UIcon name="i-heroicons-check-circle" class="status-icon" />
           <span class="status-label">Saved</span>
@@ -287,7 +287,7 @@ const headingItems = [
     <div class="toolbar-spacer" />
     
     <!-- File operations group -->
-    <div class="toolbar-group" role="group" aria-label="File operations">
+    <div class="toolbar-group" role="group" aria-label="File operations" data-tour="file-ops">
       <ToolbarButton 
         icon="i-heroicons-arrow-up-tray" 
         label="Upload Markdown" 
@@ -305,7 +305,7 @@ const headingItems = [
     <ToolbarDivider />
     
     <!-- Export group -->
-    <div class="toolbar-group" role="group" aria-label="Export">
+    <div class="toolbar-group" role="group" aria-label="Export" data-tour="export">
       <ToolbarButton 
         icon="i-heroicons-clipboard-document"
         :label="copyMarkdownSuccess ? 'Copied!' : 'Copy Markdown'"

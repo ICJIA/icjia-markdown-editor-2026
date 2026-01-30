@@ -4,6 +4,11 @@
  * The primary and only page of the application
  */
 
+import { useTour } from '~/modules/tour/composables/useTour'
+import TourOverlay from '~/modules/tour/components/TourOverlay.vue'
+import TourWelcome from '~/modules/tour/components/TourWelcome.vue'
+import { tourConfig } from '~/config/tour'
+
 // Page meta for SEO and accessibility
 useHead({
   title: 'ICJIA Markdown Editor 2.0',
@@ -18,18 +23,53 @@ useKeyboardShortcuts()
 // Announce page load to screen readers
 const { announce } = useAccessibility()
 
+// Initialize tour
+const tour = useTour(tourConfig)
+
+// Welcome modal state - shown for first-time users
+const showWelcome = ref(false)
+
 onMounted(() => {
   // Small delay to ensure components are ready
   setTimeout(() => {
     announce('ICJIA Markdown Editor 2.0 ready. Press Tab to navigate to the editor.')
   }, 100)
+  
+  // Show welcome modal for first-time users instead of auto-starting tour
+  if (tour.autoStart && !tour.hasCompletedTour.value) {
+    setTimeout(() => {
+      showWelcome.value = true
+    }, tour.autoStartDelay)
+  }
 })
+
+// Handle welcome modal - user wants to start tour
+function handleWelcomeStart() {
+  showWelcome.value = false
+  // Small delay to let the welcome modal fade out
+  setTimeout(() => {
+    tour.start()
+  }, 100)
+}
+
+// Handle welcome modal - user wants to skip tour
+function handleWelcomeSkip() {
+  showWelcome.value = false
+  // Mark as completed so we don't ask again
+  tour.hasCompletedTour.value = true
+  announce('Tour skipped. You can start it anytime from the Tour button in the header.')
+}
+
+// Handle tour start from header button (manual trigger)
+function handleStartTour() {
+  tour.start()
+}
 </script>
 
 <template>
   <div class="page-container">
     <!-- Header landmark -->
-    <AppHeader />
+    <AppHeader @start-tour="handleStartTour" />
     
     <!-- Main content landmark -->
     <main class="main-content" role="main">
@@ -38,6 +78,23 @@ onMounted(() => {
     
     <!-- Modals -->
     <DownloadModal />
+    
+    <!-- Guided Tour Welcome Modal (first-time users) -->
+    <TourWelcome
+      :is-visible="showWelcome"
+      @start-tour="handleWelcomeStart"
+      @skip-tour="handleWelcomeSkip"
+    />
+    
+    <!-- Guided Tour Overlay -->
+    <TourOverlay
+      :is-active="tour.isActive.value"
+      :current-step="tour.currentStep.value"
+      :progress="tour.progress.value"
+      @next="tour.next()"
+      @previous="tour.previous()"
+      @cancel="tour.cancel()"
+    />
   </div>
 </template>
 

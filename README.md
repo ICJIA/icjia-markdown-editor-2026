@@ -11,9 +11,11 @@ A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. Designe
 - **Auto-save** - Never lose your work (saves every 30 seconds to localStorage with visual indicator)
 - **Export Options** - Copy as Markdown, copy as HTML, or download files with custom filenames
 - **Footnote Support** - Full footnote syntax with automatic numbering and back-references
+- **Guided Tour** - Interactive onboarding that explains all features (runs once, restartable anytime)
 - **Accessibility First** - WCAG 2.1 Level AA compliant with full keyboard navigation and screen reader support
 - **Static Deployment** - Deploy anywhere as a static site (Netlify-ready)
 - **Fully Documented** - Comprehensive JSDoc comments on all composables and utilities
+- **Reusable Tour Module** - Copy the tour module to any Nuxt project for instant onboarding
 
 ## Documentation
 
@@ -25,6 +27,7 @@ A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. Designe
 | [Quick Start Guide](./documentation/QUICK_START.md) | Getting started in 5 minutes |
 | [Browser Support](./documentation/BROWSER_SUPPORT.md) | Supported browsers and screen readers |
 | [Troubleshooting](./documentation/TROUBLESHOOTING.md) | Common issues and solutions |
+| [Tour Module](./app/modules/tour/README.md) | Reusable guided tour module documentation |
 
 ## Development Progress
 
@@ -60,8 +63,10 @@ A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. Designe
 - [x] Comprehensive JSDoc documentation for all composables and utilities
 - [x] Save indicator with visual feedback (green dot on save)
 
-### Phase 4: Accessibility & Polish - PENDING
+### Phase 4: Accessibility & Polish - IN PROGRESS
 
+- [x] Guided tour/onboarding module (WCAG 2.1 AA compliant)
+- [x] Reusable tour module architecture for other projects
 - [ ] Full accessibility audit (axe-core, WAVE)
 - [ ] Screen reader testing (VoiceOver, NVDA)
 - [ ] Keyboard navigation refinement
@@ -151,6 +156,14 @@ npx serve dist
 | Download | ⌘ + S | Ctrl + S |
 | Open File | ⌘ + O | Ctrl + O |
 
+### Tour Navigation
+
+| Action | Key |
+|--------|-----|
+| Next Step | → (Arrow Right) |
+| Previous Step | ← (Arrow Left) |
+| Cancel Tour | Esc |
+
 ## Code Documentation
 
 All composables and utility files include comprehensive JSDoc documentation:
@@ -172,6 +185,146 @@ This project is committed to WCAG 2.1 Level AA compliance. Key accessibility fea
 - **Focus Indicators** - Clear, visible focus states on all interactive elements
 - **Color Contrast** - 4.5:1 for text, 3:1 for UI components
 - **Reduced Motion** - Respects `prefers-reduced-motion` setting
+- **Guided Tour** - Accessible onboarding with keyboard navigation (Arrow keys, Escape)
+
+## Guided Tour / Onboarding
+
+The application includes an interactive guided tour that introduces users to all major features. The tour is:
+
+- **WCAG 2.1 AA Compliant** - Full keyboard navigation (←/→/Esc), screen reader announcements
+- **Runs Once by Default** - Automatically starts for first-time visitors
+- **Cancellable Anytime** - Users can skip with a button or press Escape
+- **Manually Restartable** - Click the ? button in the header to restart
+- **Responsive** - Works on desktop and mobile devices
+
+### Tour Steps
+
+1. **Text Formatting** - Bold, italic, inline code
+2. **Headings** - H1-H6 with keyboard shortcuts
+3. **Block Elements** - Quotes, code blocks, horizontal rules
+4. **Lists** - Bullet and numbered lists
+5. **Tables & Links** - Visual table builder, link insertion
+6. **Scroll Sync** - Synchronized scrolling toggle
+7. **Auto-Save** - Explains browser localStorage (not file-based)
+8. **Upload & Download** - File operations
+9. **Copy to Clipboard** - Markdown and HTML export
+10. **Editor Pane** - Where to write
+11. **Preview Pane** - Live rendering
+12. **View Modes** - Split/editor/preview toggle
+
+### Reusing the Tour Module
+
+The tour module is designed to be portable. Copy it to any Nuxt project:
+
+#### 1. Copy the Module
+
+```bash
+# Copy the entire tour module folder
+cp -r app/modules/tour /path/to/your-project/app/modules/
+```
+
+#### 2. Import Tour Styles
+
+Add to your main CSS file:
+
+```css
+@import '~/modules/tour/styles/tour.css';
+```
+
+#### 3. Create Your Configuration
+
+Create `app/config/tour.ts`:
+
+```typescript
+import type { TourConfig } from '~/modules/tour/types'
+
+export const tourConfig: TourConfig = {
+  version: 1,
+  autoStart: true,
+  autoStartDelay: 800,
+  storageKeyPrefix: 'my-app-tour',
+  steps: [
+    {
+      id: 'welcome',
+      target: '[data-tour="header"]',
+      title: 'Welcome!',
+      content: 'This is a quick tour of the main features.',
+      position: 'bottom',
+      icon: 'i-heroicons-hand-raised'
+    },
+    // Add more steps...
+  ]
+}
+```
+
+#### 4. Add Tour Targets
+
+Add `data-tour` attributes to elements you want to highlight:
+
+```vue
+<template>
+  <header data-tour="header">...</header>
+  <button data-tour="save-button">Save</button>
+</template>
+```
+
+#### 5. Wire Up in Your Page
+
+```vue
+<script setup lang="ts">
+import { useTour } from '~/modules/tour/composables/useTour'
+import TourOverlay from '~/modules/tour/components/TourOverlay.vue'
+import { tourConfig } from '~/config/tour'
+
+const tour = useTour(tourConfig)
+
+onMounted(() => {
+  if (tour.autoStart && !tour.hasCompletedTour.value) {
+    setTimeout(() => tour.start(), tour.autoStartDelay)
+  }
+})
+</script>
+
+<template>
+  <!-- Add restart button -->
+  <button @click="tour.start()">Start Tour</button>
+  
+  <!-- Add tour overlay -->
+  <TourOverlay
+    :is-active="tour.isActive.value"
+    :current-step="tour.currentStep.value"
+    :progress="tour.progress.value"
+    @next="tour.next()"
+    @previous="tour.previous()"
+    @cancel="tour.cancel()"
+  />
+</template>
+```
+
+### Tour Configuration Options
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `version` | `number` | - | Increment to reset completion for all users |
+| `autoStart` | `boolean` | `true` | Auto-start for first-time visitors |
+| `autoStartDelay` | `number` | `800` | Delay (ms) before auto-starting |
+| `storageKeyPrefix` | `string` | - | LocalStorage key prefix |
+| `steps` | `TourStep[]` | - | Array of tour step definitions |
+
+### Step Configuration
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `id` | `string` | - | Unique identifier |
+| `target` | `string` | - | CSS selector (e.g., `[data-tour="id"]`) |
+| `title` | `string` | - | Step title |
+| `content` | `string` | - | Step description |
+| `tip` | `string` | - | Optional tip shown in highlighted box |
+| `position` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'bottom'` | Popover position |
+| `icon` | `string` | - | Iconify icon name |
+| `shortcut` | `string[]` | - | Keyboard shortcut to display |
+
+See `app/modules/tour/README.md` for complete documentation.
 
 ## Deployment
 
@@ -207,6 +360,20 @@ icjia-markdown-editor-2026/
 │   │   ├── useMarkdown.ts        # Markdown rendering and stats
 │   │   ├── useScrollSync.ts      # Editor/preview scroll sync
 │   │   └── useTableBuilderModal.ts # Table builder state
+│   ├── config/             # App configuration
+│   │   └── tour.ts         # Tour step definitions for this app
+│   ├── modules/            # Reusable modules
+│   │   └── tour/           # Guided tour module (portable to other projects)
+│   │       ├── README.md           # Module documentation
+│   │       ├── types.ts            # TypeScript definitions
+│   │       ├── index.ts            # Module exports
+│   │       ├── composables/
+│   │       │   └── useTour.ts      # Tour state and navigation
+│   │       ├── components/
+│   │       │   ├── TourOverlay.vue # Main tour dialog UI
+│   │       │   └── TourTrigger.vue # Reusable trigger button
+│   │       └── styles/
+│   │           └── tour.css        # Highlight ring animations
 │   ├── pages/              # Nuxt pages
 │   └── utils/              # Utility functions (fully documented with JSDoc)
 │       ├── editor/         # CodeMirror config, themes, keymaps

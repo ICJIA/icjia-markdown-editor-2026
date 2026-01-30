@@ -1,0 +1,237 @@
+/**
+ * Tour Module Styles
+ * @description CSS for tour highlight effects and animations.
+ * Import this file in your main CSS or app entry point.
+ * 
+ * These styles create a highlight ring around the currently
+ * focused tour step target element.
+ */
+
+/* =============================================================================
+   TOUR POPOVER Z-INDEX
+   Ensure tour popover content is above everything else
+   ============================================================================= */
+
+/* Target ALL Radix popper content wrappers that contain tour dialogs */
+[data-radix-popper-content-wrapper]:has([role="dialog"][aria-labelledby^="tour-title"]) {
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+}
+
+/* Alternative: target by content that contains tour dialog */
+body > [data-radix-popper-content-wrapper]:has(.tour-card) {
+  z-index: 99999 !important;
+}
+
+/* Fallback for browsers without :has() support - add class via JS if needed */
+.tour-popover-wrapper {
+  z-index: 99999 !important;
+}
+
+/* Ensure the card itself is interactive */
+.tour-card,
+[aria-labelledby^="tour-title-"] {
+  position: relative;
+  z-index: 99999;
+  pointer-events: auto !important;
+}
+
+/* Make sure all buttons inside tour are clickable */
+.tour-card button,
+[aria-labelledby^="tour-title-"] button {
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 1;
+}
+
+/* =============================================================================
+   TOUR HIGHLIGHT RING
+   Applied to elements with data-tour-active="true"
+   Uses orange/amber colors for high visibility with color-shifting animation
+   ============================================================================= */
+
+[data-tour-active="true"] {
+  position: relative;
+  z-index: 9998;
+}
+
+[data-tour-active="true"]::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border: 3px solid #f59e0b; /* amber-500 */
+  border-radius: 8px;
+  box-shadow: 
+    0 0 0 4px rgba(245, 158, 11, 0.35),
+    0 0 20px rgba(245, 158, 11, 0.4);
+  pointer-events: none;
+  animation: tour-highlight-blink 1.5s ease-in-out infinite;
+  z-index: -1;
+}
+
+/* Color-shifting blink animation: orange -> amber -> yellow -> back */
+@keyframes tour-highlight-blink {
+  0%, 100% {
+    border-color: #f59e0b; /* amber-500 */
+    box-shadow: 
+      0 0 0 4px rgba(245, 158, 11, 0.35),
+      0 0 20px rgba(245, 158, 11, 0.4);
+  }
+  33% {
+    border-color: #ea580c; /* orange-600 */
+    box-shadow: 
+      0 0 0 6px rgba(234, 88, 12, 0.3),
+      0 0 25px rgba(234, 88, 12, 0.35);
+  }
+  66% {
+    border-color: #fbbf24; /* amber-400 */
+    box-shadow: 
+      0 0 0 5px rgba(251, 191, 36, 0.4),
+      0 0 22px rgba(251, 191, 36, 0.45);
+  }
+}
+
+/* =============================================================================
+   DARK MODE ADJUSTMENTS
+   Orange/amber works well in both light and dark modes
+   ============================================================================= */
+
+.dark [data-tour-active="true"]::before {
+  border-color: #fbbf24; /* amber-400 - slightly brighter in dark mode */
+  box-shadow: 
+    0 0 0 4px rgba(251, 191, 36, 0.35),
+    0 0 24px rgba(251, 191, 36, 0.45);
+}
+
+.dark [data-tour-active="true"]::before {
+  animation: tour-highlight-blink-dark 1.5s ease-in-out infinite;
+}
+
+@keyframes tour-highlight-blink-dark {
+  0%, 100% {
+    border-color: #fbbf24; /* amber-400 */
+    box-shadow: 
+      0 0 0 4px rgba(251, 191, 36, 0.35),
+      0 0 24px rgba(251, 191, 36, 0.45);
+  }
+  33% {
+    border-color: #fb923c; /* orange-400 */
+    box-shadow: 
+      0 0 0 6px rgba(251, 146, 60, 0.35),
+      0 0 28px rgba(251, 146, 60, 0.4);
+  }
+  66% {
+    border-color: #fcd34d; /* amber-300 */
+    box-shadow: 
+      0 0 0 5px rgba(252, 211, 77, 0.4),
+      0 0 26px rgba(252, 211, 77, 0.5);
+  }
+}
+
+/* =============================================================================
+   REDUCED MOTION
+   Respects user's motion preferences (WCAG 2.3.3)
+   ============================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  [data-tour-active="true"]::before {
+    animation: none;
+    border-color: #f59e0b;
+    box-shadow: 
+      0 0 0 4px rgba(245, 158, 11, 0.4),
+      0 0 12px rgba(245, 158, 11, 0.35);
+  }
+  
+  .dark [data-tour-active="true"]::before {
+    animation: none;
+    border-color: #fbbf24;
+    box-shadow: 
+      0 0 0 4px rgba(251, 191, 36, 0.4),
+      0 0 12px rgba(251, 191, 36, 0.35);
+  }
+}
+
+/* =============================================================================
+   FOCUS VISIBLE OVERRIDE
+   Ensure tour highlight doesn't interfere with focus indicators
+   ============================================================================= */
+
+[data-tour-active="true"]:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 4px;
+}
+
+[data-tour-active="true"]:focus-visible::before {
+  border-color: transparent;
+}
+
+.dark [data-tour-active="true"]:focus-visible {
+  outline-color: #fbbf24;
+}
+
+/* =============================================================================
+   LARGE PANE HIGHLIGHTS
+   For editor/preview panes that have overflow:hidden, use outline instead
+   of ::before pseudo-element (outline is not clipped by overflow)
+   ============================================================================= */
+
+/* Editor and Preview panes need special handling - use outline which isn't clipped */
+[data-tour="editor-pane"][data-tour-active="true"],
+[data-tour="preview-pane"][data-tour-active="true"] {
+  outline: 4px solid #f59e0b !important;
+  outline-offset: -4px;
+  animation: tour-pane-blink 1.5s ease-in-out infinite;
+}
+
+/* Hide the default ::before for panes since we use outline */
+[data-tour="editor-pane"][data-tour-active="true"]::before,
+[data-tour="preview-pane"][data-tour-active="true"]::before {
+  display: none;
+}
+
+/* Pane-specific blink animation using outline */
+@keyframes tour-pane-blink {
+  0%, 100% {
+    outline-color: #f59e0b; /* amber-500 */
+  }
+  33% {
+    outline-color: #ea580c; /* orange-600 */
+  }
+  66% {
+    outline-color: #fbbf24; /* amber-400 */
+  }
+}
+
+/* Dark mode for pane highlights */
+.dark [data-tour="editor-pane"][data-tour-active="true"],
+.dark [data-tour="preview-pane"][data-tour-active="true"] {
+  outline-color: #fbbf24 !important;
+  animation: tour-pane-blink-dark 1.5s ease-in-out infinite;
+}
+
+@keyframes tour-pane-blink-dark {
+  0%, 100% {
+    outline-color: #fbbf24; /* amber-400 */
+  }
+  33% {
+    outline-color: #fb923c; /* orange-400 */
+  }
+  66% {
+    outline-color: #fcd34d; /* amber-300 */
+  }
+}
+
+/* Reduced motion for pane highlights */
+@media (prefers-reduced-motion: reduce) {
+  [data-tour="editor-pane"][data-tour-active="true"],
+  [data-tour="preview-pane"][data-tour-active="true"] {
+    animation: none;
+    outline-color: #f59e0b !important;
+  }
+  
+  .dark [data-tour="editor-pane"][data-tour-active="true"],
+  .dark [data-tour="preview-pane"][data-tour-active="true"] {
+    animation: none;
+    outline-color: #fbbf24 !important;
+  }
+}

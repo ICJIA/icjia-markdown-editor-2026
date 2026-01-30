@@ -131,7 +131,7 @@ const viewModeLabel = computed(() => {
         }"
       >
         <!-- Editor Pane -->
-        <div v-show="showEditor" class="pane editor-pane-wrapper">
+        <div v-show="showEditor" class="pane editor-pane-wrapper" data-tour="editor-pane">
           <div class="pane-header">
             <span class="pane-title">
               <UIcon name="i-heroicons-pencil-square" />
@@ -149,7 +149,7 @@ const viewModeLabel = computed(() => {
         <div v-show="showEditor && showPreview" class="pane-divider" />
         
         <!-- Preview Pane -->
-        <div v-show="showPreview" class="pane preview-pane-wrapper">
+        <div v-show="showPreview" class="pane preview-pane-wrapper" data-tour="preview-pane">
           <div class="pane-header">
             <span class="pane-title">
               <UIcon name="i-heroicons-eye" />
@@ -184,7 +184,7 @@ const viewModeLabel = computed(() => {
         </span>
       </div>
       
-      <div class="status-right">
+      <div class="status-right" data-tour="view-mode">
         <UButton
           :icon="viewModeIcon"
           :aria-label="`View mode: ${viewModeLabel}. Click to cycle.`"
