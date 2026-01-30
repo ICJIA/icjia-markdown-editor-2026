@@ -140,8 +140,8 @@ const viewModeLabel = computed(() => {
           </div>
           <EditorPane
           ref="editorPaneRef"
-          @cursor-line="(line) => syncToCursor(line, 'smooth', false)"
-          @cursor-line-immediate="(line) => syncToCursor(line, { behavior: 'auto', block: 'center' }, true)"
+          @cursor-line="(line) => syncToCursor(line, false)"
+          @cursor-line-immediate="(line) => syncToCursor(line, true)"
         />
         </div>
         

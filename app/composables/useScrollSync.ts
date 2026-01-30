@@ -1,53 +1,123 @@
 /**
- * @fileoverview Scroll Synchronization Composable
- * @description Synchronizes scroll position between the editor and preview panes.
- * Uses line-number-based sync via data-source-line attributes for accurate
- * correspondence between markdown source and rendered preview.
- *
- * @module composables/useScrollSync
- *
- * @example
- * ```typescript
- * const { enabled, init, toggle, syncToCursor } = useScrollSync()
- * init(editorEl, previewEl, { getEditorView: () => editorView.value })
- * syncToCursor(currentLine) // when cursor changes
- * ```
+ * @fileoverview Scroll Synchronization Composable (Refactored)
+ * @description Synchronizes scroll position between editor and preview panes.
+ * 
+ * Architecture:
+ * - Singleton pattern using useState for shared state across components
+ * - State machine: DISABLED | ACTIVE | SUPPRESSED
+ * - Line-based sync using data-source-line attributes
+ * 
+ * State Transitions:
+ * - Toggle OFF → DISABLED (no sync)
+ * - Toggle ON → ACTIVE (full sync)
+ * - Manual scroll (while ACTIVE) → SUPPRESSED (scroll sync works, cursor sync disabled)
+ * - User types (while SUPPRESSED) → ACTIVE (re-enables cursor sync)
  */
 
 import { EditorView } from '@codemirror/view'
 
-export interface ScrollSyncOptions {
-  /** Returns the CodeMirror EditorView for line-based sync and scrollEditorToLine. */
-  getEditorView?: () => EditorView | null
+/** Scroll sync state machine states */
+type SyncState = 'DISABLED' | 'ACTIVE' | 'SUPPRESSED'
+
+/** Configuration for scroll sync */
+interface ScrollSyncConfig {
+  /** Offset in pixels to prevent content hiding behind navbar */
+  scrollOffset: number
+  /** Debounce time for scroll events in ms */
+  scrollDebounce: number
+  /** Time to wait before allowing opposite pane to trigger sync */
+  lockoutTime: number
 }
 
-export interface SyncToCursorOptions {
-  behavior?: ScrollBehavior
-  /** 'center' keeps the typing line in the middle of the preview (good when typing). */
-  block?: ScrollLogicalPosition
+const DEFAULT_CONFIG: ScrollSyncConfig = {
+  scrollOffset: 80,
+  scrollDebounce: 16,
+  lockoutTime: 150,
 }
 
+/**
+ * Shared state - singleton across all component instances
+ * Using module-level variables for true singleton behavior
+ */
+const sharedState = {
+  syncState: ref<SyncState>('ACTIVE'),
+  activeScrollSource: ref<'editor' | 'preview' | null>(null),
+  editorElement: ref<HTMLElement | null>(null),
+  previewElement: ref<HTMLElement | null>(null),
+  getEditorView: null as (() => EditorView | null) | null,
+  initialized: false,
+  lockoutTimeout: null as ReturnType<typeof setTimeout> | null,
+}
+
+/**
+ * Scroll Synchronization Composable
+ * 
+ * @example
+ * ```typescript
+ * // In layout component
+ * const { init, syncToCursor } = useScrollSync()
+ * init(editorEl, previewEl, { getEditorView: () => view })
+ * 
+ * // In toolbar component  
+ * const { enabled, toggle } = useScrollSync()
+ * ```
+ */
 export function useScrollSync() {
-  const enabled = ref(true)
-  const activeScrollSource = ref<'editor' | 'preview' | null>(null)
-  const editorElement = ref<HTMLElement | null>(null)
-  const previewElement = ref<HTMLElement | null>(null)
-  let resetTimeout: ReturnType<typeof setTimeout> | null = null
-  let getEditorView: (() => EditorView | null) | null = null
-  
-  /**
-   * Flag to suppress cursor-based syncing after manual scrolling.
-   * Set to true when user manually scrolls, cleared only when user types.
-   */
-  const suppressCursorSync = ref(false)
+  const config = DEFAULT_CONFIG
 
-  function getScrollPercentage(element: HTMLElement): number {
-    const scrollTop = element.scrollTop
-    const maxScroll = element.scrollHeight - element.clientHeight
-    if (maxScroll <= 0) return 0
-    return Math.min(1, Math.max(0, scrollTop / maxScroll))
+  // Computed for easy enabled check
+  const enabled = computed({
+    get: () => sharedState.syncState.value !== 'DISABLED',
+    set: (value: boolean) => {
+      sharedState.syncState.value = value ? 'ACTIVE' : 'DISABLED'
+    },
+  })
+
+  /**
+   * Toggle sync on/off
+   */
+  function toggle(): void {
+    if (sharedState.syncState.value === 'DISABLED') {
+      sharedState.syncState.value = 'ACTIVE'
+    } else {
+      sharedState.syncState.value = 'DISABLED'
+    }
   }
 
+  /**
+   * Set lockout to prevent ping-pong between panes
+   */
+  function setLockout(source: 'editor' | 'preview'): void {
+    sharedState.activeScrollSource.value = source
+    if (sharedState.lockoutTimeout) {
+      clearTimeout(sharedState.lockoutTimeout)
+    }
+    sharedState.lockoutTimeout = setTimeout(() => {
+      sharedState.activeScrollSource.value = null
+    }, config.lockoutTime)
+  }
+
+  /**
+   * Check if we should process scroll from this source
+   */
+  function canProcessScroll(source: 'editor' | 'preview'): boolean {
+    if (sharedState.syncState.value === 'DISABLED') return false
+    const opposite = source === 'editor' ? 'preview' : 'editor'
+    return sharedState.activeScrollSource.value !== opposite
+  }
+
+  /**
+   * Get scroll percentage of an element
+   */
+  function getScrollPercentage(element: HTMLElement): number {
+    const maxScroll = element.scrollHeight - element.clientHeight
+    if (maxScroll <= 0) return 0
+    return Math.min(1, Math.max(0, element.scrollTop / maxScroll))
+  }
+
+  /**
+   * Set scroll percentage of an element
+   */
   function setScrollPercentage(element: HTMLElement, percentage: number): void {
     const maxScroll = element.scrollHeight - element.clientHeight
     if (maxScroll > 0) {
@@ -55,275 +125,251 @@ export function useScrollSync() {
     }
   }
 
-  /** Get the top visible source line from the editor viewport (1-based). */
-  function getVisibleSourceLineFromEditor(): number | null {
-    const view = getEditorView?.() ?? null
+  /**
+   * Get the visible source line from editor viewport
+   */
+  function getVisibleLineFromEditor(): number | null {
+    const view = sharedState.getEditorView?.()
     if (!view) return null
     const { from } = view.viewport
-    const line = view.state.doc.lineAt(from)
-    return line.number
+    return view.state.doc.lineAt(from).number
   }
 
-  /** Offset in pixels to prevent content from being hidden behind navbar/header. */
-  const SCROLL_OFFSET_PX = 80
-
-  /** Scroll the preview so the element with data-source-line for the given line is in view. */
-  function scrollPreviewToLine(
-    lineNumber: number,
-    behavior: ScrollBehavior = 'auto',
-    block: ScrollLogicalPosition = 'start'
-  ): void {
-    const preview = previewElement.value
-    if (!preview) return
-    const selector = `[data-source-line="${lineNumber}"]`
-    const element = preview.querySelector(selector) as HTMLElement | null
-    if (element) {
-      activeScrollSource.value = 'editor'
-      
-      // Calculate scroll position with offset to prevent content hiding behind navbar
-      const elementRect = element.getBoundingClientRect()
-      const previewRect = preview.getBoundingClientRect()
-      const elementTop = elementRect.top - previewRect.top + preview.scrollTop
-      
-      let targetScroll: number
-      if (block === 'center') {
-        // Center the element in the viewport
-        targetScroll = elementTop - preview.clientHeight / 2 + elementRect.height / 2
-      } else {
-        // 'start' - place at top with offset for navbar
-        targetScroll = elementTop - SCROLL_OFFSET_PX
-      }
-      
-      // Clamp to valid scroll range
-      const maxScroll = preview.scrollHeight - preview.clientHeight
-      targetScroll = Math.max(0, Math.min(targetScroll, maxScroll))
-      
-      if (behavior === 'smooth') {
-        preview.scrollTo({ top: targetScroll, behavior: 'smooth' })
-      } else {
-        preview.scrollTop = targetScroll
-      }
-      
-      if (resetTimeout) clearTimeout(resetTimeout)
-      resetTimeout = setTimeout(() => { activeScrollSource.value = null }, 100)
-    }
-  }
-
-  /** Get the source line number of the element nearest the top of the preview viewport. */
-  function getVisibleSourceLineFromPreview(): number | null {
-    const preview = previewElement.value
+  /**
+   * Get the visible source line from preview viewport
+   */
+  function getVisibleLineFromPreview(): number | null {
+    const preview = sharedState.previewElement.value
     if (!preview) return null
+    
     const previewRect = preview.getBoundingClientRect()
     const elements = preview.querySelectorAll<HTMLElement>('[data-source-line]')
+    
     let bestLine: number | null = null
     let bestDistance = Infinity
-    for (let i = 0; i < elements.length; i++) {
-      const el = elements[i]!
+    
+    for (const el of elements) {
       const lineStr = el.getAttribute('data-source-line')
       if (!lineStr) continue
       const lineNum = parseInt(lineStr, 10)
       if (Number.isNaN(lineNum)) continue
+      
       const elRect = el.getBoundingClientRect()
       const distance = Math.abs(elRect.top - previewRect.top)
+      
       if (distance < bestDistance) {
         bestDistance = distance
         bestLine = lineNum
       }
     }
+    
     return bestLine
   }
 
-  /** Scroll the editor so the given line (1-based) is in view. */
+  /**
+   * Scroll preview to show a specific source line
+   */
+  function scrollPreviewToLine(
+    lineNumber: number,
+    options: { behavior?: ScrollBehavior; center?: boolean } = {}
+  ): void {
+    const preview = sharedState.previewElement.value
+    if (!preview) return
+    
+    const element = preview.querySelector(`[data-source-line="${lineNumber}"]`) as HTMLElement | null
+    if (!element) return
+
+    setLockout('editor')
+    
+    const elementRect = element.getBoundingClientRect()
+    const previewRect = preview.getBoundingClientRect()
+    const elementTop = elementRect.top - previewRect.top + preview.scrollTop
+    
+    let targetScroll: number
+    if (options.center) {
+      targetScroll = elementTop - preview.clientHeight / 2 + elementRect.height / 2
+    } else {
+      targetScroll = elementTop - config.scrollOffset
+    }
+    
+    const maxScroll = preview.scrollHeight - preview.clientHeight
+    targetScroll = Math.max(0, Math.min(targetScroll, maxScroll))
+    
+    if (options.behavior === 'smooth') {
+      preview.scrollTo({ top: targetScroll, behavior: 'smooth' })
+    } else {
+      preview.scrollTop = targetScroll
+    }
+  }
+
+  /**
+   * Scroll editor to show a specific source line
+   */
   function scrollEditorToLine(lineNumber: number): void {
-    const view = getEditorView?.() ?? null
-    if (!view || !editorElement.value) return
+    const view = sharedState.getEditorView?.()
+    if (!view) return
+    
     const doc = view.state.doc
     if (lineNumber < 1 || lineNumber > doc.lines) return
+    
+    setLockout('preview')
+    
     const line = doc.line(lineNumber)
     view.dispatch({
       effects: EditorView.scrollIntoView(line.from, { y: 'start' }),
     })
-    activeScrollSource.value = 'preview'
-    if (resetTimeout) clearTimeout(resetTimeout)
-    resetTimeout = setTimeout(() => { activeScrollSource.value = null }, 100)
   }
 
   /**
-   * Sync preview to the given source line (e.g. cursor line). Use when the user is editing or typing.
-   * Call with block: 'center' for immediate typing sync so the current line stays visible.
-   * 
-   * @param isTyping - If true, this is from actual typing (docChanged), clears suppression and always syncs.
-   *                   If false/undefined, this is from cursor movement only - suppressed after manual scroll.
+   * Handle editor scroll events
    */
-  function syncToCursor(
-    lineNumber: number,
-    options: SyncToCursorOptions | ScrollBehavior = 'smooth',
-    isTyping = false
-  ): void {
-    if (!enabled.value) return
+  function handleEditorScroll(): void {
+    if (!canProcessScroll('editor')) return
     
-    // If user is typing, clear suppression and sync
-    if (isTyping) {
-      suppressCursorSync.value = false
+    const editor = sharedState.editorElement.value
+    const preview = sharedState.previewElement.value
+    if (!editor || !preview) return
+
+    // User is manually scrolling - suppress cursor sync
+    if (sharedState.activeScrollSource.value === null && sharedState.syncState.value === 'ACTIVE') {
+      sharedState.syncState.value = 'SUPPRESSED'
     }
+
+    setLockout('editor')
     
-    // If suppressed (user manually scrolled), don't sync on cursor movement
-    if (suppressCursorSync.value && !isTyping) {
+    const line = getVisibleLineFromEditor()
+    if (line !== null) {
+      scrollPreviewToLine(line)
+    } else {
+      setScrollPercentage(preview, getScrollPercentage(editor))
+    }
+  }
+
+  /**
+   * Handle preview scroll events
+   */
+  function handlePreviewScroll(): void {
+    if (!canProcessScroll('preview')) return
+    
+    const editor = sharedState.editorElement.value
+    const preview = sharedState.previewElement.value
+    if (!editor || !preview) return
+
+    // User is manually scrolling - suppress cursor sync
+    if (sharedState.activeScrollSource.value === null && sharedState.syncState.value === 'ACTIVE') {
+      sharedState.syncState.value = 'SUPPRESSED'
+    }
+
+    setLockout('preview')
+    
+    const line = getVisibleLineFromPreview()
+    if (line !== null && sharedState.getEditorView?.()) {
+      scrollEditorToLine(line)
+    } else {
+      setScrollPercentage(editor, getScrollPercentage(preview))
+    }
+  }
+
+  /**
+   * Sync preview to cursor position (called when user types or moves cursor)
+   * 
+   * @param lineNumber - The source line number to sync to
+   * @param isTyping - True if this is from actual typing (re-enables sync)
+   */
+  function syncToCursor(lineNumber: number, isTyping = false): void {
+    // Never sync when disabled
+    if (sharedState.syncState.value === 'DISABLED') return
+    
+    // If typing, re-enable full sync
+    if (isTyping) {
+      sharedState.syncState.value = 'ACTIVE'
+      scrollPreviewToLine(lineNumber, { center: true })
       return
     }
     
-    const opts = typeof options === 'string' ? { behavior: options } : options
-    const behavior = opts.behavior ?? 'smooth'
-    const block = opts.block ?? 'start'
-    scrollPreviewToLine(lineNumber, behavior, block)
-  }
-
-  function handleEditorScroll(): void {
-    if (!enabled.value) return
-    if (!editorElement.value || !previewElement.value) return
-    if (activeScrollSource.value === 'preview') return
+    // If suppressed (user scrolled manually), don't sync cursor movement
+    if (sharedState.syncState.value === 'SUPPRESSED') return
     
-    // Only suppress cursor sync if this is a user-initiated scroll (not from syncToCursor)
-    // activeScrollSource being null means this is a fresh user scroll, not a programmatic one
-    if (activeScrollSource.value === null) {
-      suppressCursorSync.value = true
-    }
-    
-    activeScrollSource.value = 'editor'
-    const line = getVisibleSourceLineFromEditor()
-    if (line !== null) {
-      scrollPreviewToLine(line, 'auto')
-    } else {
-      const percentage = getScrollPercentage(editorElement.value)
-      setScrollPercentage(previewElement.value, percentage)
-    }
-
-    if (resetTimeout) clearTimeout(resetTimeout)
-    resetTimeout = setTimeout(() => {
-      activeScrollSource.value = null
-    }, 100)
+    // Active state - sync to cursor
+    scrollPreviewToLine(lineNumber, { behavior: 'smooth' })
   }
 
-  function handlePreviewScroll(): void {
-    if (!enabled.value) return
-    if (!editorElement.value || !previewElement.value) return
-    if (activeScrollSource.value === 'editor') return
-
-    // Only suppress cursor sync if this is a user-initiated scroll (not programmatic)
-    if (activeScrollSource.value === null) {
-      suppressCursorSync.value = true
-    }
-    
-    activeScrollSource.value = 'preview'
-    const line = getVisibleSourceLineFromPreview()
-    if (line !== null && getEditorView?.()) {
-      scrollEditorToLine(line)
-    } else {
-      const percentage = getScrollPercentage(previewElement.value)
-      setScrollPercentage(editorElement.value, percentage)
-    }
-
-    if (resetTimeout) clearTimeout(resetTimeout)
-    resetTimeout = setTimeout(() => {
-      activeScrollSource.value = null
-    }, 100)
-  }
-  
   /**
-   * Toggles scroll synchronization on or off.
-   * 
-   * @returns {void}
-   */
-  function toggle(): void {
-    enabled.value = !enabled.value
-  }
-  
-  /**
-   * Reference to the editor scroll event listener for cleanup.
-   * @type {(() => void) | null}
-   */
-  let editorListener: (() => void) | null = null
-  
-  /**
-   * Reference to the preview scroll event listener for cleanup.
-   * @type {(() => void) | null}
-   */
-  let previewListener: (() => void) | null = null
-  
-  /**
-   * Sets up scroll event listeners on the editor and preview elements.
-   * Removes any existing listeners before adding new ones.
-   * 
-   * @returns {void}
+   * Set up scroll event listeners
    */
   function setupListeners(): void {
-    // Clean up old listeners first
     removeListeners()
     
-    if (editorElement.value) {
-      editorListener = handleEditorScroll
-      editorElement.value.addEventListener('scroll', editorListener, { passive: true })
-    }
+    const editor = sharedState.editorElement.value
+    const preview = sharedState.previewElement.value
     
-    if (previewElement.value) {
-      previewListener = handlePreviewScroll
-      previewElement.value.addEventListener('scroll', previewListener, { passive: true })
+    if (editor) {
+      editor.addEventListener('scroll', handleEditorScroll, { passive: true })
+    }
+    if (preview) {
+      preview.addEventListener('scroll', handlePreviewScroll, { passive: true })
     }
   }
-  
+
   /**
-   * Removes scroll event listeners from the editor and preview elements.
-   * Called during cleanup or before setting up new listeners.
-   * 
-   * @returns {void}
+   * Remove scroll event listeners
    */
   function removeListeners(): void {
-    if (editorElement.value && editorListener) {
-      editorElement.value.removeEventListener('scroll', editorListener)
-      editorListener = null
+    const editor = sharedState.editorElement.value
+    const preview = sharedState.previewElement.value
+    
+    if (editor) {
+      editor.removeEventListener('scroll', handleEditorScroll)
     }
-    if (previewElement.value && previewListener) {
-      previewElement.value.removeEventListener('scroll', previewListener)
-      previewListener = null
+    if (preview) {
+      preview.removeEventListener('scroll', handlePreviewScroll)
     }
   }
-  
+
   /**
-   * Initializes scroll synchronization with the DOM elements.
-   * Optionally pass getEditorView so line-based sync and scrollEditorToLine work.
+   * Initialize scroll sync with DOM elements
    */
-  function init(editor: HTMLElement, preview: HTMLElement, options?: ScrollSyncOptions): void {
-    editorElement.value = editor
-    previewElement.value = preview
-    getEditorView = options?.getEditorView ?? null
+  function init(
+    editor: HTMLElement,
+    preview: HTMLElement,
+    options?: { getEditorView?: () => EditorView | null }
+  ): void {
+    sharedState.editorElement.value = editor
+    sharedState.previewElement.value = preview
+    sharedState.getEditorView = options?.getEditorView ?? null
+    sharedState.initialized = true
     setupListeners()
   }
-  
-  /**
-   * Watcher that re-sets up listeners when elements change.
-   * Ensures scroll sync works even if elements are replaced.
-   */
-  watch([editorElement, previewElement], ([newEditor, newPreview]) => {
-    if (newEditor && newPreview) {
-      setupListeners()
+
+  // Watch for element changes
+  watch(
+    [() => sharedState.editorElement.value, () => sharedState.previewElement.value],
+    ([editor, preview]) => {
+      if (editor && preview) {
+        setupListeners()
+      }
     }
-  }, { immediate: false })
-  
-  /**
-   * Lifecycle hook that cleans up listeners and timeouts on unmount.
-   */
+  )
+
+  // Cleanup on unmount
   onUnmounted(() => {
     removeListeners()
-    if (resetTimeout) clearTimeout(resetTimeout)
+    if (sharedState.lockoutTimeout) {
+      clearTimeout(sharedState.lockoutTimeout)
+    }
   })
-  
+
   return {
+    // State
     enabled,
-    editorElement,
-    previewElement,
+    syncState: sharedState.syncState,
+    
+    // Actions
     toggle,
     init,
-    setupListeners,
     syncToCursor,
+    
+    // For debugging
+    _sharedState: sharedState,
   }
 }
