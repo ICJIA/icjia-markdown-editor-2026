@@ -41,61 +41,74 @@ A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. Designe
 
 ## Development Progress
 
-### Phase 1: Foundation - COMPLETE
+### ✅ Phase 1: Foundation — COMPLETE
 
-- [x] Nuxt 4 project setup with Nuxt UI
-- [x] CodeMirror 6 integration with markdown syntax highlighting
-- [x] Basic twin-pane layout (editor/preview)
-- [x] Dark/light mode theming with system preference detection
-- [x] markdown-it configuration with footnotes and syntax highlighting
-- [x] Skip link and semantic HTML structure
-- [x] Focus indicators on all interactive elements
-- [x] `useAccessibility` composable with screen reader announcements
+| Status | Feature |
+|:------:|:--------|
+| ✅ | Nuxt 4 project setup with Nuxt UI |
+| ✅ | CodeMirror 6 integration with markdown syntax highlighting |
+| ✅ | Basic twin-pane layout (editor/preview) |
+| ✅ | Dark/light mode theming with system preference detection |
+| ✅ | markdown-it configuration with footnotes and syntax highlighting |
+| ✅ | Skip link and semantic HTML structure |
+| ✅ | Focus indicators on all interactive elements |
+| ✅ | `useAccessibility` composable with screen reader announcements |
 
-### Phase 2: Core Features - COMPLETE
+### ✅ Phase 2: Core Features — COMPLETE
 
-- [x] Formatting toolbar with all buttons (Bold, Italic, Code, etc.)
-- [x] Keyboard shortcuts (Cmd+B, Cmd+I, Cmd+1-6, etc.)
-- [x] Scroll synchronization between editor and preview
-- [x] Copy Markdown to clipboard
-- [x] Copy HTML to clipboard
-- [x] Download as Markdown file
-- [x] Upload Markdown file
-- [x] Word count and character count in status bar
+| Status | Feature |
+|:------:|:--------|
+| ✅ | Formatting toolbar with all buttons (Bold, Italic, Code, etc.) |
+| ✅ | Keyboard shortcuts (Cmd+B, Cmd+I, Cmd+1-6, etc.) |
+| ✅ | Scroll synchronization between editor and preview |
+| ✅ | Copy Markdown to clipboard |
+| ✅ | Copy HTML to clipboard |
+| ✅ | Download as Markdown file |
+| ✅ | Upload Markdown file |
+| ✅ | Word count and character count in status bar |
 
-### Phase 3: Advanced Features - COMPLETE
+### ✅ Phase 3: Advanced Features — COMPLETE
 
-- [x] Table builder modal with visual grid editor
-- [x] Footnote support via markdown-it-footnote
-- [x] Auto-save to localStorage (every 30 seconds with countdown indicator)
-- [x] Download modal with custom filename support
-- [x] HTML export with styled document wrapper
-- [x] Comprehensive JSDoc documentation for all composables and utilities
-- [x] Save indicator with visual feedback (green dot on save)
+| Status | Feature |
+|:------:|:--------|
+| ✅ | Table builder modal with visual grid editor |
+| ✅ | Footnote support via markdown-it-footnote |
+| ✅ | Auto-save to localStorage (every 30 seconds with countdown in header) |
+| ✅ | Reset button to clear saved content |
+| ✅ | Download modal with custom filename support |
+| ✅ | HTML export with styled document wrapper |
+| ✅ | Comprehensive JSDoc documentation for all composables and utilities |
+| ✅ | Save indicator with visual feedback |
 
-### Phase 4: Accessibility & Polish - IN PROGRESS
+### 🔄 Phase 4: Accessibility & Polish — IN PROGRESS
 
-- [x] Guided tour/onboarding module (WCAG 2.1 AA compliant)
-- [x] Reusable tour module architecture for other projects
-- [ ] Full accessibility audit (axe-core, WAVE)
-- [ ] Screen reader testing (VoiceOver, NVDA)
-- [ ] Keyboard navigation refinement
-- [ ] Help modal with shortcuts reference
-- [ ] Image insertion modal with placeholder option
-- [ ] Link insertion modal with URL validation
-- [ ] Find & Replace functionality
-- [ ] Error handling improvements
-- [ ] Loading state refinements
+| Status | Feature |
+|:------:|:--------|
+| ✅ | Guided tour/onboarding module (WCAG 2.1 AA compliant, 14 steps) |
+| ✅ | Reusable tour module architecture for other projects |
+| ✅ | Safari localStorage compatibility fix |
+| ✅ | WCAG 1.4.12 text spacing compliance for code blocks |
+| ⬜ | Full accessibility audit (axe-core, WAVE) |
+| ⬜ | Screen reader testing (VoiceOver, NVDA) |
+| ⬜ | Keyboard navigation refinement |
+| ⬜ | Help modal with shortcuts reference |
+| ⬜ | Image insertion modal with placeholder option |
+| ⬜ | Link insertion modal with URL validation |
+| ⬜ | Find & Replace functionality |
+| ⬜ | Error handling improvements |
+| ⬜ | Loading state refinements |
 
-### Phase 5: Testing & Launch - PENDING
+### ⬜ Phase 5: Testing & Launch — PENDING
 
-- [ ] Unit tests for utilities
-- [ ] Component tests
-- [ ] E2E tests for critical paths
-- [ ] Cross-browser testing
-- [ ] Performance optimization
-- [ ] Lighthouse score optimization (target: 100 accessibility)
-- [ ] Production deployment documentation
+| Status | Feature |
+|:------:|:--------|
+| ⬜ | Unit tests for utilities |
+| ⬜ | Component tests |
+| ⬜ | E2E tests for critical paths |
+| ⬜ | Cross-browser testing |
+| ⬜ | Performance optimization |
+| ⬜ | Lighthouse score optimization (target: 100 accessibility) |
+| ⬜ | Production deployment documentation |
 
 ## Tech Stack
 
