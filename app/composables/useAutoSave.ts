@@ -128,11 +128,11 @@ export function useAutoSave() {
         clearTimeout(hideIndicatorTimeout)
       }
       
-      // Hide the green dot after 2 seconds
+      // Hide the indicator after 3 seconds
       hideIndicatorTimeout = setTimeout(() => {
         showSaveIndicator.value = false
         justSaved.value = false
-      }, 2000)
+      }, 3000)
       
       return true
     } catch (e) {

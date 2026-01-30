@@ -24,6 +24,7 @@ const { openModal: openDownloadModal } = useDownloadModal()
 const { copyMarkdown, copyHtml, downloadMarkdown, downloadHtml, uploadMarkdown, copyMarkdownSuccess, copyHtmlSuccess } = useExport()
 const { announce } = useAccessibility()
 const { enabled: scrollSyncEnabled, toggle: toggleScrollSync } = useScrollSync()
+const { showSaveIndicator } = useAutoSave()
 
 function handleToggleScrollSync() {
   toggleScrollSync()
@@ -263,14 +264,24 @@ const headingItems = [
         type="button"
         :aria-label="`Scroll sync: ${scrollSyncEnabled ? 'enabled' : 'disabled'}. Click to toggle.`"
         :aria-pressed="scrollSyncEnabled"
-        class="scroll-sync-toggle"
+        class="status-toggle scroll-sync-toggle"
         :class="scrollSyncEnabled ? 'scroll-sync-on' : 'scroll-sync-off'"
         @click="handleToggleScrollSync"
       >
-        <UIcon name="i-heroicons-arrows-up-down" class="scroll-sync-icon" />
-        <span class="scroll-sync-label">{{ scrollSyncEnabled ? 'Scroll Sync ON' : 'Scroll Sync OFF' }}</span>
+        <UIcon name="i-heroicons-arrows-up-down" class="status-icon" />
+        <span class="status-label">{{ scrollSyncEnabled ? 'Sync ON' : 'Sync OFF' }}</span>
       </button>
     </div>
+    
+    <!-- Save indicator - only appears briefly when saved -->
+    <Transition name="fade">
+      <div v-if="showSaveIndicator" class="toolbar-group" role="status" aria-label="Save status">
+        <span class="save-indicator" aria-live="polite">
+          <UIcon name="i-heroicons-check-circle" class="status-icon" />
+          <span class="status-label">Saved</span>
+        </span>
+      </div>
+    </Transition>
     
     <!-- Spacer to push export buttons to the right -->
     <div class="toolbar-spacer" />
@@ -346,14 +357,14 @@ const headingItems = [
   flex-shrink: 1;
 }
 
-/* Scroll sync toggle button - highly visible with text */
-.scroll-sync-toggle {
+/* Shared status toggle button styles */
+.status-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.375rem 0.75rem;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
   border-radius: 0.375rem;
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.025em;
@@ -363,50 +374,91 @@ const headingItems = [
   white-space: nowrap;
 }
 
-.scroll-sync-toggle:focus {
+.status-toggle:focus {
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }
 
-.scroll-sync-icon {
-  width: 1rem;
-  height: 1rem;
+.status-icon {
+  width: 0.875rem;
+  height: 0.875rem;
   flex-shrink: 0;
 }
 
-.scroll-sync-label {
+.status-label {
   line-height: 1;
 }
 
-/* ON state - Green */
+/* Scroll Sync ON state - Green */
 .scroll-sync-toggle.scroll-sync-on {
   background-color: #166534;
   border-color: #22c55e;
   color: #4ade80;
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
 }
 
 .scroll-sync-toggle.scroll-sync-on:hover {
   background-color: #15803d;
   border-color: #4ade80;
-  box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
 }
 
-/* OFF state - Red */
+/* Scroll Sync OFF state - Red */
 .scroll-sync-toggle.scroll-sync-off {
   background-color: #7f1d1d;
   border-color: #ef4444;
   color: #fca5a5;
-  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
 }
 
 .scroll-sync-toggle.scroll-sync-off:hover {
   background-color: #991b1b;
   border-color: #f87171;
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+}
+
+/* Save indicator - transient green badge */
+.save-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+  background-color: #166534;
+  border: 2px solid #22c55e;
+  color: #4ade80;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+}
+
+/* Fade transition for save indicator */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 /* Responsive: compact on smaller screens */
+@media (max-width: 768px) {
+  .status-toggle {
+    font-size: 0.6rem;
+    padding: 0.25rem 0.375rem;
+  }
+  
+  .status-icon {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+}
+
 @media (max-width: 640px) {
   .editor-toolbar {
     gap: 0.125rem;
@@ -418,12 +470,12 @@ const headingItems = [
   }
   
   /* Hide text label on small screens, keep icon */
-  .scroll-sync-label {
+  .status-label {
     display: none;
   }
   
-  .scroll-sync-toggle {
-    padding: 0.375rem;
+  .status-toggle {
+    padding: 0.25rem;
   }
 }
 </style>
