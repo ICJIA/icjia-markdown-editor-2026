@@ -269,7 +269,7 @@ const headingItems = [
         @click="handleToggleScrollSync"
       >
         <UIcon name="i-heroicons-arrows-up-down" class="status-icon" />
-        <span class="status-label">{{ scrollSyncEnabled ? 'Sync ON' : 'Sync OFF' }}</span>
+        <span class="status-label">{{ scrollSyncEnabled ? 'Scroll Sync ON' : 'Scroll Sync OFF' }}</span>
       </button>
     </div>
     
