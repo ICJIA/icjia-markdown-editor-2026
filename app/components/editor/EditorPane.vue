@@ -64,6 +64,8 @@ onMounted(() => {
       scroller.setAttribute('role', 'textbox')
       scroller.setAttribute('aria-label', 'Markdown editor - scrollable code editing area')
       scroller.setAttribute('aria-multiline', 'true')
+      // Add id for skip link focus detection
+      scroller.setAttribute('id', 'main-editor-scroller')
     }
   })
   

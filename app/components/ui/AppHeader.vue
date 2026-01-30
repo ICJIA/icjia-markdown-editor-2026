@@ -1,9 +1,11 @@
 <script setup lang="ts">
 /**
  * Application Header Component
- * Contains app title, tour trigger, and color mode toggle
+ * Contains app title, view mode toggle, tour trigger, and color mode toggle
  * Uses semantic <header> landmark for accessibility
  */
+
+const { cycleViewMode, viewModeIcon, viewModeLabel } = useViewMode()
 
 defineEmits<{
   /** Emitted when the tour trigger button is clicked */
@@ -20,7 +22,24 @@ defineEmits<{
       </h1>
       
       <nav class="header-actions" aria-label="Application controls">
-        <!-- Tour trigger button - polished gradient button -->
+        <!-- View mode toggle - polished gradient button (purple) -->
+        <UTooltip
+          text="Click to cycle: Split → Editor → Preview"
+          :content="{ side: 'bottom', sideOffset: 8 }"
+        >
+          <button
+            type="button"
+            class="view-mode-button"
+            :aria-label="`View mode: ${viewModeLabel}. Click to cycle between split, editor-only, and preview-only views.`"
+            data-tour="view-mode"
+            @click="cycleViewMode"
+          >
+            <UIcon :name="viewModeIcon" class="view-mode-icon" />
+            <span>{{ viewModeLabel }}</span>
+          </button>
+        </UTooltip>
+        
+        <!-- Tour trigger button - polished gradient button (blue) -->
         <button
           type="button"
           class="tour-button"
@@ -132,5 +151,65 @@ defineEmits<{
 
 .dark .tour-button:hover {
   background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #60a5fa 100%);
+}
+
+/* View mode button - polished gradient button (purple/violet) */
+.view-mode-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 50%, #7c3aed 100%);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 
+    0 1px 3px rgba(139, 92, 246, 0.3),
+    0 4px 6px -2px rgba(139, 92, 246, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.view-mode-button:hover {
+  background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 50%, #6d28d9 100%);
+  box-shadow: 
+    0 2px 8px rgba(139, 92, 246, 0.4),
+    0 6px 12px -2px rgba(139, 92, 246, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.view-mode-button:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 1px 2px rgba(139, 92, 246, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.view-mode-button:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 2px;
+}
+
+.view-mode-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+}
+
+/* Dark mode adjustments for view mode button */
+.dark .view-mode-button {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #8b5cf6 100%);
+  box-shadow: 
+    0 1px 3px rgba(139, 92, 246, 0.4),
+    0 4px 8px -2px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.dark .view-mode-button:hover {
+  background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #a78bfa 100%);
 }
 </style>

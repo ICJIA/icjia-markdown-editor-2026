@@ -214,6 +214,20 @@ async function runAudit(page: Page, mode: 'dark' | 'light', viewport: { width: n
   // Wait for editor to be ready
   await page.waitForSelector('.cm-editor', { timeout: 10000 })
   
+  // Wait for welcome dialog to potentially appear (1s delay in config + buffer)
+  await page.waitForTimeout(1500)
+  
+  // Dismiss welcome dialog if present (shown to first-time visitors)
+  const welcomeDialog = page.locator('.welcome-dialog')
+  if (await welcomeDialog.count() > 0) {
+    // Click the skip button to dismiss
+    const skipButton = page.locator('.welcome-dialog button:has-text("No thanks")')
+    if (await skipButton.count() > 0) {
+      await skipButton.click()
+      await page.waitForTimeout(500)
+    }
+  }
+  
   // Set color mode
   if (mode === 'light') {
     const toggleButton = page.locator('button[aria-label*="light"], button[aria-label*="Switch to light"]')
@@ -260,26 +274,45 @@ async function testKeyboardNavigation(page: Page): Promise<TestResult> {
   await page.goto(DEV_SERVER_URL, { waitUntil: 'networkidle' })
   await page.waitForSelector('.cm-editor', { timeout: 10000 })
   
+  // Wait for welcome dialog to potentially appear (1s delay in config + buffer)
+  await page.waitForTimeout(1500)
+  
+  // Dismiss welcome dialog if present (shown to first-time visitors)
+  const welcomeDialog = page.locator('.welcome-dialog')
+  if (await welcomeDialog.count() > 0) {
+    const skipButton = page.locator('.welcome-dialog button:has-text("No thanks")')
+    if (await skipButton.count() > 0) {
+      await skipButton.click()
+      await page.waitForTimeout(500)
+    }
+  }
+
   // Test 1: Skip link is first focusable element
   await page.keyboard.press('Tab')
   const skipLink = await page.locator(':focus').getAttribute('href')
-  if (skipLink !== '#main-editor') {
+  if (skipLink !== '#main-editor-scroller' && skipLink !== '#main-editor') {
     issues.push('Skip link is not the first focusable element')
   }
   
-  // Test 2: Skip link works
+  // Test 2: Skip link works (should focus either main-editor or main-editor-scroller)
   await page.keyboard.press('Enter')
   await page.waitForTimeout(300)
   const focusedAfterSkip = await page.evaluate(() => document.activeElement?.id)
-  if (focusedAfterSkip !== 'main-editor') {
+  if (focusedAfterSkip !== 'main-editor' && focusedAfterSkip !== 'main-editor-scroller') {
     issues.push('Skip link does not focus the editor')
   }
   
-  // Test 3: Toolbar buttons are focusable
-  await page.keyboard.press('Tab')
-  const toolbarButton = await page.locator(':focus').getAttribute('aria-label')
-  if (!toolbarButton) {
-    issues.push('Toolbar buttons may not be properly labeled')
+  // Test 3: Toolbar buttons have proper aria-labels
+  const toolbarButtons = await page.locator('[role="toolbar"] button').all()
+  let unlabeledButtons = 0
+  for (const button of toolbarButtons) {
+    const ariaLabel = await button.getAttribute('aria-label')
+    if (!ariaLabel || ariaLabel.trim() === '') {
+      unlabeledButtons++
+    }
+  }
+  if (unlabeledButtons > 0) {
+    issues.push(`${unlabeledButtons} toolbar button(s) missing aria-label`)
   }
   
   // Test 4: Check for focus visible styles
@@ -309,6 +342,19 @@ async function testLandmarks(page: Page): Promise<TestResult> {
   await page.goto(DEV_SERVER_URL, { waitUntil: 'networkidle' })
   await page.waitForSelector('.cm-editor', { timeout: 10000 })
   
+  // Wait for welcome dialog to potentially appear (1s delay in config + buffer)
+  await page.waitForTimeout(1500)
+  
+  // Dismiss welcome dialog if present (shown to first-time visitors)
+  const welcomeDialog = page.locator('.welcome-dialog')
+  if (await welcomeDialog.count() > 0) {
+    const skipButton = page.locator('.welcome-dialog button:has-text("No thanks")')
+    if (await skipButton.count() > 0) {
+      await skipButton.click()
+      await page.waitForTimeout(500)
+    }
+  }
+
   const landmarks = await page.evaluate(() => {
     const results: Record<string, boolean> = {}
     results.main = document.querySelector('main, [role="main"]') !== null

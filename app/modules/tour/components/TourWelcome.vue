@@ -66,8 +66,12 @@ onUnmounted(() => {
         v-if="isVisible"
         class="welcome-overlay"
       >
-        <!-- Backdrop -->
-        <div class="welcome-backdrop" aria-hidden="true" />
+        <!-- Backdrop - clicking closes the modal -->
+        <div 
+          class="welcome-backdrop" 
+          aria-hidden="true"
+          @click="emit('skipTour')"
+        />
         
         <!-- Dialog -->
         <div
@@ -157,6 +161,7 @@ onUnmounted(() => {
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 1;
+  cursor: pointer;
 }
 
 .welcome-dialog {

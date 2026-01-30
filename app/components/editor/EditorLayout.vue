@@ -22,6 +22,9 @@ const { isSaving, showSaveIndicator, countdownToSave, isContentReady } = useAuto
 // Initialize scroll synchronization
 const { init: initScrollSync, syncToCursor } = useScrollSync()
 
+// View mode state (shared via composable, controlled from header)
+const { viewMode, showEditor, showPreview } = useViewMode()
+
 // References to child pane components (using any for auto-imported components)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const editorPaneRef = ref<any>(null)
@@ -71,42 +74,6 @@ function setupScrollSync(): void {
     setTimeout(setupScrollSync, 200)
   }
 }
-
-// Pane visibility state
-const showEditor = ref(true)
-const showPreview = ref(true)
-
-// View mode for mobile
-const viewMode = ref<'split' | 'editor' | 'preview'>('split')
-
-// Toggle between view modes
-function cycleViewMode() {
-  const modes: readonly ['split', 'editor', 'preview'] = ['split', 'editor', 'preview']
-  const currentIndex = modes.indexOf(viewMode.value)
-  const nextIndex = (currentIndex + 1) % modes.length
-  const nextMode = modes[nextIndex] ?? 'split'
-  viewMode.value = nextMode
-  
-  showEditor.value = nextMode !== 'preview'
-  showPreview.value = nextMode !== 'editor'
-}
-
-// Get view mode icon
-const viewModeIcon = computed(() => {
-  switch (viewMode.value) {
-    case 'split': return 'i-heroicons-squares-2x2'
-    case 'editor': return 'i-heroicons-pencil-square'
-    case 'preview': return 'i-heroicons-eye'
-  }
-})
-
-const viewModeLabel = computed(() => {
-  switch (viewMode.value) {
-    case 'split': return 'Split view'
-    case 'editor': return 'Editor only'
-    case 'preview': return 'Preview only'
-  }
-})
 </script>
 
 <template>
@@ -182,17 +149,6 @@ const viewModeLabel = computed(() => {
             <span class="countdown">Next save: {{ countdownToSave }}s</span>
           </template>
         </span>
-      </div>
-      
-      <div class="status-right" data-tour="view-mode">
-        <UButton
-          :icon="viewModeIcon"
-          :aria-label="`View mode: ${viewModeLabel}. Click to cycle.`"
-          variant="ghost"
-          color="neutral"
-          size="xs"
-          @click="cycleViewMode"
-        />
       </div>
     </div>
   </div>
@@ -272,8 +228,7 @@ const viewModeLabel = computed(() => {
   flex-shrink: 0;
 }
 
-.status-left,
-.status-right {
+.status-left {
   display: flex;
   align-items: center;
   gap: 1rem;

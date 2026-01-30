@@ -5,6 +5,14 @@
  */
 
 function skipToMain() {
+  // Try to focus the CodeMirror scroller first (the actual editable area)
+  const scroller = document.getElementById('main-editor-scroller')
+  if (scroller) {
+    scroller.focus()
+    scroller.scrollIntoView({ behavior: 'smooth' })
+    return
+  }
+  // Fallback to the container
   const mainEditor = document.getElementById('main-editor')
   if (mainEditor) {
     mainEditor.focus()
@@ -15,7 +23,7 @@ function skipToMain() {
 
 <template>
   <a 
-    href="#main-editor" 
+    href="#main-editor-scroller" 
     class="skip-link"
     @click.prevent="skipToMain"
   >

@@ -150,8 +150,12 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
         v-if="isActive && currentStep"
         class="tour-overlay"
       >
-        <!-- Semi-transparent backdrop for visual focus -->
-        <div class="tour-backdrop" aria-hidden="true" />
+        <!-- Semi-transparent backdrop - clicking closes the tour -->
+        <div 
+          class="tour-backdrop" 
+          aria-hidden="true"
+          @click="emit('cancel')"
+        />
         
         <!-- Dialog positioned relative to target -->
         <div
@@ -267,6 +271,7 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
   z-index: 1;
+  cursor: pointer;
 }
 
 .tour-dialog {

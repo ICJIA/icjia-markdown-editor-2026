@@ -194,14 +194,15 @@ export const tourConfig: TourConfig = {
     },
 
     // =========================================================================
-    // STEP 12: VIEW MODE TOGGLE
+    // STEP 12: VIEW MODE TOGGLE (in header)
     // =========================================================================
     {
       id: 'view-mode',
       target: '[data-tour="view-mode"]',
       title: 'View Modes',
-      content: 'Toggle between split view (both panes), editor-only, or preview-only modes. Useful on smaller screens or when you want to focus.',
-      position: 'top',
+      content: 'Toggle between split view (both panes), editor-only, or preview-only modes. Click to cycle through views—useful on smaller screens or when you want to focus on writing.',
+      tip: 'Find this button in the header for quick access anytime.',
+      position: 'bottom',
       icon: 'i-heroicons-squares-2x2'
     }
   ]

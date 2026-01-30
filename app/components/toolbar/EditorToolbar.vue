@@ -389,17 +389,18 @@ const headingItems = [
   line-height: 1;
 }
 
-/* Scroll Sync ON state - Green */
+/* Scroll Sync ON state - Green with accessible contrast */
 .scroll-sync-toggle.scroll-sync-on {
   background-color: #166534;
   border-color: #22c55e;
-  color: #4ade80;
+  color: #ffffff;
   box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
 }
 
 .scroll-sync-toggle.scroll-sync-on:hover {
   background-color: #15803d;
   border-color: #4ade80;
+  color: #ffffff;
   box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
 }
 
@@ -417,7 +418,7 @@ const headingItems = [
   box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
 }
 
-/* Save indicator - transient green badge */
+/* Save indicator - transient green badge with accessible contrast */
 .save-indicator {
   display: inline-flex;
   align-items: center;
@@ -431,7 +432,7 @@ const headingItems = [
   white-space: nowrap;
   background-color: #166534;
   border: 2px solid #22c55e;
-  color: #4ade80;
+  color: #ffffff;
   box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
 }
 
