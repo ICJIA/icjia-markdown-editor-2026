@@ -103,6 +103,56 @@ export function createMarkdownIt(): MarkdownIt {
     }
     return defaultImageRender(tokens, idx, options, env, self)
   }
+
+  // Source line attributes for scroll sync: add data-source-line to block elements
+  const blockRules = [
+    'paragraph_open',
+    'heading_open',
+    'blockquote_open',
+    'bullet_list_open',
+    'ordered_list_open',
+    'list_item_open',
+    'table_open',
+    'thead_open',
+    'tbody_open',
+    'tr_open',
+    'th_open',
+    'td_open',
+    'hr',
+  ] as const
+
+  blockRules.forEach((ruleName) => {
+    const defaultRule = md.renderer.rules[ruleName] || function(tokens, idx, options, _env, self) {
+      return self.renderToken(tokens, idx, options)
+    }
+    md.renderer.rules[ruleName] = function(tokens, idx, options, env, self) {
+      const token = tokens[idx]
+      if (token?.map) {
+        token.attrPush(['data-source-line', String(token.map[0])])
+      }
+      return defaultRule(tokens, idx, options, env, self)
+    }
+  })
+
+  // Fence (code blocks): highlight returns full HTML, so we wrap with data-source-line
+  const defaultFence = md.renderer.rules.fence!
+  md.renderer.rules.fence = function(tokens, idx, options, env, self) {
+    const token = tokens[idx]
+    const lang = token?.info?.trim() ?? ''
+    const code = token?.content ?? ''
+    let highlighted: string
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        highlighted = hljs.highlight(code, { language: lang, ignoreIllegals: true }).value
+      } catch {
+        highlighted = md.utils.escapeHtml(code)
+      }
+    } else {
+      highlighted = md.utils.escapeHtml(code)
+    }
+    const lineAttr = token?.map ? ` data-source-line="${token.map[0]}"` : ''
+    return `<pre class="hljs language-${lang}"${lineAttr}><code>${highlighted}</code></pre>`
+  }
   
   return md
 }

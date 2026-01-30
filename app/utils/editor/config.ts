@@ -57,25 +57,19 @@ export function getTheme(isDark: boolean) {
 /**
  * Creates a fully configured CodeMirror editor state.
  * Includes markdown syntax support, keyboard shortcuts, history, and accessibility features.
- * 
- * @param {string} doc - The initial document content
- * @param {(value: string) => void} onChange - Callback fired when document changes
- * @param {boolean} [isDark=true] - Whether to use dark theme initially
- * @returns {EditorState} Configured CodeMirror editor state
- * 
- * @example
- * ```typescript
- * const state = createEditorState(
- *   '# Hello World',
- *   (value) => console.log('Content changed:', value),
- *   true // dark mode
- * )
- * ```
+ *
+ * @param doc - The initial document content
+ * @param onChange - Callback fired when document changes
+ * @param isDark - Whether to use dark theme initially
+ * @param onCursorLineChange - Optional callback fired when cursor line changes (for scroll sync)
+ * @returns Configured CodeMirror editor state
  */
 export function createEditorState(
   doc: string,
   onChange: (value: string) => void,
-  isDark: boolean = true
+  isDark: boolean = true,
+  /** Called when cursor line changes. Second arg true = from typing (sync immediately). */
+  onCursorLineChange?: (line: number, immediate?: boolean) => void
 ): EditorState {
   return EditorState.create({
     doc,
@@ -123,10 +117,15 @@ export function createEditorState(
       // Line wrapping (soft wrap)
       EditorView.lineWrapping,
       
-      // Change listener
+      // Change and selection listener (cursor-line for scroll sync: immediate on type, debounced on selection-only)
       EditorView.updateListener.of((update) => {
         if (update.docChanged) {
           onChange(update.state.doc.toString())
+        }
+        if (onCursorLineChange) {
+          const line = update.state.doc.lineAt(update.state.selection.main.from).number
+          const fromTyping = update.docChanged
+          onCursorLineChange(line, fromTyping)
         }
       }),
       

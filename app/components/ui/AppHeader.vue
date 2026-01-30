@@ -11,7 +11,7 @@
     <div class="header-content">
       <h1 class="app-title">
         <UIcon name="i-heroicons-document-text" class="title-icon" />
-        ICJIA Markdown Editor
+        ICJIA Markdown Editor 2.0
       </h1>
       
       <nav class="header-actions" aria-label="Application controls">

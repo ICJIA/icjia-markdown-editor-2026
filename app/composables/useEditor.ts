@@ -739,7 +739,7 @@ Replace this text with your own bold, italic, and ~~strikethrough~~ examples.
 
 ## About This Editor
 
-The **ICJIA Markdown Editor** is designed for researchers, writers, and anyone who needs a clean, accessible writing environment. Key features include:
+The **ICJIA Markdown Editor 2.0** is designed for researchers, writers, and anyone who needs a clean, accessible writing environment. Key features include:
 
 - **Real-time Preview** — See your formatted document as you type
 - **Auto-save** — Never lose your work (saves every 30 seconds)

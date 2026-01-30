@@ -20,7 +20,7 @@ function handleTableInsert(markdown: string) {
 const { isSaving, showSaveIndicator, countdownToSave, isContentReady } = useAutoSave()
 
 // Initialize scroll synchronization
-const { enabled: scrollSyncEnabled, toggle: toggleScrollSync, init: initScrollSync } = useScrollSync()
+const { init: initScrollSync, syncToCursor } = useScrollSync()
 
 // References to child pane components (using any for auto-imported components)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -62,9 +62,10 @@ function setupScrollSync(): void {
     previewScrollContainer = document.querySelector('.preview-content') as HTMLElement
   }
   
-  // Initialize scroll sync if both containers are available
+  // Initialize scroll sync if both containers are available (pass getEditorView for line-based sync)
   if (editorScrollContainer && previewScrollContainer) {
-    initScrollSync(editorScrollContainer, previewScrollContainer)
+    const getEditorView = () => editorPaneRef.value?.view?.value ?? null
+    initScrollSync(editorScrollContainer, previewScrollContainer, { getEditorView })
   } else {
     // Retry after a short delay if elements not found
     setTimeout(setupScrollSync, 200)
@@ -137,7 +138,11 @@ const viewModeLabel = computed(() => {
               Editor
             </span>
           </div>
-          <EditorPane ref="editorPaneRef" />
+          <EditorPane
+          ref="editorPaneRef"
+          @cursor-line="(line) => syncToCursor(line, 'smooth', false)"
+          @cursor-line-immediate="(line) => syncToCursor(line, { behavior: 'auto', block: 'center' }, true)"
+        />
         </div>
         
         <!-- Divider -->
@@ -180,16 +185,6 @@ const viewModeLabel = computed(() => {
       </div>
       
       <div class="status-right">
-        <UButton
-          :icon="scrollSyncEnabled ? 'i-heroicons-arrows-up-down' : 'i-heroicons-arrows-up-down'"
-          :aria-label="`Scroll sync: ${scrollSyncEnabled ? 'enabled' : 'disabled'}. Click to toggle.`"
-          :aria-pressed="scrollSyncEnabled"
-          variant="ghost"
-          :color="scrollSyncEnabled ? 'primary' : 'neutral'"
-          size="xs"
-          :title="`Scroll sync ${scrollSyncEnabled ? 'on' : 'off'}`"
-          @click="toggleScrollSync"
-        />
         <UButton
           :icon="viewModeIcon"
           :aria-label="`View mode: ${viewModeLabel}. Click to cycle.`"

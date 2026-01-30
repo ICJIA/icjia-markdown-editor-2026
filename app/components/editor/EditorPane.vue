@@ -12,6 +12,21 @@ const colorMode = useColorMode()
 const { setEditorView, updateContent, content, isContentReady } = useEditor()
 const { announce } = useAccessibility()
 
+const emit = defineEmits<{ (e: 'cursor-line', line: number): void; (e: 'cursor-line-immediate', line: number): void }>()
+
+// Cursor-line for scroll sync: immediate when user types, debounced (150ms) when only selection changes
+let cursorLineTimeout: ReturnType<typeof setTimeout> | null = null
+function onCursorLineChange(line: number, immediate = false) {
+  if (immediate) {
+    if (cursorLineTimeout) clearTimeout(cursorLineTimeout)
+    cursorLineTimeout = null
+    emit('cursor-line-immediate', line)
+  } else {
+    if (cursorLineTimeout) clearTimeout(cursorLineTimeout)
+    cursorLineTimeout = setTimeout(() => emit('cursor-line', line), 150)
+  }
+}
+
 // Container ref for mounting CodeMirror
 const editorContainer = ref<HTMLElement | null>(null)
 const view = shallowRef<EditorView | null>(null)
@@ -28,7 +43,8 @@ onMounted(() => {
     (newContent) => {
       updateContent(newContent)
     },
-    isDark.value
+    isDark.value,
+    onCursorLineChange
   )
   
   view.value = new EditorView({
@@ -57,6 +73,7 @@ onMounted(() => {
 
 // Clean up on unmount
 onUnmounted(() => {
+  if (cursorLineTimeout) clearTimeout(cursorLineTimeout)
   view.value?.destroy()
 })
 

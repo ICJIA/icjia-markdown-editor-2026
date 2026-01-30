@@ -6,7 +6,7 @@
 
 // Page meta for SEO and accessibility
 useHead({
-  title: 'ICJIA Markdown Editor',
+  title: 'ICJIA Markdown Editor 2.0',
   meta: [
     { name: 'description', content: 'Accessible markdown editor for ICJIA researchers. Write, preview, and export markdown documents.' },
   ],
@@ -21,7 +21,7 @@ const { announce } = useAccessibility()
 onMounted(() => {
   // Small delay to ensure components are ready
   setTimeout(() => {
-    announce('ICJIA Markdown Editor ready. Press Tab to navigate to the editor.')
+    announce('ICJIA Markdown Editor 2.0 ready. Press Tab to navigate to the editor.')
   }, 100)
 })
 </script>

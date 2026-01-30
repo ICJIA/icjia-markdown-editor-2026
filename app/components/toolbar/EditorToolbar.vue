@@ -23,6 +23,12 @@ const { openModal: openDownloadModal } = useDownloadModal()
 
 const { copyMarkdown, copyHtml, downloadMarkdown, downloadHtml, uploadMarkdown, copyMarkdownSuccess, copyHtmlSuccess } = useExport()
 const { announce } = useAccessibility()
+const { enabled: scrollSyncEnabled, toggle: toggleScrollSync } = useScrollSync()
+
+function handleToggleScrollSync() {
+  toggleScrollSync()
+  announce(scrollSyncEnabled.value ? 'Scroll sync disabled' : 'Scroll sync enabled')
+}
 
 // Handle formatting actions
 function handleBold() {
@@ -166,15 +172,15 @@ const headingItems = [
     
     <!-- Headings group -->
     <div class="toolbar-group" role="group" aria-label="Headings">
-      <UTooltip
-        text="Headings"
-        :kbds="['meta', '1-6']"
-        :content="{ side: 'top', sideOffset: 8 }"
+      <UDropdownMenu 
+        :items="headingItems"
+        :content="{ side: 'bottom', align: 'start', sideOffset: 8 }"
+        class="heading-dropdown"
       >
-        <UDropdownMenu 
-          :items="headingItems"
-          :content="{ side: 'bottom', align: 'start', sideOffset: 8 }"
-          class="heading-dropdown"
+        <UTooltip
+          text="Headings"
+          :kbds="['meta', '1-6']"
+          :content="{ side: 'top', sideOffset: 8 }"
         >
           <UButton
             icon="i-lucide-heading"
@@ -185,8 +191,8 @@ const headingItems = [
             size="sm"
             square
           />
-        </UDropdownMenu>
-      </UTooltip>
+        </UTooltip>
+      </UDropdownMenu>
     </div>
     
     <ToolbarDivider />
@@ -249,6 +255,23 @@ const headingItems = [
       />
     </div>
 
+    <ToolbarDivider />
+    
+    <!-- Scroll sync toggle - highly visible with text label -->
+    <div class="toolbar-group" role="group" aria-label="Scroll sync">
+      <button
+        type="button"
+        :aria-label="`Scroll sync: ${scrollSyncEnabled ? 'enabled' : 'disabled'}. Click to toggle.`"
+        :aria-pressed="scrollSyncEnabled"
+        class="scroll-sync-toggle"
+        :class="scrollSyncEnabled ? 'scroll-sync-on' : 'scroll-sync-off'"
+        @click="handleToggleScrollSync"
+      >
+        <UIcon name="i-heroicons-arrows-up-down" class="scroll-sync-icon" />
+        <span class="scroll-sync-label">{{ scrollSyncEnabled ? 'Scroll Sync ON' : 'Scroll Sync OFF' }}</span>
+      </button>
+    </div>
+    
     <!-- Spacer to push export buttons to the right -->
     <div class="toolbar-spacer" />
     
@@ -323,6 +346,66 @@ const headingItems = [
   flex-shrink: 1;
 }
 
+/* Scroll sync toggle button - highly visible with text */
+.scroll-sync-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 2px solid;
+  white-space: nowrap;
+}
+
+.scroll-sync-toggle:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.scroll-sync-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.scroll-sync-label {
+  line-height: 1;
+}
+
+/* ON state - Green */
+.scroll-sync-toggle.scroll-sync-on {
+  background-color: #166534;
+  border-color: #22c55e;
+  color: #4ade80;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+}
+
+.scroll-sync-toggle.scroll-sync-on:hover {
+  background-color: #15803d;
+  border-color: #4ade80;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+}
+
+/* OFF state - Red */
+.scroll-sync-toggle.scroll-sync-off {
+  background-color: #7f1d1d;
+  border-color: #ef4444;
+  color: #fca5a5;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+
+.scroll-sync-toggle.scroll-sync-off:hover {
+  background-color: #991b1b;
+  border-color: #f87171;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+}
+
 /* Responsive: compact on smaller screens */
 @media (max-width: 640px) {
   .editor-toolbar {
@@ -332,6 +415,15 @@ const headingItems = [
   
   .toolbar-spacer {
     min-width: 0.5rem;
+  }
+  
+  /* Hide text label on small screens, keep icon */
+  .scroll-sync-label {
+    display: none;
+  }
+  
+  .scroll-sync-toggle {
+    padding: 0.375rem;
   }
 }
 </style>
