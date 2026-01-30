@@ -231,6 +231,12 @@ defineExpose({
   background: var(--color-surface, #1e293b);
   border-radius: 0.5rem;
   overflow-x: auto;
+  /* WCAG 1.4.12 Text Spacing compliance (Siteimprove SIA-R79):
+     Allow users to adjust letter-spacing and word-spacing via browser settings
+     or user stylesheets for improved readability (benefits dyslexia, low vision) */
+  white-space: pre-wrap;
+  letter-spacing: inherit;
+  word-spacing: inherit;
 }
 
 /* Focus styles for scrollable code blocks (tabindex added via JS) */
@@ -245,6 +251,9 @@ defineExpose({
   background: transparent;
   font-size: 0.875rem;
   line-height: 1.5;
+  /* Inherit spacing adjustments from parent for WCAG 1.4.12 compliance */
+  letter-spacing: inherit;
+  word-spacing: inherit;
 }
 
 .preview-content :deep(blockquote) {

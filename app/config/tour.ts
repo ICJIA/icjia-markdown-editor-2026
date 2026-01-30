@@ -49,11 +49,11 @@ export const tourConfig: TourConfig = {
 
   /**
    * Tour steps in display order.
-   * Each step highlights a feature group and explains its purpose.
+   * Order: Toolbar left-to-right, then main content, then header controls.
    */
   steps: [
     // =========================================================================
-    // STEP 1: TEXT FORMATTING
+    // TOOLBAR ROW (Left to right)
     // =========================================================================
     {
       id: 'formatting',
@@ -65,9 +65,6 @@ export const tourConfig: TourConfig = {
       icon: 'i-heroicons-bold'
     },
 
-    // =========================================================================
-    // STEP 2: HEADINGS
-    // =========================================================================
     {
       id: 'headings',
       target: '[data-tour="headings"]',
@@ -78,9 +75,6 @@ export const tourConfig: TourConfig = {
       icon: 'i-lucide-heading'
     },
 
-    // =========================================================================
-    // STEP 3: BLOCK ELEMENTS
-    // =========================================================================
     {
       id: 'blocks',
       target: '[data-tour="blocks"]',
@@ -90,9 +84,6 @@ export const tourConfig: TourConfig = {
       icon: 'i-heroicons-chat-bubble-bottom-center-text'
     },
 
-    // =========================================================================
-    // STEP 4: LISTS
-    // =========================================================================
     {
       id: 'lists',
       target: '[data-tour="lists"]',
@@ -102,9 +93,6 @@ export const tourConfig: TourConfig = {
       icon: 'i-heroicons-list-bullet'
     },
 
-    // =========================================================================
-    // STEP 5: TABLES & LINKS
-    // =========================================================================
     {
       id: 'insert',
       target: '[data-tour="insert"]',
@@ -115,9 +103,6 @@ export const tourConfig: TourConfig = {
       icon: 'i-heroicons-table-cells'
     },
 
-    // =========================================================================
-    // STEP 6: SCROLL SYNC (IMPORTANT FEATURE)
-    // =========================================================================
     {
       id: 'scroll-sync',
       target: '[data-tour="scroll-sync"]',
@@ -129,23 +114,6 @@ export const tourConfig: TourConfig = {
       icon: 'i-heroicons-arrows-up-down'
     },
 
-    // =========================================================================
-    // STEP 7: AUTO-SAVE (CRITICAL TO EXPLAIN) - Now in header
-    // =========================================================================
-    {
-      id: 'auto-save',
-      target: '[data-tour="auto-save"]',
-      title: 'Auto-Save (Browser Only)',
-      content: 'Your work is automatically saved to your browser\'s local storage every 30 seconds. Hover over it to see the countdown. A green "Saved!" message flashes briefly when saved.',
-      tip: 'This is NOT saved to a file on your computer. Use the Download button in the toolbar to save a permanent copy.',
-      position: 'bottom',
-      highlight: true,
-      icon: 'i-heroicons-arrow-path'
-    },
-
-    // =========================================================================
-    // STEP 8: FILE OPERATIONS
-    // =========================================================================
     {
       id: 'file-ops',
       target: '[data-tour="file-ops"]',
@@ -156,9 +124,6 @@ export const tourConfig: TourConfig = {
       icon: 'i-heroicons-arrow-down-tray'
     },
 
-    // =========================================================================
-    // STEP 9: EXPORT OPTIONS
-    // =========================================================================
     {
       id: 'export',
       target: '[data-tour="export"]',
@@ -170,7 +135,7 @@ export const tourConfig: TourConfig = {
     },
 
     // =========================================================================
-    // STEP 10: EDITOR PANE
+    // MAIN CONTENT AREA (Left to right)
     // =========================================================================
     {
       id: 'editor-pane',
@@ -181,9 +146,6 @@ export const tourConfig: TourConfig = {
       icon: 'i-heroicons-pencil-square'
     },
 
-    // =========================================================================
-    // STEP 11: PREVIEW PANE
-    // =========================================================================
     {
       id: 'preview-pane',
       target: '[data-tour="preview-pane"]',
@@ -194,16 +156,45 @@ export const tourConfig: TourConfig = {
     },
 
     // =========================================================================
-    // STEP 12: VIEW MODE TOGGLE (in header)
+    // HEADER CONTROLS (Application features)
     // =========================================================================
+    {
+      id: 'auto-save',
+      target: '[data-tour="auto-save"]',
+      title: 'Auto-Save (Browser Only)',
+      content: 'Your work is automatically saved to your browser\'s local storage every 30 seconds. Watch the countdown to see when the next save occurs.',
+      tip: 'This is NOT saved to a file on your computer. Use the Download button to save a permanent copy.',
+      position: 'bottom',
+      highlight: true,
+      icon: 'i-heroicons-arrow-path'
+    },
+
     {
       id: 'view-mode',
       target: '[data-tour="view-mode"]',
       title: 'View Modes',
-      content: 'Toggle between split view (both panes), editor-only, or preview-only modes. Click to cycle through views—useful on smaller screens or when you want to focus on writing.',
-      tip: 'Find this button in the header for quick access anytime.',
+      content: 'Toggle between split view (both panes), editor-only, or preview-only modes. Click to cycle through views—useful on smaller screens.',
       position: 'bottom',
       icon: 'i-heroicons-squares-2x2'
+    },
+
+    {
+      id: 'reset',
+      target: '[data-tour="reset"]',
+      title: 'Reset Content',
+      content: 'Clear your saved content and reset to the default welcome text. Useful for starting fresh or testing.',
+      tip: 'This will delete all your current work from browser storage!',
+      position: 'bottom',
+      icon: 'i-heroicons-arrow-path'
+    },
+
+    {
+      id: 'color-mode',
+      target: '[data-tour="color-mode"]',
+      title: 'Light / Dark Mode',
+      content: 'Toggle between light and dark themes. Your preference is saved automatically.',
+      position: 'bottom',
+      icon: 'i-heroicons-sun'
     }
   ]
 }

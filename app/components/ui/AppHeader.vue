@@ -7,6 +7,7 @@
 
 const { cycleViewMode, viewModeIcon, viewModeLabel } = useViewMode()
 const { showSaveIndicator, countdownToSave } = useAutoSave()
+const { setContent, getDefaultContent } = useEditor()
 
 /** Dynamic tooltip text showing countdown and storage info */
 const autosaveTooltip = computed(() => {
@@ -15,6 +16,18 @@ const autosaveTooltip = computed(() => {
   }
   return `Next save in ${countdownToSave.value}s · Saved to browser local storage`
 })
+
+/** Clear localStorage and reset to default content */
+function clearStorage() {
+  if (confirm('This will clear your saved content and reset to the default text. Continue?')) {
+    // Clear the content from localStorage
+    if (import.meta.client) {
+      localStorage.removeItem('icjia-markdown-editor-content')
+    }
+    // Reset editor to default content
+    setContent(getDefaultContent())
+  }
+}
 
 defineEmits<{
   /** Emitted when the tour trigger button is clicked */
@@ -31,9 +44,9 @@ defineEmits<{
       </h1>
       
       <nav class="header-actions" aria-label="Application controls">
-        <!-- Auto-save status - informational text with tooltip, NOT a button -->
+        <!-- Auto-save status with countdown -->
         <UTooltip
-          :text="autosaveTooltip"
+          text="Your work is automatically saved to browser local storage"
           :content="{ side: 'bottom', sideOffset: 8 }"
         >
           <div 
@@ -42,16 +55,16 @@ defineEmits<{
             aria-label="Auto Save is always enabled. Your work is saved to browser storage automatically."
             data-tour="auto-save"
           >
-            <Transition name="fade">
-              <span v-if="showSaveIndicator" class="autosave-saved" aria-live="polite">
+            <Transition name="fade" mode="out-in">
+              <span v-if="showSaveIndicator" key="saved" class="autosave-saved" aria-live="polite">
                 <UIcon name="i-heroicons-check-circle" class="autosave-icon" />
                 Saved!
               </span>
+              <span v-else key="countdown" class="autosave-label">
+                <UIcon name="i-heroicons-arrow-path" class="autosave-icon" />
+                <span class="autosave-text">Next save: {{ countdownToSave }}s</span>
+              </span>
             </Transition>
-            <span v-if="!showSaveIndicator" class="autosave-label">
-              <UIcon name="i-heroicons-arrow-path" class="autosave-icon" />
-              Auto Save
-            </span>
           </div>
         </UTooltip>
         
@@ -82,6 +95,23 @@ defineEmits<{
           <UIcon name="i-heroicons-academic-cap" class="tour-icon" />
           <span>Tour</span>
         </button>
+        
+        <!-- Reset button - clears localStorage and resets to default content -->
+        <UTooltip
+          text="Clear saved content and reset to default"
+          :content="{ side: 'bottom', sideOffset: 8 }"
+        >
+          <button
+            type="button"
+            class="reset-button"
+            aria-label="Reset to default content"
+            data-tour="reset"
+            @click="clearStorage"
+          >
+            <UIcon name="i-heroicons-arrow-path" class="reset-icon" />
+            <span>Reset</span>
+          </button>
+        </UTooltip>
         
         <ColorModeToggle />
       </nav>
@@ -130,19 +160,19 @@ defineEmits<{
 .tour-button {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   color: #ffffff;
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #2563eb 100%);
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 0.25rem;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 
-    0 1px 3px rgba(59, 130, 246, 0.3),
-    0 4px 6px -2px rgba(59, 130, 246, 0.2),
+    0 1px 2px rgba(59, 130, 246, 0.3),
+    0 2px 4px -1px rgba(59, 130, 246, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
@@ -168,8 +198,8 @@ defineEmits<{
 }
 
 .tour-icon {
-  width: 1.125rem;
-  height: 1.125rem;
+  width: 0.75rem;
+  height: 0.75rem;
   flex-shrink: 0;
 }
 
@@ -190,19 +220,19 @@ defineEmits<{
 .view-mode-button {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   color: #ffffff;
   background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 50%, #7c3aed 100%);
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 0.25rem;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 
-    0 1px 3px rgba(139, 92, 246, 0.3),
-    0 4px 6px -2px rgba(139, 92, 246, 0.2),
+    0 1px 2px rgba(139, 92, 246, 0.3),
+    0 2px 4px -1px rgba(139, 92, 246, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
@@ -228,8 +258,8 @@ defineEmits<{
 }
 
 .view-mode-icon {
-  width: 1.125rem;
-  height: 1.125rem;
+  width: 0.75rem;
+  height: 0.75rem;
   flex-shrink: 0;
 }
 
@@ -244,6 +274,72 @@ defineEmits<{
 
 .dark .view-mode-button:hover {
   background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #a78bfa 100%);
+}
+
+/* Reset button - shaded style */
+.reset-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #e2e8f0;
+  background: linear-gradient(135deg, #475569 0%, #334155 50%, #3f4f63 100%);
+  border: 1px solid #64748b;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.reset-button:hover {
+  color: #ffffff;
+  background: linear-gradient(135deg, #64748b 0%, #475569 50%, #526177 100%);
+  border-color: #94a3b8;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.reset-button:active {
+  transform: translateY(0);
+  background: linear-gradient(135deg, #334155 0%, #1e293b 50%, #334155 100%);
+  box-shadow: 
+    0 1px 1px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.reset-button:focus-visible {
+  outline: 2px solid #94a3b8;
+  outline-offset: 2px;
+}
+
+.reset-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* Light mode adjustments for reset button */
+:root:not(.dark) .reset-button,
+.light .reset-button {
+  color: #475569;
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 50%, #d4dce6 100%);
+  border-color: #94a3b8;
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+:root:not(.dark) .reset-button:hover,
+.light .reset-button:hover {
+  color: #1e293b;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 50%, #e8ecf1 100%);
+  border-color: #64748b;
 }
 
 /* Auto-save status - plain text indicator, NOT a button */

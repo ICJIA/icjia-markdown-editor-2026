@@ -32,6 +32,7 @@ const label = computed(() => isDark.value ? 'Dark mode active. Click to switch t
     type="button"
     class="color-mode-button"
     :aria-label="label"
+    data-tour="color-mode"
     @click="toggleColorMode"
   >
     <UIcon :name="icon" class="mode-icon" />
@@ -44,19 +45,19 @@ const label = computed(() => isDark.value ? 'Dark mode active. Click to switch t
 .color-mode-button {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   color: #ffffff;
   background: linear-gradient(135deg, #64748b 0%, #475569 50%, #64748b 100%);
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 0.25rem;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 
-    0 1px 3px rgba(100, 116, 139, 0.3),
-    0 4px 6px -2px rgba(100, 116, 139, 0.2),
+    0 1px 2px rgba(100, 116, 139, 0.3),
+    0 2px 4px -1px rgba(100, 116, 139, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
@@ -82,13 +83,13 @@ const label = computed(() => isDark.value ? 'Dark mode active. Click to switch t
 }
 
 .mode-icon {
-  width: 1.125rem;
-  height: 1.125rem;
+  width: 0.75rem;
+  height: 0.75rem;
   flex-shrink: 0;
 }
 
 .mode-label {
-  min-width: 2.5rem;
+  min-width: 2rem;
   text-align: left;
 }
 

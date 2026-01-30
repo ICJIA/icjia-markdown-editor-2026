@@ -1,6 +1,15 @@
 # ICJIA Markdown Editor
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Nuxt](https://img.shields.io/badge/Nuxt-4.x-00DC82?logo=nuxt.js)](https://nuxt.com)
+[![Vue](https://img.shields.io/badge/Vue-3.5+-4FC08D?logo=vue.js)](https://vuejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)](https://www.typescriptlang.org)
+[![WCAG 2.1 AA](https://img.shields.io/badge/WCAG-2.1_AA-green)](https://www.w3.org/WAI/WCAG21/quickref/)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/placeholder/deploy-status)](https://markdown.icjia.cloud)
+
 A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. Designed for ICJIA researchers to write reports, policy briefs, and documentation with full WCAG 2.1 AA compliance.
+
+**[Live Demo →](https://markdown.icjia.cloud)**
 
 ## Features
 
@@ -8,10 +17,11 @@ A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. Designe
 - **Dark/Light Mode** - Easy on the eyes with dark mode default and system preference detection
 - **Keyboard Shortcuts** - Speed up your workflow with comprehensive shortcuts
 - **Table Builder** - Visual table creation modal (Cmd/Ctrl+T)
-- **Auto-save** - Never lose your work (saves every 30 seconds to localStorage with visual indicator)
+- **Auto-save** - Never lose your work (saves every 30 seconds with live countdown in header)
+- **Reset Button** - Clear saved content and reset to default with one click
 - **Export Options** - Copy as Markdown, copy as HTML, or download files with custom filenames
 - **Footnote Support** - Full footnote syntax with automatic numbering and back-references
-- **Guided Tour** - Interactive onboarding that explains all features (runs once, restartable anytime)
+- **Guided Tour** - Interactive 14-step onboarding covering all features (runs once, restartable anytime)
 - **Accessibility First** - WCAG 2.1 Level AA compliant with full keyboard navigation and screen reader support
 - **Static Deployment** - Deploy anywhere as a static site (Netlify-ready)
 - **Fully Documented** - Comprehensive JSDoc comments on all composables and utilities
@@ -199,18 +209,27 @@ The application includes an interactive guided tour that introduces users to all
 
 ### Tour Steps
 
+The tour follows a logical left-to-right, top-to-bottom order:
+
+**Toolbar (left to right):**
 1. **Text Formatting** - Bold, italic, inline code
 2. **Headings** - H1-H6 with keyboard shortcuts
 3. **Block Elements** - Quotes, code blocks, horizontal rules
 4. **Lists** - Bullet and numbered lists
 5. **Tables & Links** - Visual table builder, link insertion
 6. **Scroll Sync** - Synchronized scrolling toggle
-7. **Auto-Save** - Explains browser localStorage (not file-based)
-8. **Upload & Download** - File operations
-9. **Copy to Clipboard** - Markdown and HTML export
-10. **Editor Pane** - Where to write
-11. **Preview Pane** - Live rendering
+7. **Upload & Download** - File operations
+8. **Copy to Clipboard** - Markdown and HTML export
+
+**Main Content:**
+9. **Editor Pane** - Where to write markdown
+10. **Preview Pane** - Live rendering
+
+**Header Controls:**
+11. **Auto-Save** - Browser localStorage with countdown timer
 12. **View Modes** - Split/editor/preview toggle
+13. **Reset** - Clear saved content and reset to default
+14. **Light/Dark Mode** - Theme toggle
 
 ### Reusing the Tour Module
 
@@ -397,7 +416,9 @@ icjia-markdown-editor-2026/
 
 ## License
 
-This project is developed for the Illinois Criminal Justice Information Authority (ICJIA).
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+Copyright (c) 2026 Illinois Criminal Justice Information Authority (ICJIA).
 
 ## Acknowledgments
 
