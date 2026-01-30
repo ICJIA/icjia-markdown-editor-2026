@@ -46,8 +46,8 @@ const dialogStyle = computed(() => {
   
   const rect = targetElement.value.getBoundingClientRect()
   const position = props.currentStep?.position ?? 'bottom'
-  const dialogWidth = 320 // w-80 = 20rem = 320px
-  const dialogHeight = 200 // Approximate height
+  const dialogWidth = 384 // w-96 = 24rem = 384px
+  const dialogHeight = 280 // Fixed height for consistent button position
   const gap = 8 // Reduced from 16px to keep dialog closer to target
   const viewportWidth = window.innerWidth
   const viewportHeight = window.innerHeight
@@ -168,10 +168,10 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
           class="tour-dialog"
           :style="dialogStyle"
         >
-          <UCard
+            <UCard
             class="tour-card"
             :ui="{
-              root: 'w-80 max-w-[90vw] bg-white dark:bg-gray-900',
+              root: 'w-96 max-w-[90vw] bg-white dark:bg-gray-900',
               header: 'pb-2',
               body: 'pt-2 pb-3',
               footer: 'pt-3'
@@ -199,7 +199,7 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
               </div>
             </template>
             
-            <div :id="`tour-content-${currentStep.id}`">
+            <div :id="`tour-content-${currentStep.id}`" class="tour-body">
               <p class="tour-content">
                 {{ currentStep.content }}
               </p>
@@ -283,6 +283,10 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
 .tour-card {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   background: var(--ui-bg, #ffffff) !important;
+  /* Fixed size so Next button stays in same position */
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Ensure solid background in dark mode */
@@ -319,11 +323,20 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
   line-height: 1.3;
 }
 
+/* Fixed height body area so footer stays in same position */
+.tour-body {
+  min-height: 120px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
 .tour-content {
   font-size: 0.875rem;
   line-height: 1.5;
   color: var(--ui-text-muted);
   margin: 0;
+  /* Fixed content height so dialog size is consistent */
+  min-height: 3.5rem;
 }
 
 .tour-tip {

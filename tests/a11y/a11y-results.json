@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-01-30T18:52:23.285Z",
-  "devServerUrl": "http://localhost:3002",
+  "timestamp": "2026-01-30T19:51:17.663Z",
+  "devServerUrl": "http://localhost:3000",
   "summary": {
     "totalViolations": 0,
     "critical": 0,
@@ -28,8 +28,8 @@
         "name": "Desktop (1920x1080)"
       },
       "violations": [],
-      "passes": 28,
-      "incomplete": 1
+      "passes": 49,
+      "incomplete": 2
     },
     {
       "mode": "dark",
@@ -39,8 +39,8 @@
         "name": "Tablet (768x1024)"
       },
       "violations": [],
-      "passes": 28,
-      "incomplete": 1
+      "passes": 49,
+      "incomplete": 2
     },
     {
       "mode": "dark",
@@ -50,8 +50,8 @@
         "name": "Mobile (375x667)"
       },
       "violations": [],
-      "passes": 28,
-      "incomplete": 1
+      "passes": 49,
+      "incomplete": 2
     },
     {
       "mode": "light",
@@ -61,8 +61,8 @@
         "name": "Desktop (1920x1080)"
       },
       "violations": [],
-      "passes": 28,
-      "incomplete": 1
+      "passes": 49,
+      "incomplete": 2
     },
     {
       "mode": "light",
@@ -72,8 +72,8 @@
         "name": "Tablet (768x1024)"
       },
       "violations": [],
-      "passes": 28,
-      "incomplete": 1
+      "passes": 49,
+      "incomplete": 2
     },
     {
       "mode": "light",
@@ -83,8 +83,8 @@
         "name": "Mobile (375x667)"
       },
       "violations": [],
-      "passes": 28,
-      "incomplete": 1
+      "passes": 49,
+      "incomplete": 2
     }
   ]
 }

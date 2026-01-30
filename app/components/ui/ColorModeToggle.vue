@@ -23,7 +23,8 @@ function toggleColorMode() {
 
 // Icon based on current mode
 const icon = computed(() => isDark.value ? 'i-heroicons-moon' : 'i-heroicons-sun')
-const label = computed(() => isDark.value ? 'Switch to light mode' : 'Switch to dark mode')
+// aria-label must include visible text per WCAG 2.5.3 "Label in Name"
+const label = computed(() => isDark.value ? 'Dark mode active. Click to switch to light mode.' : 'Light mode active. Click to switch to dark mode.')
 </script>
 
 <template>

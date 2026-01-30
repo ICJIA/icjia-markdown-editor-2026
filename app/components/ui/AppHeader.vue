@@ -1,11 +1,20 @@
 <script setup lang="ts">
 /**
  * Application Header Component
- * Contains app title, view mode toggle, tour trigger, and color mode toggle
+ * Contains app title, auto-save status, view mode toggle, tour trigger, and color mode toggle
  * Uses semantic <header> landmark for accessibility
  */
 
 const { cycleViewMode, viewModeIcon, viewModeLabel } = useViewMode()
+const { showSaveIndicator, countdownToSave } = useAutoSave()
+
+/** Dynamic tooltip text showing countdown and storage info */
+const autosaveTooltip = computed(() => {
+  if (showSaveIndicator.value) {
+    return 'Just saved to browser local storage!'
+  }
+  return `Next save in ${countdownToSave.value}s · Saved to browser local storage`
+})
 
 defineEmits<{
   /** Emitted when the tour trigger button is clicked */
@@ -22,6 +31,30 @@ defineEmits<{
       </h1>
       
       <nav class="header-actions" aria-label="Application controls">
+        <!-- Auto-save status - informational text with tooltip, NOT a button -->
+        <UTooltip
+          :text="autosaveTooltip"
+          :content="{ side: 'bottom', sideOffset: 8 }"
+        >
+          <div 
+            class="autosave-status" 
+            role="status" 
+            aria-label="Auto Save is always enabled. Your work is saved to browser storage automatically."
+            data-tour="auto-save"
+          >
+            <Transition name="fade">
+              <span v-if="showSaveIndicator" class="autosave-saved" aria-live="polite">
+                <UIcon name="i-heroicons-check-circle" class="autosave-icon" />
+                Saved!
+              </span>
+            </Transition>
+            <span v-if="!showSaveIndicator" class="autosave-label">
+              <UIcon name="i-heroicons-arrow-path" class="autosave-icon" />
+              Auto Save
+            </span>
+          </div>
+        </UTooltip>
+        
         <!-- View mode toggle - polished gradient button (purple) -->
         <UTooltip
           text="Click to cycle: Split → Editor → Preview"
@@ -211,5 +244,72 @@ defineEmits<{
 
 .dark .view-mode-button:hover {
   background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #a78bfa 100%);
+}
+
+/* Auto-save status - plain text indicator, NOT a button */
+.autosave-status {
+  display: flex;
+  align-items: center;
+  cursor: help; /* Indicate tooltip is available */
+  user-select: none;
+}
+
+.autosave-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #94a3b8; /* slate-400 - muted */
+  white-space: nowrap;
+  cursor: default;
+}
+
+.autosave-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+  opacity: 0.7;
+}
+
+.autosave-saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4ade80; /* green-400 */
+  white-space: nowrap;
+}
+
+.autosave-saved .autosave-icon {
+  opacity: 1;
+  color: #4ade80;
+}
+
+/* Light mode */
+:root:not(.dark) .autosave-label,
+.light .autosave-label {
+  color: #64748b; /* slate-500 */
+}
+
+:root:not(.dark) .autosave-saved,
+.light .autosave-saved {
+  color: #16a34a; /* green-600 */
+}
+
+:root:not(.dark) .autosave-saved .autosave-icon,
+.light .autosave-saved .autosave-icon {
+  color: #16a34a;
+}
+
+/* Fade transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

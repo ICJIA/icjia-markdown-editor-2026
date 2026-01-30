@@ -130,17 +130,17 @@ export const tourConfig: TourConfig = {
     },
 
     // =========================================================================
-    // STEP 7: AUTO-SAVE (CRITICAL TO EXPLAIN)
+    // STEP 7: AUTO-SAVE (CRITICAL TO EXPLAIN) - Now in header
     // =========================================================================
     {
       id: 'auto-save',
       target: '[data-tour="auto-save"]',
       title: 'Auto-Save (Browser Only)',
-      content: 'Your work is automatically saved to your browser\'s local storage every few seconds. The green indicator appears briefly when saved.',
-      tip: 'This is NOT saved to a file on your computer. Use the Download button to save a permanent copy.',
+      content: 'Your work is automatically saved to your browser\'s local storage every 30 seconds. Hover over it to see the countdown. A green "Saved!" message flashes briefly when saved.',
+      tip: 'This is NOT saved to a file on your computer. Use the Download button in the toolbar to save a permanent copy.',
       position: 'bottom',
       highlight: true,
-      icon: 'i-heroicons-check-circle'
+      icon: 'i-heroicons-arrow-path'
     },
 
     // =========================================================================

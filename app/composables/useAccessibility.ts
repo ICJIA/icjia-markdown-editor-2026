@@ -33,24 +33,16 @@ export function useAccessibility() {
   const announcer = ref<HTMLElement | null>(null)
   
   /**
-   * Lifecycle hook that creates or reuses the screen reader announcer element.
-   * The announcer is a visually hidden live region that screen readers monitor.
+   * Lifecycle hook that reuses the screen reader announcer element from app.vue.
+   * The announcer is defined in the template within an ARIA landmark (aside).
    */
   onMounted(() => {
-    // Check if announcer already exists (prevents duplicates)
+    // Use the existing announcer element from app.vue template
+    // It's placed inside an aside landmark to satisfy ARIA requirements
     const existing = document.getElementById('sr-announcer')
     if (existing) {
       announcer.value = existing
-      return
     }
-    
-    announcer.value = document.createElement('div')
-    announcer.value.id = 'sr-announcer'
-    announcer.value.setAttribute('role', 'status')
-    announcer.value.setAttribute('aria-live', 'polite')
-    announcer.value.setAttribute('aria-atomic', 'true')
-    announcer.value.className = 'sr-only'
-    document.body.appendChild(announcer.value)
   })
   
   /**

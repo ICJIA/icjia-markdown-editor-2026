@@ -24,7 +24,6 @@ const { openModal: openDownloadModal } = useDownloadModal()
 const { copyMarkdown, copyHtml, downloadMarkdown, downloadHtml, uploadMarkdown, copyMarkdownSuccess, copyHtmlSuccess } = useExport()
 const { announce } = useAccessibility()
 const { enabled: scrollSyncEnabled, toggle: toggleScrollSync } = useScrollSync()
-const { showSaveIndicator } = useAutoSave()
 
 function handleToggleScrollSync() {
   toggleScrollSync()
@@ -262,7 +261,7 @@ const headingItems = [
     <div class="toolbar-group" role="group" aria-label="Scroll sync" data-tour="scroll-sync">
       <button
         type="button"
-        :aria-label="`Scroll sync: ${scrollSyncEnabled ? 'enabled' : 'disabled'}. Click to toggle.`"
+        :aria-label="`${scrollSyncEnabled ? 'Scroll Sync ON' : 'Scroll Sync OFF'}. Click to toggle.`"
         :aria-pressed="scrollSyncEnabled"
         class="status-toggle scroll-sync-toggle"
         :class="scrollSyncEnabled ? 'scroll-sync-on' : 'scroll-sync-off'"
@@ -273,17 +272,7 @@ const headingItems = [
       </button>
     </div>
     
-    <!-- Save indicator - only appears briefly when saved -->
-    <Transition name="fade">
-      <div v-if="showSaveIndicator" class="toolbar-group" role="status" aria-label="Save status" data-tour="auto-save">
-        <span class="save-indicator" aria-live="polite">
-          <UIcon name="i-heroicons-check-circle" class="status-icon" />
-          <span class="status-label">Saved</span>
-        </span>
-      </div>
-    </Transition>
-    
-    <!-- Spacer to push export buttons to the right -->
+    <!-- Spacer to push right-side elements -->
     <div class="toolbar-spacer" />
     
     <!-- File operations group -->
@@ -416,24 +405,6 @@ const headingItems = [
   background-color: #991b1b;
   border-color: #f87171;
   box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
-}
-
-/* Save indicator - transient green badge with accessible contrast */
-.save-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.375rem;
-  font-size: 0.65rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-  white-space: nowrap;
-  background-color: #166534;
-  border: 2px solid #22c55e;
-  color: #ffffff;
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
 }
 
 /* Fade transition for save indicator */

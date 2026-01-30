@@ -1,6 +1,7 @@
 /**
  * ICJIA Markdown Editor - Accessibility Audit Script
- * Tests WCAG 2.1 AA compliance using axe-core
+ * Tests WCAG 2.1 AAA compliance (strictest level) using axe-core
+ * Includes: WCAG 2.0 A/AA/AAA, WCAG 2.1 A/AA/AAA, WCAG 2.2 AA, and best practices
  * 
  * Usage:
  *   yarn test:a11y           # Run fresh audit (or review cached if available)
@@ -16,7 +17,7 @@ import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const RESULTS_FILE = join(__dirname, 'a11y-results.json')
-const DEV_SERVER_URL = 'http://localhost:3002'
+const DEV_SERVER_URL = 'http://localhost:3000'
 
 interface ViolationResult {
   id: string
@@ -170,7 +171,7 @@ function displayCachedResults(report: FullAuditReport): void {
   }
   
   console.log(`\n   ${'─'.repeat(40)}`)
-  console.log(`   WCAG 2.1 AA Compliance: ${s.overallPass ? '✅ PASS' : '❌ FAIL'}`)
+  console.log(`   WCAG 2.1 AAA Compliance: ${s.overallPass ? '✅ PASS' : '❌ FAIL'}`)
   
   if (uniqueViolations.size > 0) {
     console.log(`\n${'─'.repeat(60)}`)
@@ -237,9 +238,12 @@ async function runAudit(page: Page, mode: 'dark' | 'light', viewport: { width: n
     }
   }
   
-  // Run axe-core analysis
+  // Run axe-core analysis - WCAG 2.1 AAA (strictest level) + best practices
+  // Exclude Nuxt DevTools (development-only, not present in production)
   const results = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
+    .withTags(['wcag2a', 'wcag2aa', 'wcag2aaa', 'wcag21a', 'wcag21aa', 'wcag21aaa', 'wcag22aa', 'best-practice'])
+    .exclude('nuxt-devtools-frame')
+    .exclude('[class*="nuxt-devtools"]')
     .analyze()
   
   // Format violations with node details
@@ -386,7 +390,8 @@ async function testLandmarks(page: Page): Promise<TestResult> {
 async function runFullAudit(): Promise<FullAuditReport> {
   console.log('\n' + '='.repeat(60))
   console.log('🔍 ICJIA Markdown Editor - Accessibility Audit')
-  console.log('   WCAG 2.1 Level AA Compliance Check')
+  console.log('   WCAG 2.1 Level AAA Compliance Check (Strictest)')
+  console.log('   Includes: A, AA, AAA + Best Practices')
   console.log('='.repeat(60) + '\n')
   
   console.log(`📡 Checking dev server at ${DEV_SERVER_URL}...`)
@@ -499,7 +504,7 @@ async function runFullAudit(): Promise<FullAuditReport> {
   console.log(`   ARIA Landmarks:      ${landmarksResult.passed ? '✅ PASS' : '❌ FAIL'}`)
   
   console.log(`\n   ${'─'.repeat(40)}`)
-  console.log(`   WCAG 2.1 AA Compliance: ${overallPass ? '✅ PASS' : '❌ FAIL'}`)
+  console.log(`   WCAG 2.1 AAA Compliance: ${overallPass ? '✅ PASS' : '❌ FAIL'}`)
   console.log('='.repeat(60) + '\n')
   
   return report
@@ -558,7 +563,7 @@ async function main() {
       process.exit(0)
     }
     
-    console.log('✅ Audit passed - WCAG 2.1 AA compliant!')
+    console.log('✅ Audit passed - WCAG 2.1 AAA compliant!')
     process.exit(0)
     
   } catch (error) {

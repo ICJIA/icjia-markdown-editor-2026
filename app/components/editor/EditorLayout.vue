@@ -201,7 +201,14 @@ function setupScrollSync(): void {
   gap: 0.5rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--color-text-muted, #94a3b8);
+  /* WCAG AAA compliant - 7:1+ contrast ratio */
+  color: #e2e8f0; /* slate-200 for dark mode - 12:1 on #1e293b */
+}
+
+/* Light mode override for pane title */
+:root:not(.dark) .pane-title,
+.light .pane-title {
+  color: #1e293b; /* slate-800 for light mode - 12.6:1 on #f8fafc */
 }
 
 .editor-pane-wrapper {
@@ -224,8 +231,15 @@ function setupScrollSync(): void {
   background: var(--color-surface, #1e293b);
   border-top: 1px solid var(--color-border, #334155);
   font-size: 0.75rem;
-  color: var(--color-text-muted, #94a3b8);
+  /* WCAG AAA compliant - 7:1+ contrast ratio */
+  color: #e2e8f0; /* slate-200 for dark mode */
   flex-shrink: 0;
+}
+
+/* Light mode override for status bar */
+:root:not(.dark) .status-bar,
+.light .status-bar {
+  color: #1e293b; /* slate-800 for light mode */
 }
 
 .status-left {
@@ -242,7 +256,7 @@ function setupScrollSync(): void {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  color: var(--color-text-muted, #94a3b8); /* WCAG AA compliant - 4.68:1 on slate-800 */
+  /* WCAG AAA compliant - inherits from .status-bar */
   transition: all 0.3s ease;
 }
 
@@ -252,7 +266,7 @@ function setupScrollSync(): void {
 }
 
 .countdown {
-  color: var(--color-text-muted, #94a3b8);
+  /* WCAG AAA compliant - inherits from .status-bar */
   font-variant-numeric: tabular-nums;
 }
 

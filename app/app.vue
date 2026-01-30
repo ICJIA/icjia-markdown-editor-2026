@@ -13,13 +13,33 @@ provide('announce', announce)
 
 <template>
   <!-- UApp provides required context providers (TooltipProvider, etc.) -->
-  <UApp>
+  <!-- Disable toaster since we don't use toasts - prevents empty <ol> a11y violation -->
+  <UApp :toaster="null">
     <div id="app">
       <!-- Skip link - first focusable element (WCAG 2.4.1) -->
       <SkipLink />
 
-      <!-- Route announcer for SPA navigation -->
-      <NuxtRouteAnnouncer />
+      <!-- 
+        Live region container for screen reader announcements
+        Placed inside a landmark (complementary) to satisfy ARIA landmark requirements
+        All live regions (route announcer, status messages) go here
+      -->
+      <aside 
+        id="live-region-container"
+        aria-label="Announcements"
+        class="sr-only"
+      >
+        <!-- Route announcer for SPA navigation -->
+        <NuxtRouteAnnouncer />
+        
+        <!-- Screen reader announcer element (managed by useAccessibility) -->
+        <div 
+          id="sr-announcer"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        ></div>
+      </aside>
 
       <!-- Page content -->
       <NuxtPage />
@@ -34,5 +54,18 @@ provide('announce', announce)
   min-height: 100vh;
   background: var(--color-background, #0f172a);
   color: var(--color-text, #f1f5f9);
+}
+
+/* Screen reader only - visually hidden but accessible */
+#live-region-container {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 </style>
