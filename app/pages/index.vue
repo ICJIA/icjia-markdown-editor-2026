@@ -55,8 +55,8 @@ function handleWelcomeStart() {
 // Handle welcome modal - user wants to skip tour
 function handleWelcomeSkip() {
   showWelcome.value = false
-  // Mark as completed so we don't ask again
-  tour.hasCompletedTour.value = true
+  // Mark as seen so we don't ask again (uses explicit localStorage write for Safari)
+  tour.markAsSeen()
   announce('Tour skipped. You can start it anytime from the Tour button in the header.')
 }
 

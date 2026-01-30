@@ -11,8 +11,9 @@ const previewRef = ref<HTMLElement | null>(null)
 
 /**
  * Make scrollable code blocks keyboard accessible (WCAG 2.1 AAA)
- * Adds tabindex="0" to all pre elements with overflow
- * Uses unique aria-labels to satisfy landmark-unique requirement
+ * Adds tabindex="0" to scrollable pre elements so they can be keyboard-focused
+ * Updates aria-label to indicate scrollability for screen reader users
+ * Note: All pre elements already have role="figure" and aria-label from markdown renderer
  */
 function makeCodeBlocksAccessible() {
   if (!previewRef.value) return
@@ -24,13 +25,14 @@ function makeCodeBlocksAccessible() {
     codeBlockIndex++
     // Check if the element is scrollable
     if (pre.scrollWidth > pre.clientWidth || pre.scrollHeight > pre.clientHeight) {
+      // Make focusable for keyboard users to scroll
       pre.setAttribute('tabindex', '0')
-      pre.setAttribute('role', 'region')
-      // Use unique aria-label with index to satisfy landmark-unique
+      // Update aria-label to indicate scrollability
       const sourceLine = pre.getAttribute('data-source-line')
+      const existingLabel = pre.getAttribute('aria-label') || 'code block'
       const label = sourceLine 
-        ? `Code block at line ${sourceLine} - scrollable`
-        : `Code block ${codeBlockIndex} - scrollable`
+        ? `${existingLabel} at line ${sourceLine}, scrollable`
+        : `${existingLabel}, scrollable`
       pre.setAttribute('aria-label', label)
     }
   })

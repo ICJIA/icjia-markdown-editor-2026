@@ -162,7 +162,7 @@ export interface UseTourReturn {
   next: () => void
   /** Go to the previous step */
   previous: () => void
-  /** Cancel the tour without marking as complete */
+  /** Cancel the tour and mark as seen (won't auto-start again) */
   cancel: () => void
   /** Complete the tour and mark as finished */
   complete: () => void
@@ -176,6 +176,8 @@ export interface UseTourReturn {
   getStepIndex: (id: string) => number
   /** Keyboard event handler for the tour */
   handleKeydown: (event: KeyboardEvent) => void
+  /** Mark tour as seen with explicit localStorage write for Safari */
+  markAsSeen: () => void
 }
 
 // Re-export Ref types for external use

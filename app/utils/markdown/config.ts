@@ -45,10 +45,13 @@ export function createMarkdownIt(): MarkdownIt {
     typographer: true,    // Enable smartquotes, dashes
     
     // Syntax highlighting for code blocks
+    // Includes role="figure" and aria-label for accessibility (WCAG 2.1 preformatted text compliance)
     highlight: (str: string, lang: string): string => {
+      const langLabel = lang ? `${lang} ` : ''
+      const ariaLabel = `${langLabel}code block`
       if (lang && hljs.getLanguage(lang)) {
         try {
-          return `<pre class="hljs language-${lang}"><code>${
+          return `<pre class="hljs language-${lang}" role="figure" aria-label="${ariaLabel}"><code>${
             hljs.highlight(str, { language: lang, ignoreIllegals: true }).value
           }</code></pre>`
         } catch (e) {
@@ -56,7 +59,7 @@ export function createMarkdownIt(): MarkdownIt {
         }
       }
       // Fallback: escape HTML and wrap in pre/code
-      return `<pre class="hljs"><code>${md.utils.escapeHtml(str)}</code></pre>`
+      return `<pre class="hljs" role="figure" aria-label="code block"><code>${md.utils.escapeHtml(str)}</code></pre>`
     },
   })
   
@@ -135,6 +138,7 @@ export function createMarkdownIt(): MarkdownIt {
   })
 
   // Fence (code blocks): highlight returns full HTML, so we wrap with data-source-line
+  // Also add role="figure" and aria-label for accessibility (WCAG 2.1 preformatted text compliance)
   const defaultFence = md.renderer.rules.fence!
   md.renderer.rules.fence = function(tokens, idx, options, env, self) {
     const token = tokens[idx]
@@ -151,7 +155,11 @@ export function createMarkdownIt(): MarkdownIt {
       highlighted = md.utils.escapeHtml(code)
     }
     const lineAttr = token?.map ? ` data-source-line="${token.map[0]}"` : ''
-    return `<pre class="hljs language-${lang}"${lineAttr}><code>${highlighted}</code></pre>`
+    // Accessibility: role="figure" indicates preformatted content is intentional visual presentation
+    // aria-label describes the code block for screen readers
+    const langLabel = lang ? `${lang} ` : ''
+    const ariaLabel = `${langLabel}code block`
+    return `<pre class="hljs language-${lang}"${lineAttr} role="figure" aria-label="${ariaLabel}"><code>${highlighted}</code></pre>`
   }
   
   return md

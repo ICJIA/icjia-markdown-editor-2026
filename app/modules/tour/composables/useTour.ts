@@ -193,10 +193,30 @@ export function useTour(config: TourConfig): UseTourReturn {
   }
   
   /**
-   * Cancel the tour without marking as complete.
+   * Mark the tour as seen with explicit localStorage write for Safari compatibility.
+   * Safari has known timing issues with reactive localStorage, so we write directly.
+   */
+  function markAsSeen(): void {
+    hasCompletedTour.value = true
+    // Explicitly write to localStorage for Safari compatibility
+    // Safari may not sync reactive localStorage before page refresh
+    if (import.meta.client) {
+      try {
+        localStorage.setItem(storageKey, 'true')
+      } catch {
+        // localStorage may be unavailable (private mode, quota exceeded, etc.)
+        // The reactive ref will still work for the current session
+      }
+    }
+  }
+  
+  /**
+   * Cancel the tour and mark as seen so it won't auto-start again.
+   * Users can still manually restart via the Tour button.
    */
   function cancel(): void {
     clearHighlight()
+    markAsSeen()
     currentStepIndex.value = -1
     restoreFocus()
     announce('Tour cancelled. You can restart it anytime from the Tour button in the header.')
@@ -207,7 +227,7 @@ export function useTour(config: TourConfig): UseTourReturn {
    */
   function complete(): void {
     clearHighlight()
-    hasCompletedTour.value = true
+    markAsSeen()
     currentStepIndex.value = -1
     restoreFocus()
     announce('Tour complete! You are ready to start using the editor.')
@@ -283,6 +303,7 @@ export function useTour(config: TourConfig): UseTourReturn {
     // Utilities
     getStepById,
     getStepIndex,
-    handleKeydown
+    handleKeydown,
+    markAsSeen
   }
 }
