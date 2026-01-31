@@ -44,12 +44,15 @@ const fileTypeIcon = computed(() => {
 <template>
   <UModal
     v-model:open="isOpen"
+    :dismissible="true"
     :ui="{
       content: 'bg-neutral-900 dark:bg-neutral-900 border border-neutral-700 shadow-2xl max-w-md w-full',
       header: 'border-b border-neutral-700 px-6 py-4',
       body: 'px-6 py-5',
-      footer: 'border-t border-neutral-700 px-6 py-4'
+      footer: 'border-t border-neutral-700 px-6 py-4',
+      overlay: 'bg-black/60 backdrop-blur-sm'
     }"
+    @update:open="(open: boolean) => !open && cancel()"
   >
     <template #header>
       <div class="flex items-center gap-3">

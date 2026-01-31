@@ -75,10 +75,17 @@ export interface TourStep {
   icon?: string
 
   /**
-   * Optional keyboard shortcut to display.
-   * Array of key symbols: ['⌘', 'B'] or ['Ctrl', 'Shift', 'C']
+   * Optional keyboard shortcut to display for Mac.
+   * Array of key symbols: ['⌘', 'B'] or ['⌘', 'Shift', 'C']
    */
   shortcut?: string[]
+
+  /**
+   * Optional keyboard shortcut for Windows/Linux.
+   * Array of key symbols: ['Ctrl', 'B'] or ['Ctrl', 'Shift', 'C']
+   * If not provided, Mac shortcut with ⌘ replaced by Ctrl will be shown.
+   */
+  shortcutWin?: string[]
 }
 
 /**

@@ -20,6 +20,7 @@
  */
 
 import type { EditorView } from '@codemirror/view'
+import { undo as cmUndo, redo as cmRedo } from '@codemirror/commands'
 
 /**
  * Default content shown when no saved content exists in localStorage.
@@ -52,6 +53,31 @@ Use hash symbols for headings: \`# H1\`, \`## H2\`, \`### H3\`, and so on up to 
 
 - **Link:** \`[Link Text](https://example.com)\` → [Visit ICJIA](https://icjia.illinois.gov)
 - **Image:** \`![Alt text](image-url.jpg)\`
+
+Here's an example image:
+
+![A serene mountain landscape with a lake](https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop)
+
+*Image: Mountain landscape from Unsplash[^1]*
+
+### Footnotes
+
+Add references with footnotes using \`[^1]\` syntax:
+
+Research shows that data-driven policies improve outcomes[^2]. The Illinois Criminal Justice Information Authority (ICJIA) conducts research to inform evidence-based practices[^3].
+
+[^1]: Photo from Unsplash, free to use under the Unsplash License.
+[^2]: Smith, J. (2024). "Evidence-Based Policy Making." *Journal of Public Policy*, 12(3), 45-67.
+[^3]: For more information, visit the [ICJIA Research Hub](https://icjia.illinois.gov/researchhub/).
+
+### Task Lists
+
+Create interactive checklists with \`- [ ]\` and \`- [x]\`:
+
+- [x] Write introduction
+- [x] Add formatting examples
+- [ ] Review and edit
+- [ ] Share with team
 
 ### Lists
 
@@ -299,6 +325,21 @@ export function useEditor() {
    */
   function getDefaultContent(): string {
     return DEFAULT_CONTENT_VALUE
+  }
+  
+  /**
+   * Resets the editor content to the default tutorial content.
+   * Also clears localStorage to ensure fresh start.
+   * 
+   * @returns {void}
+   */
+  function resetContent(): void {
+    // Clear localStorage
+    if (import.meta.client) {
+      localStorage.removeItem('icjia-markdown-editor-content')
+    }
+    // Set the default content
+    setContent(DEFAULT_CONTENT_VALUE)
   }
   
   /**
@@ -607,6 +648,28 @@ export function useEditor() {
   }
   
   /**
+   * Undoes the last change in the editor.
+   * Uses CodeMirror's built-in history extension.
+   * 
+   * @returns {boolean} True if undo was successful, false otherwise
+   */
+  function undo(): boolean {
+    if (!editorView.value) return false
+    return cmUndo(editorView.value)
+  }
+  
+  /**
+   * Redoes the last undone change in the editor.
+   * Uses CodeMirror's built-in history extension.
+   * 
+   * @returns {boolean} True if redo was successful, false otherwise
+   */
+  function redo(): boolean {
+    if (!editorView.value) return false
+    return cmRedo(editorView.value)
+  }
+  
+  /**
    * Focuses the CodeMirror editor.
    * Useful for returning focus after modal dialogs or toolbar interactions.
    * 
@@ -633,6 +696,7 @@ export function useEditor() {
     initializeWithDefault,
     markContentReady,
     getDefaultContent,
+    resetContent,
     
     // Editor actions
     insertText,
@@ -648,6 +712,8 @@ export function useEditor() {
     insertBulletList,
     insertNumberedList,
     insertHorizontalRule,
+    undo,
+    redo,
     focus,
   }
 }

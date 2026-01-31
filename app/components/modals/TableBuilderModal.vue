@@ -108,8 +108,12 @@ const previewMarkdown = computed(() => generateTableMarkdown(table.value))
 <template>
   <UModal
     v-model:open="isOpen"
+    :dismissible="true"
     title="Insert Table"
     description="Set rows and columns, edit headers and cells, choose column alignment, then insert markdown at the cursor."
+    :ui="{
+      overlay: 'bg-black/60 backdrop-blur-sm'
+    }"
   >
     <template #content>
       <div class="p-4 sm:p-6 space-y-4">

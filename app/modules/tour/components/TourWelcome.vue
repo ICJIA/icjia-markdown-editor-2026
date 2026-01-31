@@ -94,11 +94,11 @@ onUnmounted(() => {
           >
             <template #header>
               <div class="welcome-header">
-                <div class="welcome-icon-wrapper">
-                  <UIcon 
-                    name="i-heroicons-academic-cap" 
-                    class="welcome-icon"
-                    aria-hidden="true"
+                <div class="welcome-logo-wrapper">
+                  <img 
+                    src="https://icjia.illinois.gov/img/icjia-logo.ee010aa8.png"
+                    alt="ICJIA Logo"
+                    class="welcome-logo"
                   />
                 </div>
                 <h2 id="welcome-title" class="welcome-title">
@@ -189,21 +189,18 @@ onUnmounted(() => {
   gap: 0.75rem;
 }
 
-.welcome-icon-wrapper {
+.welcome-logo-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--ui-primary) 0%, var(--ui-primary-600, #2563eb) 100%);
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
 }
 
-.welcome-icon {
-  width: 1.75rem;
-  height: 1.75rem;
-  color: white;
+.welcome-logo {
+  max-width: 75px;
+  max-height: 75px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
 }
 
 .welcome-title {

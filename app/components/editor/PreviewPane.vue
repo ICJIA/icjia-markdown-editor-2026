@@ -353,6 +353,60 @@ defineExpose({
   display: none;
 }
 
+/* Strikethrough styling */
+.preview-content :deep(del),
+.preview-content :deep(s) {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+.light .preview-content :deep(del),
+.light .preview-content :deep(s) {
+  color: #64748b;
+}
+
+/* Highlight/Mark styling */
+.preview-content :deep(mark) {
+  background-color: rgba(250, 204, 21, 0.3);
+  color: inherit;
+  padding: 0.125em 0.25em;
+  border-radius: 0.25em;
+}
+
+.light .preview-content :deep(mark) {
+  background-color: rgba(250, 204, 21, 0.5);
+}
+
+/* Task list styling */
+.preview-content :deep(.task-list-item) {
+  list-style-type: none;
+  margin-left: -1.5rem;
+}
+
+.preview-content :deep(.task-list-item-checkbox) {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
+.preview-content :deep(.task-list-item-checkbox:checked) {
+  accent-color: #22c55e;
+}
+
+.preview-content :deep(.task-list-item-checkbox:checked + span),
+.preview-content :deep(.task-list-item.checked) {
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+.light .preview-content :deep(.task-list-item-checkbox:checked + span),
+.light .preview-content :deep(.task-list-item.checked) {
+  color: #64748b;
+}
+
 /* Scrollbar styling */
 .preview-content::-webkit-scrollbar {
   width: 12px;

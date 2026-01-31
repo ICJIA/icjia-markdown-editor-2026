@@ -7,8 +7,28 @@
 
 const { wordCountDisplay, wordCount } = useMarkdown()
 const { isTableBuilderOpen, closeTableBuilder } = useTableBuilderModal()
-const { insertText } = useEditor()
+const { insertText, resetContent } = useEditor()
 const { announce } = useAccessibility()
+
+// Inject tour start function from parent
+const startTour = inject<() => void>('startTour', () => {})
+
+/**
+ * Handle tour button click
+ */
+function handleStartTour() {
+  startTour()
+}
+
+/**
+ * Handle reset button click with confirmation
+ */
+function handleReset() {
+  if (confirm('Reset to default content? This will delete all your current work.')) {
+    resetContent()
+    announce('Content reset to default')
+  }
+}
 
 function handleTableInsert(markdown: string) {
   insertText('\n' + markdown + '\n')
@@ -16,8 +36,8 @@ function handleTableInsert(markdown: string) {
   announce('Table inserted')
 }
 
-// Initialize auto-save functionality
-const { isSaving, showSaveIndicator, countdownToSave, isContentReady } = useAutoSave()
+// Initialize auto-save functionality (still needed for the feature, but status shown in header)
+useAutoSave()
 
 // Initialize scroll synchronization
 const { init: initScrollSync, syncToCursor } = useScrollSync()
@@ -130,25 +150,47 @@ function setupScrollSync(): void {
     
     <!-- Status Bar -->
     <div class="status-bar" role="status" aria-label="Editor status">
-      <div class="status-left">
+      <div class="status-left" data-tour="word-count">
         <span class="word-count" :title="`${wordCount.lines} lines, ${wordCount.paragraphs} paragraphs`">
           {{ wordCountDisplay }}
         </span>
-        <span class="save-status">
-          <template v-if="isSaving">
-            <UIcon name="i-heroicons-arrow-path" class="animate-spin" />
-            <span>Saving...</span>
-          </template>
-          <template v-else-if="showSaveIndicator">
-            <span class="save-indicator">
-              <span class="save-dot" />
-              <span>Saved</span>
-            </span>
-          </template>
-          <template v-else>
-            <span class="countdown">Next save: {{ countdownToSave }}s</span>
-          </template>
+        <span class="reading-time" :title="`Estimated reading time at 200 words per minute`">
+          {{ wordCount.readingTime }} min read
         </span>
+      </div>
+      <div class="status-right">
+        <button
+          type="button"
+          class="tour-button"
+          data-tour="tour-button"
+          aria-label="Start guided tour"
+          @click="handleStartTour"
+        >
+          <UIcon name="i-heroicons-academic-cap" class="tour-icon" />
+          <span class="tour-text">Tour</span>
+        </button>
+        <button
+          type="button"
+          class="reset-button"
+          data-tour="reset"
+          aria-label="Reset to default content"
+          @click="handleReset"
+        >
+          <UIcon name="i-heroicons-arrow-path" class="reset-icon" />
+          <span class="reset-text">Reset</span>
+        </button>
+        <a 
+          href="https://github.com/ICJIA/icjia-markdown-editor-2026"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="github-link"
+          aria-label="View source code on GitHub (opens in new window)"
+        >
+          <svg class="github-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <span class="github-text">GitHub</span>
+        </a>
       </div>
     </div>
   </div>
@@ -248,61 +290,166 @@ function setupScrollSync(): void {
   gap: 1rem;
 }
 
+.status-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Tour button - blue gradient style */
+.tour-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 
+    0 1px 2px rgba(59, 130, 246, 0.3),
+    0 2px 4px -1px rgba(59, 130, 246, 0.2);
+}
+
+.tour-button:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 
+    0 2px 6px rgba(59, 130, 246, 0.4),
+    0 4px 8px -2px rgba(59, 130, 246, 0.3);
+  transform: translateY(-1px);
+}
+
+.tour-button:active {
+  transform: translateY(0);
+}
+
+.tour-button:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+.tour-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+}
+
+.tour-text {
+  /* Text label */
+}
+
+.reset-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #94a3b8;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reset-button:hover {
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.reset-button:focus-visible {
+  outline: 2px solid var(--color-primary, #3b82f6);
+  outline-offset: 2px;
+}
+
+.reset-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+}
+
+.reset-text {
+  /* Hide on very small screens if needed */
+}
+
+/* Light mode reset button */
+:root:not(.dark) .reset-button,
+.light .reset-button {
+  color: #64748b;
+}
+
+:root:not(.dark) .reset-button:hover,
+.light .reset-button:hover {
+  color: #1e293b;
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #94a3b8;
+  text-decoration: none;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.github-link:hover {
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.github-link:focus-visible {
+  outline: 2px solid var(--color-primary, #3b82f6);
+  outline-offset: 2px;
+}
+
+.github-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.github-text {
+  /* Hide on very small screens */
+}
+
+/* Light mode GitHub link */
+:root:not(.dark) .github-link,
+.light .github-link {
+  color: #64748b;
+}
+
+:root:not(.dark) .github-link:hover,
+.light .github-link:hover {
+  color: #1e293b;
+  background: rgba(0, 0, 0, 0.05);
+}
+
 .word-count {
   cursor: help;
 }
 
-.save-status {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  /* WCAG AAA compliant - inherits from .status-bar */
-  transition: all 0.3s ease;
+.reading-time {
+  cursor: help;
+  color: #94a3b8;
+  font-size: 0.75rem;
 }
 
-.save-status.saving {
-  opacity: 1;
-  color: var(--color-primary, #3b82f6);
-}
-
-.countdown {
-  /* WCAG AAA compliant - inherits from .status-bar */
-  font-variant-numeric: tabular-nums;
-}
-
-.save-indicator {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-}
-
-.save-dot {
-  width: 8px;
-  height: 8px;
-  background-color: #22c55e;
-  border-radius: 50%;
-  flex-shrink: 0;
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-
-@keyframes pulse-dot {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(0.9);
-  }
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+/* Light mode reading time */
+:root:not(.dark) .reading-time,
+.light .reading-time {
+  color: #64748b;
 }
 
 /* View mode states */

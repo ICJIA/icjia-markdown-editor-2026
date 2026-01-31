@@ -90,22 +90,29 @@ export function useMarkdown() {
     // Strip markdown syntax for accurate word count
     return content.value
       .replace(/#{1,6}\s/g, '') // headings
+      .replace(/\*\*\*(.+?)\*\*\*/g, '$1') // bold+italic
       .replace(/\*\*(.+?)\*\*/g, '$1') // bold
-      .replace(/_(.+?)_/g, '$1') // italic
+      .replace(/\*(.+?)\*/g, '$1') // italic (asterisk)
+      .replace(/_(.+?)_/g, '$1') // italic (underscore)
+      .replace(/~~(.+?)~~/g, '$1') // strikethrough
+      .replace(/==(.+?)==/g, '$1') // highlight/mark
       .replace(/`(.+?)`/g, '$1') // inline code
       .replace(/```[\s\S]*?```/g, '') // code blocks
-      .replace(/\[(.+?)\]\(.+?\)/g, '$1') // links
+      .replace(/\[(.+?)\]\(.+?\)/g, '$1') // inline links
+      .replace(/\[(.+?)\]\[.+?\]/g, '$1') // reference links
       .replace(/!\[.*?\]\(.+?\)/g, '') // images
       .replace(/^\s*[-*+]\s/gm, '') // list markers
       .replace(/^\s*\d+\.\s/gm, '') // numbered lists
       .replace(/^\s*>\s/gm, '') // blockquotes
       .replace(/---/g, '') // horizontal rules
+      .replace(/\|[^|]*\|/g, '') // table cells
+      .replace(/^\s*\[.\]\s/gm, '') // task list markers
   })
   
   /**
    * Computed property that provides comprehensive word count statistics.
    * 
-   * @type {ComputedRef<{words: number, characters: number, charactersNoSpaces: number, lines: number, paragraphs: number}>}
+   * @type {ComputedRef<{words: number, characters: number, charactersNoSpaces: number, lines: number, paragraphs: number, readingTime: number}>}
    */
   const wordCount = computed(() => {
     const text = plainText.value.trim()
@@ -117,15 +124,16 @@ export function useMarkdown() {
         charactersNoSpaces: 0,
         lines: 0,
         paragraphs: 0,
+        readingTime: 0,
       }
     }
     
     // Word count: split on whitespace, filter empty strings
     const words = text.split(/\s+/).filter(Boolean).length
     
-    // Character counts
-    const characters = content.value.length
-    const charactersNoSpaces = content.value.replace(/\s/g, '').length
+    // Character counts - use plainText for consistency (actual readable content)
+    const characters = plainText.value.length
+    const charactersNoSpaces = plainText.value.replace(/\s/g, '').length
     
     // Line count
     const lines = content.value.split('\n').length
@@ -135,12 +143,17 @@ export function useMarkdown() {
       .split(/\n\s*\n/)
       .filter(p => p.trim().length > 0).length
     
+    // Reading time: average adult reads 200-250 words per minute
+    // Using 200 wpm for a comfortable reading pace
+    const readingTime = Math.max(1, Math.ceil(words / 200))
+    
     return {
       words,
       characters,
       charactersNoSpaces,
       lines,
       paragraphs,
+      readingTime,
     }
   })
   

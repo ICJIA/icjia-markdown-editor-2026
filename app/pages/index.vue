@@ -64,12 +64,15 @@ function handleWelcomeSkip() {
 function handleStartTour() {
   tour.start()
 }
+
+// Provide tour start function to child components
+provide('startTour', handleStartTour)
 </script>
 
 <template>
   <div class="page-container">
     <!-- Header landmark -->
-    <AppHeader @start-tour="handleStartTour" />
+    <AppHeader />
     
     <!-- Main content landmark -->
     <main class="main-content" role="main">
@@ -78,6 +81,7 @@ function handleStartTour() {
     
     <!-- Modals -->
     <DownloadModal />
+    <ConversionToolsModal />
     
     <!-- Guided Tour Welcome Modal (first-time users) -->
     <TourWelcome

@@ -21,6 +21,12 @@ import MarkdownIt from 'markdown-it'
 // @ts-expect-error - no type declarations available
 import footnote from 'markdown-it-footnote'
 import anchor from 'markdown-it-anchor'
+// @ts-expect-error - no type declarations available
+import taskLists from 'markdown-it-task-lists'
+// @ts-expect-error - no type declarations available
+import strikethrough from 'markdown-it-strikethrough-alt'
+// @ts-expect-error - no type declarations available
+import mark from 'markdown-it-mark'
 import hljs from 'highlight.js'
 
 /**
@@ -65,6 +71,19 @@ export function createMarkdownIt(): MarkdownIt {
   
   // Add footnote support
   md.use(footnote)
+  
+  // Add strikethrough support (~~text~~)
+  md.use(strikethrough)
+  
+  // Add highlight/mark support (==text==)
+  md.use(mark)
+  
+  // Add task list support (checkboxes: - [ ] and - [x])
+  md.use(taskLists, {
+    enabled: true,
+    label: true,
+    labelAfter: true,
+  })
   
   // Add heading anchors for navigation
   md.use(anchor, {

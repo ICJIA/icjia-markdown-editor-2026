@@ -16,6 +16,8 @@ const {
   insertNumberedList,
   insertHorizontalRule,
   insertLink,
+  undo,
+  redo,
 } = useEditor()
 
 const { openTableBuilder } = useTableBuilderModal()
@@ -26,8 +28,23 @@ const { announce } = useAccessibility()
 const { enabled: scrollSyncEnabled, toggle: toggleScrollSync } = useScrollSync()
 
 function handleToggleScrollSync() {
+  const wasEnabled = scrollSyncEnabled.value
   toggleScrollSync()
-  announce(scrollSyncEnabled.value ? 'Scroll sync disabled' : 'Scroll sync enabled')
+  // Announce the NEW state after toggling
+  announce(wasEnabled ? 'Scroll sync disabled' : 'Scroll sync enabled')
+}
+
+// Handle undo/redo actions
+function handleUndo() {
+  if (undo()) {
+    announce('Undo')
+  }
+}
+
+function handleRedo() {
+  if (redo()) {
+    announce('Redo')
+  }
 }
 
 // Handle formatting actions
@@ -146,6 +163,24 @@ const headingItems = [
 
 <template>
   <div class="editor-toolbar" role="toolbar" aria-label="Formatting toolbar">
+    <!-- Undo/Redo group -->
+    <div class="toolbar-group" role="group" aria-label="History" data-tour="history">
+      <ToolbarButton 
+        icon="i-heroicons-arrow-uturn-left" 
+        label="Undo" 
+        shortcut="Mod+Z"
+        @click="handleUndo" 
+      />
+      <ToolbarButton 
+        icon="i-heroicons-arrow-uturn-right" 
+        label="Redo" 
+        shortcut="Mod+Shift+Z"
+        @click="handleRedo" 
+      />
+    </div>
+    
+    <ToolbarDivider />
+    
     <!-- Text formatting group -->
     <div class="toolbar-group" role="group" aria-label="Text formatting" data-tour="formatting">
       <ToolbarButton 

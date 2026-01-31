@@ -26,8 +26,13 @@ export const tourConfig: TourConfig = {
   /**
    * Tour version - increment to reset completion for all users.
    * Users who completed v1 will see v2 as a new tour.
+   * v2: Added Conversion Tools step
+   * v3: Added Word Count step, moved Reset to bottom toolbar
+   * v4: Reordered steps, added Win shortcuts
+   * v5: Added Undo/Redo step, reordered to toolbar → header → panes → status bar
+   * v6: Moved Tour button to status bar, added Tour button step
    */
-  version: 1,
+  version: 6,
 
   /**
    * Auto-start the tour for first-time visitors.
@@ -49,18 +54,30 @@ export const tourConfig: TourConfig = {
 
   /**
    * Tour steps in display order.
-   * Order: Toolbar left-to-right, then main content, then header controls.
+   * Order: Toolbar (left to right), Header (left to right), Editor/Preview panes, Status bar
    */
   steps: [
     // =========================================================================
-    // TOOLBAR ROW (Left to right)
+    // TOOLBAR ROW (Left to right - main working area first)
     // =========================================================================
+    {
+      id: 'history',
+      target: '[data-tour="history"]',
+      title: 'Undo & Redo',
+      content: 'Made a mistake? Use Undo to revert changes, or Redo to restore them. These work just like in any text editor.',
+      shortcut: ['⌘', 'Z'],
+      shortcutWin: ['Ctrl', 'Z'],
+      position: 'bottom',
+      icon: 'i-heroicons-arrow-uturn-left'
+    },
+
     {
       id: 'formatting',
       target: '[data-tour="formatting"]',
       title: 'Text Formatting',
       content: 'Apply bold, italic, and inline code formatting to your text. These are the most common formatting options.',
-      tip: 'Hover over any button to see its keyboard shortcut.',
+      shortcut: ['⌘', 'B'],
+      shortcutWin: ['Ctrl', 'B'],
       position: 'bottom',
       icon: 'i-heroicons-bold'
     },
@@ -71,6 +88,7 @@ export const tourConfig: TourConfig = {
       title: 'Headings',
       content: 'Insert headings from H1 (largest) to H6 (smallest). Click to open the menu and select a heading level.',
       shortcut: ['⌘', '1-6'],
+      shortcutWin: ['Ctrl', '1-6'],
       position: 'bottom',
       icon: 'i-lucide-heading'
     },
@@ -99,6 +117,7 @@ export const tourConfig: TourConfig = {
       title: 'Tables & Links',
       content: 'Insert tables using the visual table builder, or add hyperlinks to reference external content.',
       shortcut: ['⌘', 'T'],
+      shortcutWin: ['Ctrl', 'T'],
       position: 'bottom',
       icon: 'i-heroicons-table-cells'
     },
@@ -119,7 +138,8 @@ export const tourConfig: TourConfig = {
       target: '[data-tour="file-ops"]',
       title: 'Upload & Download',
       content: 'Upload an existing Markdown file to continue editing, or download your work as a .md file to save permanently.',
-      shortcut: ['⌘', 'S'],
+      shortcut: ['⌘', 'Shift', 'S'],
+      shortcutWin: ['Ctrl', 'Shift', 'S'],
       position: 'bottom',
       icon: 'i-heroicons-arrow-down-tray'
     },
@@ -130,8 +150,51 @@ export const tourConfig: TourConfig = {
       title: 'Copy to Clipboard',
       content: 'Copy your content as Markdown or HTML, ready to paste into emails, documents, or other applications.',
       shortcut: ['⌘', 'Shift', 'C'],
+      shortcutWin: ['Ctrl', 'Shift', 'C'],
       position: 'bottom',
       icon: 'i-heroicons-clipboard-document'
+    },
+
+    // =========================================================================
+    // HEADER CONTROLS (Left to right in top navbar)
+    // =========================================================================
+    {
+      id: 'auto-save',
+      target: '[data-tour="auto-save"]',
+      title: 'Auto-Save (Browser Only)',
+      content: 'Your work is automatically saved to your browser\'s local storage every 30 seconds. Watch the countdown to see when the next save occurs.',
+      tip: 'This is NOT saved to a file on your computer. Use the Download button to save a permanent copy.',
+      position: 'bottom',
+      highlight: true,
+      icon: 'i-heroicons-arrow-path'
+    },
+
+    {
+      id: 'view-mode',
+      target: '[data-tour="view-mode"]',
+      title: 'View Modes',
+      content: 'Toggle between split view (both panes), editor-only, or preview-only modes. Click to cycle through views—useful on smaller screens.',
+      position: 'bottom',
+      icon: 'i-heroicons-squares-2x2'
+    },
+
+    {
+      id: 'conversion-tools',
+      target: '[data-tour="conversion-tools"]',
+      title: 'Conversion Tools',
+      content: 'Access external utilities for PDF conversion, image processing, and document format changes. These privacy-first tools process files locally in your browser.',
+      tip: 'Tools open in a new window. Your files never leave your device.',
+      position: 'bottom',
+      icon: 'i-heroicons-wrench-screwdriver'
+    },
+
+    {
+      id: 'color-mode',
+      target: '[data-tour="color-mode"]',
+      title: 'Light / Dark Mode',
+      content: 'Toggle between light and dark themes. Your preference is saved automatically.',
+      position: 'bottom',
+      icon: 'i-heroicons-sun'
     },
 
     // =========================================================================
@@ -156,45 +219,34 @@ export const tourConfig: TourConfig = {
     },
 
     // =========================================================================
-    // HEADER CONTROLS (Application features)
+    // STATUS BAR (Bottom toolbar, left to right)
     // =========================================================================
     {
-      id: 'auto-save',
-      target: '[data-tour="auto-save"]',
-      title: 'Auto-Save (Browser Only)',
-      content: 'Your work is automatically saved to your browser\'s local storage every 30 seconds. Watch the countdown to see when the next save occurs.',
-      tip: 'This is NOT saved to a file on your computer. Use the Download button to save a permanent copy.',
-      position: 'bottom',
-      highlight: true,
-      icon: 'i-heroicons-arrow-path'
+      id: 'word-count',
+      target: '[data-tour="word-count"]',
+      title: 'Document Statistics',
+      content: 'Track your document\'s word count, character count, and estimated reading time. Hover for additional details like line and paragraph counts.',
+      position: 'top',
+      icon: 'i-heroicons-chart-bar'
     },
 
     {
-      id: 'view-mode',
-      target: '[data-tour="view-mode"]',
-      title: 'View Modes',
-      content: 'Toggle between split view (both panes), editor-only, or preview-only modes. Click to cycle through views—useful on smaller screens.',
-      position: 'bottom',
-      icon: 'i-heroicons-squares-2x2'
+      id: 'tour-button',
+      target: '[data-tour="tour-button"]',
+      title: 'Guided Tour',
+      content: 'Want to see this tour again? Click here anytime to restart the guided walkthrough of all features.',
+      position: 'top',
+      icon: 'i-heroicons-academic-cap'
     },
 
     {
       id: 'reset',
       target: '[data-tour="reset"]',
       title: 'Reset Content',
-      content: 'Clear your saved content and reset to the default welcome text. Useful for starting fresh or testing.',
+      content: 'Clear your saved content and reset to the default welcome text. Useful for starting fresh or testing the editor.',
       tip: 'This will delete all your current work from browser storage!',
-      position: 'bottom',
+      position: 'top',
       icon: 'i-heroicons-arrow-path'
-    },
-
-    {
-      id: 'color-mode',
-      target: '[data-tour="color-mode"]',
-      title: 'Light / Dark Mode',
-      content: 'Toggle between light and dark themes. Your preference is saved automatically.',
-      position: 'bottom',
-      icon: 'i-heroicons-sun'
     }
   ]
 }

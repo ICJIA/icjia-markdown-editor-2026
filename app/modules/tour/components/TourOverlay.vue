@@ -208,47 +208,54 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
                 {{ currentStep.tip }}
               </p>
               
-              <div v-if="currentStep.shortcut?.length" class="tour-shortcut">
-                <span class="tour-shortcut-label">Shortcut:</span>
-                <span class="tour-shortcut-keys">
-                  <UKbd v-for="key in currentStep.shortcut" :key="key" size="sm">
-                    {{ key }}
-                  </UKbd>
-                </span>
+              <div v-if="currentStep.shortcut?.length" class="tour-shortcuts">
+                <div class="tour-shortcut-row">
+                  <span class="tour-shortcut-platform">Mac:</span>
+                  <span class="tour-shortcut-keys">
+                    <span v-for="key in currentStep.shortcut" :key="'mac-' + key" class="shortcut-key">
+                      {{ key }}
+                    </span>
+                  </span>
+                </div>
+                <div class="tour-shortcut-row">
+                  <span class="tour-shortcut-platform">Win:</span>
+                  <span class="tour-shortcut-keys">
+                    <span v-for="key in (currentStep.shortcutWin || currentStep.shortcut?.map(k => k === '⌘' ? 'Ctrl' : k))" :key="'win-' + key" class="shortcut-key">
+                      {{ key }}
+                    </span>
+                  </span>
+                </div>
               </div>
             </div>
             
             <template #footer>
               <div class="tour-footer">
-                <UButton
-                  variant="ghost"
-                  color="neutral"
-                  size="sm"
+                <button
+                  type="button"
+                  class="tour-skip-btn"
                   @click="emit('cancel')"
                 >
                   Skip tour
-                </UButton>
+                </button>
                 
                 <div class="tour-nav-buttons">
-                  <UButton
+                  <button
                     v-if="!isFirstStep"
-                    variant="soft"
-                    color="neutral"
-                    size="sm"
-                    icon="i-heroicons-arrow-left"
+                    type="button"
+                    class="tour-back-btn"
                     @click="emit('previous')"
                   >
+                    <UIcon name="i-heroicons-arrow-left" class="tour-btn-icon" />
                     Back
-                  </UButton>
-                  <UButton
-                    color="primary"
-                    size="sm"
-                    :icon="isLastStep ? 'i-heroicons-check' : 'i-heroicons-arrow-right'"
-                    icon-trailing
+                  </button>
+                  <button
+                    type="button"
+                    class="tour-next-btn"
                     @click="emit('next')"
                   >
                     {{ isLastStep ? 'Finish' : 'Next' }}
-                  </UButton>
+                    <UIcon :name="isLastStep ? 'i-heroicons-check' : 'i-heroicons-arrow-right'" class="tour-btn-icon" />
+                  </button>
                 </div>
               </div>
             </template>
@@ -350,22 +357,71 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
   border-left: 3px solid var(--ui-primary);
 }
 
-.tour-shortcut {
+.tour-shortcuts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.625rem;
+  background: var(--ui-bg-elevated, rgba(0, 0, 0, 0.05));
+  border-radius: 0.375rem;
+}
+
+.tour-shortcut-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 0.75rem;
   font-size: 0.75rem;
-  color: var(--ui-text-dimmed);
 }
 
-.tour-shortcut-label {
+.tour-shortcut-platform {
   flex-shrink: 0;
+  min-width: 2rem;
+  font-weight: 500;
+  color: var(--ui-text-dimmed);
 }
 
 .tour-shortcut-keys {
   display: flex;
   gap: 0.25rem;
+}
+
+.shortcut-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--ui-text);
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.15) 0%, 
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-color: var(--ui-bg-muted, #374151);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.25rem;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Light mode shortcut keys */
+:root:not(.dark) .shortcut-key,
+.light .shortcut-key {
+  color: #1e293b;
+  background: linear-gradient(180deg, 
+    #ffffff 0%, 
+    #f1f5f9 100%
+  );
+  border-color: #cbd5e1;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .tour-footer {
@@ -378,6 +434,118 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
 .tour-nav-buttons {
   display: flex;
   gap: 0.5rem;
+}
+
+/* Tour button base styles */
+.tour-skip-btn,
+.tour-back-btn,
+.tour-next-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+}
+
+.tour-btn-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+}
+
+/* Skip button - subtle outline style */
+.tour-skip-btn {
+  color: #64748b;
+  background: transparent;
+  border: 1px solid #cbd5e1;
+}
+
+.tour-skip-btn:hover {
+  color: #475569;
+  background: rgba(0, 0, 0, 0.05);
+  border-color: #94a3b8;
+}
+
+.tour-skip-btn:focus-visible {
+  outline: 2px solid var(--ui-primary, #3b82f6);
+  outline-offset: 2px;
+}
+
+/* Back button - soft neutral style */
+.tour-back-btn {
+  color: #374151;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+}
+
+.tour-back-btn:hover {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+}
+
+.tour-back-btn:focus-visible {
+  outline: 2px solid var(--ui-primary, #3b82f6);
+  outline-offset: 2px;
+}
+
+/* Next button - primary solid style */
+.tour-next-btn {
+  color: #ffffff;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: none;
+  box-shadow: 
+    0 1px 2px rgba(59, 130, 246, 0.3),
+    0 2px 4px -1px rgba(59, 130, 246, 0.2);
+}
+
+.tour-next-btn:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 
+    0 2px 8px rgba(59, 130, 246, 0.4),
+    0 4px 8px -2px rgba(59, 130, 246, 0.3);
+  transform: translateY(-1px);
+}
+
+.tour-next-btn:active {
+  transform: translateY(0);
+}
+
+.tour-next-btn:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+/* Dark mode button adjustments */
+.dark .tour-skip-btn,
+:root.dark .tour-skip-btn {
+  color: #94a3b8;
+  border-color: #475569;
+}
+
+.dark .tour-skip-btn:hover,
+:root.dark .tour-skip-btn:hover {
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #64748b;
+}
+
+.dark .tour-back-btn,
+:root.dark .tour-back-btn {
+  color: #e2e8f0;
+  background: #374151;
+  border-color: #4b5563;
+}
+
+.dark .tour-back-btn:hover,
+:root.dark .tour-back-btn:hover {
+  background: #4b5563;
+  border-color: #6b7280;
 }
 
 /* Transition animations */
