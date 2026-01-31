@@ -125,9 +125,9 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
             class="tour-card"
             :ui="{
               root: 'w-96 max-w-[90vw] bg-white dark:bg-gray-900',
-              header: 'pb-2',
-              body: 'pt-2 pb-3',
-              footer: 'pt-3'
+              header: 'px-6 pt-5 pb-2',
+              body: 'px-6 pt-2 pb-3',
+              footer: 'px-6 pt-3 pb-5'
             }"
           >
             <template #header>

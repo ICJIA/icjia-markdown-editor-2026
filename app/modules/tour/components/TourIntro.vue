@@ -212,9 +212,9 @@ const slides = [
             class="intro-card"
             :ui="{
               root: 'w-[32rem] max-w-[90vw] bg-white dark:bg-gray-900',
-              header: 'pb-3',
-              body: 'pt-0 pb-4',
-              footer: 'pt-4'
+              header: 'px-6 pt-6 pb-3',
+              body: 'px-6 pt-0 pb-4',
+              footer: 'px-6 pt-4 pb-6'
             }"
           >
             <template #header>
