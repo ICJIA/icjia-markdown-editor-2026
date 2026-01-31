@@ -36,11 +36,21 @@
  * @returns {Readonly<Ref<boolean>>} returns.copyHtmlSuccess - HTML copy succeeded
  * @returns {Readonly<Ref<boolean>>} returns.isUploading - File upload in progress
  */
+/**
+ * Timeout ID for clearing the copy status message.
+ */
+let copyStatusTimeout: ReturnType<typeof setTimeout> | null = null
+
 export function useExport() {
   const { content, setContent } = useEditor()
   const { renderedHtml } = useMarkdown()
   const { announce } = useAccessibility()
-  const toast = useToast()
+  
+  /**
+   * Shared state for copy status message displayed in status bar.
+   * Using useState for proper SSR-safe global state in Nuxt.
+   */
+  const copyStatusMessage = useState<string>('copy-status-message', () => '')
   
   /**
    * Flag indicating markdown copy is in progress.
@@ -75,6 +85,25 @@ export function useExport() {
   const isUploading = ref(false)
   
   /**
+   * Shows a copy status message in the header for 3 seconds.
+   * @param {string} message - The message to display
+   */
+  function showCopyStatus(message: string): void {
+    // Clear any existing timeout
+    if (copyStatusTimeout) {
+      clearTimeout(copyStatusTimeout)
+    }
+    
+    // Set the message
+    copyStatusMessage.value = message
+    
+    // Clear after 3 seconds
+    copyStatusTimeout = setTimeout(() => {
+      copyStatusMessage.value = ''
+    }, 3000)
+  }
+  
+  /**
    * Copies the current markdown content to the clipboard.
    * Announces success or failure to screen readers.
    * Shows success state for 2 seconds.
@@ -89,13 +118,8 @@ export function useExport() {
       copyMarkdownSuccess.value = true
       announce('Markdown copied to clipboard')
       
-      // Show success toast
-      toast.add({
-        title: 'Markdown Copied',
-        description: 'Markdown content copied to clipboard',
-        icon: 'i-heroicons-clipboard-document-check',
-        color: 'success'
-      })
+      // Show success message in status bar
+      showCopyStatus('✓ Markdown copied to clipboard')
       
       // Reset success state after 2 seconds
       setTimeout(() => {
@@ -107,13 +131,8 @@ export function useExport() {
       console.error('Failed to copy markdown:', e)
       announce('Failed to copy markdown to clipboard')
       
-      // Show error toast
-      toast.add({
-        title: 'Copy Failed',
-        description: 'Failed to copy markdown to clipboard',
-        icon: 'i-heroicons-exclamation-circle',
-        color: 'error'
-      })
+      // Show error message in status bar
+      showCopyStatus('✗ Failed to copy markdown')
       
       return false
     } finally {
@@ -136,13 +155,8 @@ export function useExport() {
       copyHtmlSuccess.value = true
       announce('HTML copied to clipboard')
       
-      // Show success toast
-      toast.add({
-        title: 'HTML Copied',
-        description: 'HTML content copied to clipboard',
-        icon: 'i-heroicons-code-bracket',
-        color: 'success'
-      })
+      // Show success message in status bar
+      showCopyStatus('✓ HTML copied to clipboard')
       
       setTimeout(() => {
         copyHtmlSuccess.value = false
@@ -153,13 +167,8 @@ export function useExport() {
       console.error('Failed to copy HTML:', e)
       announce('Failed to copy HTML to clipboard')
       
-      // Show error toast
-      toast.add({
-        title: 'Copy Failed',
-        description: 'Failed to copy HTML to clipboard',
-        icon: 'i-heroicons-exclamation-circle',
-        color: 'error'
-      })
+      // Show error message in status bar
+      showCopyStatus('✗ Failed to copy HTML')
       
       return false
     } finally {
@@ -276,6 +285,7 @@ export function useExport() {
     copyMarkdownSuccess: readonly(copyMarkdownSuccess),
     copyHtmlSuccess: readonly(copyHtmlSuccess),
     isUploading: readonly(isUploading),
+    copyStatusMessage,
   }
 }
 

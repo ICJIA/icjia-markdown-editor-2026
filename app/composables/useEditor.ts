@@ -28,7 +28,9 @@ import { undo as cmUndo, redo as cmRedo } from '@codemirror/commands'
  * Uses inline code instead of code blocks to avoid Siteimprove SIA-R79 accessibility warnings.
  * @constant {string}
  */
-const DEFAULT_CONTENT = `# Welcome to the ICJIA Markdown Editor
+const DEFAULT_CONTENT = `# Welcome to the ICJIA Markdown Editor 2.0
+
+This is the **updated version** of the ICJIA Markdown Editor, rebuilt from the ground up with modern web technologies. If you used our previous editor from several years ago, you'll find this version faster, more accessible, and packed with new features.
 
 This editor helps you write beautifully formatted documents using **Markdown** — a simple, readable syntax that converts to HTML.
 

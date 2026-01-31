@@ -8,15 +8,64 @@
 const { cycleViewMode, viewModeIcon, viewModeLabel } = useViewMode()
 const { showSaveIndicator, countdownToSave } = useAutoSave()
 const { openModal: openConversionTools } = useConversionToolsModal()
+const { copyStatusMessage } = useExport()
+
+// Handle opening conversion tools modal and closing tooltip
+function handleOpenConversionTools(event: Event) {
+  // Blur the button to close the tooltip
+  const target = event.currentTarget as HTMLButtonElement
+  target.blur()
+  
+  // Open the modal
+  openConversionTools()
+}
+
+// Scroll the editor and preview panes to the top
+function scrollToTop() {
+  // Scroll the editor pane
+  const editorScroller = document.getElementById('main-editor-scroller')
+  if (editorScroller) {
+    editorScroller.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+  
+  // Scroll the preview pane
+  const previewPane = document.querySelector('.preview-pane')
+  if (previewPane) {
+    previewPane.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+}
 </script>
 
 <template>
   <header class="app-header">
     <div class="header-content">
       <h1 class="app-title">
-        <UIcon name="i-heroicons-document-text" class="title-icon" />
-        ICJIA Markdown Editor 2.0
+        <a 
+          href="#" 
+          class="title-link"
+          @click.prevent="scrollToTop"
+          aria-label="ICJIA Markdown Editor 2.0 - Click to scroll to top"
+        >
+          <img 
+            src="https://icjia.illinois.gov/img/icjia-logo.ee010aa8.png" 
+            alt="ICJIA Logo" 
+            class="title-logo"
+          />
+          <span>ICJIA Markdown Editor 2.0</span>
+        </a>
       </h1>
+      
+      <!-- Copy Status Message - Centered in header -->
+      <Transition name="copy-status">
+        <span 
+          v-if="copyStatusMessage" 
+          class="copy-status-message"
+          role="status"
+          aria-live="polite"
+        >
+          {{ copyStatusMessage }}
+        </span>
+      </Transition>
       
       <nav class="header-actions" aria-label="Application controls">
         <!-- Auto-save status with countdown -->
@@ -71,7 +120,7 @@ const { openModal: openConversionTools } = useConversionToolsModal()
             aria-label="Open conversion tools menu"
             aria-haspopup="dialog"
             data-tour="conversion-tools"
-            @click="openConversionTools"
+            @click="handleOpenConversionTools"
           >
             <UIcon name="i-heroicons-wrench-screwdriver" class="conversion-tools-icon" />
             <span>Tools</span>
@@ -99,6 +148,7 @@ const { openModal: openConversionTools } = useConversionToolsModal()
 }
 
 .header-content {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -110,23 +160,106 @@ const { openModal: openConversionTools } = useConversionToolsModal()
 .app-title {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-text, #f1f5f9);
   margin: 0;
 }
 
-.title-icon {
-  width: 1.5rem;
-  height: 1.5rem;
-  color: var(--color-primary, #3b82f6);
+.title-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.title-link:hover {
+  opacity: 0.85;
+}
+
+.title-link:focus-visible {
+  outline: 2px solid var(--color-primary, #3b82f6);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.title-logo {
+  width: 3rem;
+  height: 3rem;
+  object-fit: contain;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+/* Copy Status Message - bright green, centered in viewport */
+.copy-status-message {
+  position: fixed;
+  top: 0.625rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.15);
+  border: 1px solid rgba(74, 222, 128, 0.4);
+  border-radius: 0.5rem;
+  text-shadow: 0 0 12px rgba(74, 222, 128, 0.6);
+  animation: copy-pulse 0.4s ease-out;
+  z-index: 100;
+  white-space: nowrap;
+}
+
+/* Light mode - adjust for visibility */
+:root:not(.dark) .copy-status-message,
+.light .copy-status-message {
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.15);
+  border-color: rgba(22, 163, 74, 0.35);
+  text-shadow: none;
+  font-weight: 700;
+}
+
+/* Pulse animation for attention */
+@keyframes copy-pulse {
+  0% {
+    transform: translateX(-50%) scale(1.08);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.02);
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Transition for entering/leaving */
+.copy-status-enter-active {
+  transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+}
+
+.copy-status-leave-active {
+  transition: opacity 0.25s ease-in, transform 0.25s ease-in;
+}
+
+.copy-status-enter-from {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-20px) scale(0.9);
+}
+
+.copy-status-leave-to {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-20px) scale(0.9);
 }
 
 /* View mode button - polished gradient button (purple/violet) */
@@ -295,7 +428,8 @@ const { openModal: openConversionTools } = useConversionToolsModal()
 
 /* Dark mode adjustments for conversion tools button */
 .dark .conversion-tools-button {
-  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 50%, #14b8a6 100%);
+  color: #ffffff;
+  background: linear-gradient(135deg, #0f766e 0%, #115e59 50%, #134e4a 100%);
   box-shadow: 
     0 1px 3px rgba(20, 184, 166, 0.4),
     0 4px 8px -2px rgba(0, 0, 0, 0.3),
@@ -303,7 +437,27 @@ const { openModal: openConversionTools } = useConversionToolsModal()
 }
 
 .dark .conversion-tools-button:hover {
-  background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 50%, #2dd4bf 100%);
+  background: linear-gradient(135deg, #14b8a6 0%, #0f766e 50%, #115e59 100%);
+}
+
+/* Light mode adjustments for conversion tools button - ensure AA contrast */
+:root:not(.dark) .conversion-tools-button,
+.light .conversion-tools-button {
+  color: #0f172a;
+  background: linear-gradient(135deg, #5eead4 0%, #2dd4bf 50%, #14b8a6 100%);
+  box-shadow: 
+    0 1px 2px rgba(20, 184, 166, 0.2),
+    0 2px 4px -1px rgba(20, 184, 166, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+:root:not(.dark) .conversion-tools-button:hover,
+.light .conversion-tools-button:hover {
+  background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 50%, #0d9488 100%);
+  box-shadow: 
+    0 2px 8px rgba(20, 184, 166, 0.3),
+    0 4px 12px -2px rgba(20, 184, 166, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 /* Fade transition */

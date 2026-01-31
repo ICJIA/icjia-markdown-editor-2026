@@ -13,7 +13,7 @@ provide('announce', announce)
 
 <template>
   <!-- UApp provides required context providers (TooltipProvider, etc.) -->
-  <UApp :toaster="{ position: 'bottom-right', duration: 3000 }">
+  <UApp>
     <div id="app">
       <!-- Skip link - first focusable element (WCAG 2.4.1) -->
       <SkipLink />
@@ -67,4 +67,5 @@ provide('announce', announce)
   white-space: nowrap;
   border: 0;
 }
+
 </style>
