@@ -421,10 +421,15 @@ export function useEditor() {
    * Computed property to check if the editor is showing the default content.
    * Used to show/hide the "Start Editing" button.
    * 
+   * Conditions for showing the button:
+   * 1. Content is ready (loaded from storage or initialized with default)
+   * 2. Content equals the default tutorial content
+   * 3. User hasn't started editing yet
+   * 
    * @returns {boolean} True if showing default content and user hasn't started editing
    */
   const isShowingDefaultContent = computed(() => {
-    return content.value === DEFAULT_CONTENT_VALUE && !hasStartedEditing.value
+    return isContentReady.value && content.value === DEFAULT_CONTENT_VALUE && !hasStartedEditing.value
   })
   
   /**
