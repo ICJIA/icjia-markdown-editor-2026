@@ -203,18 +203,18 @@ function setupScrollSync(): void {
           </button>
         </UTooltip>
         <UTooltip
-          text="Reset editor to the default tutorial text"
+          text="Display the markdown tutorial in the editor"
           :content="{ side: 'top', sideOffset: 8, avoidCollisions: true }"
         >
           <button
             type="button"
             class="reset-button"
             data-tour="reset"
-            aria-label="Reset editor to the default tutorial text"
+            aria-label="Display the markdown tutorial in the editor"
             @click="handleReset"
           >
             <UIcon name="i-heroicons-arrow-path" class="reset-icon" />
-            <span class="reset-text">Reset to Tutorial Text</span>
+            <span class="reset-text">Display Markdown Tutorial</span>
           </button>
         </UTooltip>
         <UTooltip
