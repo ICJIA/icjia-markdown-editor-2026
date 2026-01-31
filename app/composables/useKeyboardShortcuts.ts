@@ -11,6 +11,7 @@
  * - Ctrl/Cmd + Shift + C: Copy markdown to clipboard
  * - Ctrl/Cmd + Shift + H: Copy HTML to clipboard
  * - Ctrl/Cmd + O: Upload/open markdown file
+ * - Ctrl/Cmd + \: Toggle scroll synchronization
  * 
  * @example
  * ```typescript
@@ -32,6 +33,7 @@ export function useKeyboardShortcuts() {
   const { copyMarkdown, copyHtml, downloadMarkdown, uploadMarkdown } = useExport()
   const { announce } = useAccessibility()
   const { openTableBuilder } = useTableBuilderModal()
+  const { enabled: scrollSyncEnabled, toggle: toggleScrollSync } = useScrollSync()
 
   /**
    * Handles global keyboard shortcut events.
@@ -78,6 +80,14 @@ export function useKeyboardShortcuts() {
     if (isMod && !isShift && event.key === 'o') {
       event.preventDefault()
       uploadMarkdown()
+      return
+    }
+
+    // Ctrl/Cmd + \ - Toggle scroll sync
+    if (isMod && !isShift && event.key === '\\') {
+      event.preventDefault()
+      toggleScrollSync()
+      announce(scrollSyncEnabled.value ? 'Scroll sync disabled' : 'Scroll sync enabled')
       return
     }
   }

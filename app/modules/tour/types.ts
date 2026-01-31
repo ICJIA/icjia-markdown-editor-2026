@@ -77,6 +77,7 @@ export interface TourStep {
   /**
    * Optional keyboard shortcut to display for Mac.
    * Array of key symbols: ['⌘', 'B'] or ['⌘', 'Shift', 'C']
+   * @deprecated Use `shortcuts` array for multiple shortcuts
    */
   shortcut?: string[]
 
@@ -84,8 +85,22 @@ export interface TourStep {
    * Optional keyboard shortcut for Windows/Linux.
    * Array of key symbols: ['Ctrl', 'B'] or ['Ctrl', 'Shift', 'C']
    * If not provided, Mac shortcut with ⌘ replaced by Ctrl will be shown.
+   * @deprecated Use `shortcuts` array for multiple shortcuts
    */
   shortcutWin?: string[]
+
+  /**
+   * Multiple keyboard shortcuts to display (for button groups).
+   * Each entry has a label and keys for both platforms.
+   */
+  shortcuts?: Array<{
+    /** Label for the shortcut (e.g., "Bold", "Italic") */
+    label: string
+    /** Mac keyboard shortcut keys */
+    mac: string[]
+    /** Windows keyboard shortcut keys */
+    win: string[]
+  }>
 }
 
 /**

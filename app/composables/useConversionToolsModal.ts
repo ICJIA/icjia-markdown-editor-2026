@@ -50,6 +50,15 @@ const conversionTools: ConversionTool[] = [
     gradient: 'from-blue-500 via-indigo-500 to-violet-500',
     features: ['Lorem Ipsum', 'Custom Length', 'Multiple Formats', 'Instant Generation'],
   },
+  {
+    id: 'tablesgenerator',
+    name: 'Tables Generator',
+    description: 'Advanced markdown table generator with spreadsheet-like editing and CSV import.',
+    url: 'https://www.tablesgenerator.com/markdown_tables',
+    icon: 'i-heroicons-table-cells',
+    gradient: 'from-amber-500 via-orange-500 to-red-500',
+    features: ['CSV Import', 'Copy/Paste Data', 'Column Alignment', 'Spreadsheet UI'],
+  },
 ]
 
 /**

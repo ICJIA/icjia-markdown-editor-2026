@@ -154,7 +154,37 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
                 {{ currentStep.tip }}
               </p>
               
-              <div v-if="currentStep.shortcut?.length" class="tour-shortcuts">
+              <!-- Multiple shortcuts (new format) -->
+              <div v-if="currentStep.shortcuts?.length" class="tour-shortcuts tour-shortcuts--multi">
+                <div 
+                  v-for="(shortcut, idx) in currentStep.shortcuts" 
+                  :key="`shortcut-${idx}`" 
+                  class="tour-shortcut-group"
+                >
+                  <span class="tour-shortcut-label">{{ shortcut.label }}</span>
+                  <div class="tour-shortcut-platforms">
+                    <div class="tour-shortcut-row">
+                      <span class="tour-shortcut-platform">Mac</span>
+                      <span class="tour-shortcut-keys">
+                        <span v-for="(key, keyIdx) in shortcut.mac" :key="`mac-${idx}-${keyIdx}`" class="shortcut-key">
+                          {{ key }}
+                        </span>
+                      </span>
+                    </div>
+                    <div class="tour-shortcut-row">
+                      <span class="tour-shortcut-platform">Win</span>
+                      <span class="tour-shortcut-keys">
+                        <span v-for="(key, keyIdx) in shortcut.win" :key="`win-${idx}-${keyIdx}`" class="shortcut-key">
+                          {{ key }}
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Legacy single shortcut format (fallback) -->
+              <div v-else-if="currentStep.shortcut?.length" class="tour-shortcuts">
                 <div class="tour-shortcut-row">
                   <span class="tour-shortcut-platform">Mac:</span>
                   <span class="tour-shortcut-keys">
@@ -237,7 +267,7 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   background: #f8fafc !important;
   /* Fixed size so Next button stays in same position */
-  min-height: 280px;
+  min-height: 320px;
   display: flex;
   flex-direction: column;
 }
@@ -305,7 +335,7 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
 /* Fixed height body area so footer stays in same position */
 .tour-body {
   min-height: 120px;
-  max-height: 160px;
+  max-height: 220px;
   overflow-y: auto;
 }
 
@@ -339,6 +369,43 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
   border-radius: 0.375rem;
 }
 
+/* Multi-shortcut layout for button groups */
+.tour-shortcuts--multi {
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  max-height: 140px;
+  overflow-y: auto;
+}
+
+.tour-shortcut-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tour-shortcut-group:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.tour-shortcut-label {
+  flex-shrink: 0;
+  min-width: 4.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--ui-text-muted, #94a3b8);
+  padding-top: 0.125rem;
+}
+
+.tour-shortcut-platforms {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
 .tour-shortcut-row {
   display: flex;
   align-items: center;
@@ -348,14 +415,24 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
 
 .tour-shortcut-platform {
   flex-shrink: 0;
-  min-width: 2rem;
-  font-weight: 500;
-  color: var(--ui-text-dimmed);
+  min-width: 1.75rem;
+  font-size: 0.5625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  color: var(--ui-text-dimmed, #64748b);
 }
 
 .tour-shortcut-keys {
   display: flex;
   gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+/* Light mode border adjustment */
+:root:not(.dark) .tour-shortcut-group,
+.light .tour-shortcut-group {
+  border-bottom-color: rgba(0, 0, 0, 0.1);
 }
 
 .shortcut-key {

@@ -66,8 +66,10 @@ export const tourConfig: TourConfig = {
       target: '[data-tour="history"]',
       title: 'Undo & Redo',
       content: 'Made a mistake? Use Undo to revert changes, or Redo to restore them. These work just like in any text editor.',
-      shortcut: ['⌘', 'Z'],
-      shortcutWin: ['Ctrl', 'Z'],
+      shortcuts: [
+        { label: 'Undo', mac: ['⌘', 'Z'], win: ['Ctrl', 'Z'] },
+        { label: 'Redo', mac: ['⌘', '⇧', 'Z'], win: ['Ctrl', 'Shift', 'Z'] },
+      ],
       position: 'bottom',
       icon: 'i-heroicons-arrow-uturn-left'
     },
@@ -77,8 +79,11 @@ export const tourConfig: TourConfig = {
       target: '[data-tour="formatting"]',
       title: 'Text Formatting',
       content: 'Apply bold, italic, and inline code formatting to your text. These are the most common formatting options.',
-      shortcut: ['⌘', 'B'],
-      shortcutWin: ['Ctrl', 'B'],
+      shortcuts: [
+        { label: 'Bold', mac: ['⌘', 'B'], win: ['Ctrl', 'B'] },
+        { label: 'Italic', mac: ['⌘', 'I'], win: ['Ctrl', 'I'] },
+        { label: 'Code', mac: ['⌘', '`'], win: ['Ctrl', '`'] },
+      ],
       position: 'bottom',
       icon: 'i-heroicons-bold'
     },
@@ -88,8 +93,9 @@ export const tourConfig: TourConfig = {
       target: '[data-tour="headings"]',
       title: 'Headings',
       content: 'Insert headings from H1 (largest) to H6 (smallest). Click to open the menu and select a heading level.',
-      shortcut: ['⌘', '1-6'],
-      shortcutWin: ['Ctrl', '1-6'],
+      shortcuts: [
+        { label: 'H1-H6', mac: ['⌘', '1-6'], win: ['Ctrl', '1-6'] },
+      ],
       position: 'bottom',
       icon: 'i-lucide-heading'
     },
@@ -99,6 +105,11 @@ export const tourConfig: TourConfig = {
       target: '[data-tour="blocks"]',
       title: 'Block Elements',
       content: 'Insert block quotes for citations, code blocks for programming snippets, and horizontal rules to separate sections.',
+      shortcuts: [
+        { label: 'Quote', mac: ['⌘', 'Q'], win: ['Ctrl', 'Q'] },
+        { label: 'Code Block', mac: ['⌘', '⇧', '`'], win: ['Ctrl', 'Shift', '`'] },
+        { label: 'HR', mac: ['⌘', '-'], win: ['Ctrl', '-'] },
+      ],
       position: 'bottom',
       icon: 'i-heroicons-chat-bubble-bottom-center-text'
     },
@@ -108,6 +119,10 @@ export const tourConfig: TourConfig = {
       target: '[data-tour="lists"]',
       title: 'Lists',
       content: 'Create bulleted (unordered) or numbered (ordered) lists to organize your content.',
+      shortcuts: [
+        { label: 'Bullet', mac: ['⌘', '⇧', '8'], win: ['Ctrl', 'Shift', '8'] },
+        { label: 'Numbered', mac: ['⌘', '⇧', '7'], win: ['Ctrl', 'Shift', '7'] },
+      ],
       position: 'bottom',
       icon: 'i-heroicons-list-bullet'
     },
@@ -117,8 +132,10 @@ export const tourConfig: TourConfig = {
       target: '[data-tour="insert"]',
       title: 'Tables & Links',
       content: 'Insert tables using the visual table builder, or add hyperlinks to reference external content.',
-      shortcut: ['⌘', 'T'],
-      shortcutWin: ['Ctrl', 'T'],
+      shortcuts: [
+        { label: 'Table', mac: ['⌘', 'T'], win: ['Ctrl', 'T'] },
+        { label: 'Link', mac: ['⌘', 'K'], win: ['Ctrl', 'K'] },
+      ],
       position: 'bottom',
       icon: 'i-heroicons-table-cells'
     },
@@ -129,6 +146,9 @@ export const tourConfig: TourConfig = {
       title: 'Scroll Synchronization',
       content: 'When enabled (green), scrolling the editor automatically scrolls the preview to the same position—and vice versa.',
       tip: 'Disable this if you prefer to scroll each pane independently.',
+      shortcuts: [
+        { label: 'Toggle', mac: ['⌘', '\\'], win: ['Ctrl', '\\'] },
+      ],
       position: 'bottom',
       highlight: true,
       icon: 'i-heroicons-arrows-up-down'
@@ -139,8 +159,10 @@ export const tourConfig: TourConfig = {
       target: '[data-tour="file-ops"]',
       title: 'Upload & Download',
       content: 'Upload an existing Markdown file to continue editing, or download your work as a .md file to save permanently.',
-      shortcut: ['⌘', 'Shift', 'S'],
-      shortcutWin: ['Ctrl', 'Shift', 'S'],
+      shortcuts: [
+        { label: 'Upload', mac: ['⌘', 'O'], win: ['Ctrl', 'O'] },
+        { label: 'Download', mac: ['⌘', '⇧', 'S'], win: ['Ctrl', 'Shift', 'S'] },
+      ],
       position: 'bottom',
       icon: 'i-heroicons-arrow-down-tray'
     },
@@ -150,8 +172,10 @@ export const tourConfig: TourConfig = {
       target: '[data-tour="export"]',
       title: 'Copy to Clipboard',
       content: 'Copy your content as Markdown or HTML, ready to paste into emails, documents, or other applications.',
-      shortcut: ['⌘', 'Shift', 'C'],
-      shortcutWin: ['Ctrl', 'Shift', 'C'],
+      shortcuts: [
+        { label: 'Copy MD', mac: ['⌘', '⇧', 'C'], win: ['Ctrl', 'Shift', 'C'] },
+        { label: 'Copy HTML', mac: ['⌘', '⇧', 'H'], win: ['Ctrl', 'Shift', 'H'] },
+      ],
       position: 'bottom',
       icon: 'i-heroicons-clipboard-document'
     },

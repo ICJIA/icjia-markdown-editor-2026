@@ -174,6 +174,51 @@ Create tables with pipes \`|\` and hyphens \`-\`:
 
 > **Tip:** Use the Table Builder (⌘/Ctrl + T) for an easier way to create tables!
 
+### Embedding HTML in Markdown
+
+Markdown supports **inline HTML** for cases where you need more control—especially useful for complex tables. This is valid in GitHub Flavored Markdown and most renderers.
+
+**Why use HTML tables?**
+
+- More control over formatting and structure
+- Better accessibility with \`<caption>\`, \`<thead>\`, \`<th scope>\` attributes
+- Familiar syntax if you know basic HTML
+- Works when Markdown tables become unwieldy
+
+**Example — HTML Table:**
+
+<table>
+  <caption>Quarterly Report Summary</caption>
+  <thead>
+    <tr>
+      <th scope="col">Quarter</th>
+      <th scope="col">Revenue</th>
+      <th scope="col">Growth</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Q1 2025</td>
+      <td>$1.2M</td>
+      <td>+12%</td>
+    </tr>
+    <tr>
+      <td>Q2 2025</td>
+      <td>$1.4M</td>
+      <td>+17%</td>
+    </tr>
+    <tr>
+      <td>Q3 2025</td>
+      <td>$1.5M</td>
+      <td>+7%</td>
+    </tr>
+  </tbody>
+</table>
+
+> **Note:** When using HTML in Markdown, leave a blank line before and after the HTML block. The HTML above renders as a proper accessible table with semantic structure.
+
+> **⚠️ Caution:** While embedding HTML in Markdown is valid, it **increases complexity** and creates a higher potential for errors. You're mixing two different syntaxes, which can make files harder to read, edit, and maintain. Use HTML sparingly—only when Markdown tables can't meet your needs (e.g., accessibility requirements, complex layouts, or row/column spanning).
+
 ---
 
 ## Keyboard Shortcuts

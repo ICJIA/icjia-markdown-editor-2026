@@ -112,7 +112,7 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
       <div class="tools-note">
         <UIcon name="i-heroicons-information-circle" class="tools-note__icon" />
         <p class="tools-note__text">
-          These tools open in a new window. BentoPDF, Vert.sh, and Ipsumify process files locally in your browser for privacy.
+          These tools open in a new window. BentoPDF and Vert.sh process files locally in your browser for privacy.
         </p>
       </div>
     </template>
@@ -408,6 +408,13 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
     0 0 0 1px rgba(99, 102, 241, 0.1);
 }
 
+/* TablesGenerator specific hover glow */
+.tool-card--tablesgenerator:hover {
+  box-shadow: 
+    0 20px 40px -12px rgba(245, 158, 11, 0.3),
+    0 0 0 1px rgba(245, 158, 11, 0.1);
+}
+
 /* Mobile optimizations for tool cards */
 @media (max-width: 639px) {
   .tools-grid {
@@ -675,6 +682,13 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
   box-shadow: 
     0 20px 40px -12px rgba(99, 102, 241, 0.2),
     0 0 0 1px rgba(99, 102, 241, 0.1);
+}
+
+/* TablesGenerator light mode hover */
+.light .tool-card--tablesgenerator:hover {
+  box-shadow: 
+    0 20px 40px -12px rgba(245, 158, 11, 0.2),
+    0 0 0 1px rgba(245, 158, 11, 0.1);
 }
 
 /* Dialog background override - lighter to stand out from editor */
