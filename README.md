@@ -239,7 +239,8 @@ The application includes an interactive guided tour with a welcome screen that i
 
 The tour follows a logical left-to-right, top-to-bottom order covering 19 features:
 
-**Toolbar (left to right):**
+#### Toolbar (left to right)
+
 1. **Undo & Redo** - History navigation with keyboard shortcuts
 2. **Text Formatting** - Bold, italic, inline code
 3. **Headings** - H1-H6 with keyboard shortcuts
@@ -250,17 +251,20 @@ The tour follows a logical left-to-right, top-to-bottom order covering 19 featur
 8. **Upload & Download** - File operations
 9. **Copy to Clipboard** - Markdown and HTML export
 
-**Header Controls (left to right):**
+#### Header Controls (left to right)
+
 10. **Auto-Save** - Browser localStorage with countdown timer
 11. **View Modes** - Split/editor/preview toggle
 12. **Conversion Tools** - External privacy-first utilities
 13. **Light/Dark Mode** - Theme toggle
 
-**Main Content:**
+#### Main Content
+
 14. **Editor Pane** - Where to write markdown
 15. **Preview Pane** - Live rendering
 
-**Status Bar (bottom toolbar, left to right):**
+#### Status Bar (bottom toolbar, left to right)
+
 16. **Document Statistics** - Word count, character count, reading time
 17. **Tour Button** - Restart the guided tour anytime
 18. **Tutorial** - Reset to markdown tutorial content (with confirmation)
