@@ -199,7 +199,7 @@ function setupScrollSync(): void {
             @click="handleStartTour"
           >
             <UIcon name="i-heroicons-academic-cap" class="tour-icon" />
-            <span class="tour-text">Take Tour</span>
+            <span class="tour-text">Take Guided Tour</span>
           </button>
         </UTooltip>
         <UTooltip
