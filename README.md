@@ -6,7 +6,8 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)](https://www.typescriptlang.org)
 [![WCAG 2.1 AA](https://img.shields.io/badge/WCAG-2.1_AA-green)](https://www.w3.org/WAI/WCAG21/quickref/)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/efc7c372-8945-4089-acbd-5201f59a753e/deploy-status)](https://app.netlify.com/projects/nostalgic-shaw-a15a61/deploys)
-A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. This is the **updated version** of the original ICJIA Markdown Editor, rebuilt from the ground up with modern web technologies. Designed for ICJIA researchers to write reports, policy briefs, and documentation with full WCAG 2.1 AA compliance.
+
+A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. This is the **updated version** of the original ICJIA Markdown Editor, rebuilt from the ground up with modern web technologies. Full WCAG 2.1 AA compliance.
 
 **[Live Demo →](https://markdown.icjia.cloud)**
 
