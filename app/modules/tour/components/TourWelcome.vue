@@ -109,8 +109,8 @@ onUnmounted(() => {
             
             <div id="welcome-description" class="welcome-content">
               <p class="welcome-text">
-                This appears to be your first time here. Would you like a quick guided tour 
-                to learn about the editor's features?
+                This is an accessible markdown editor designed for researchers and writers. 
+                Would you like a quick guided tour to learn about all the features?
               </p>
               <p class="welcome-subtext">
                 The tour takes about 2 minutes and covers all the main features including 
@@ -233,6 +233,11 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column-reverse;
   gap: 0.5rem;
+}
+
+/* Ensure buttons have pointer cursor */
+.welcome-footer :deep(button) {
+  cursor: pointer;
 }
 
 @media (min-width: 480px) {

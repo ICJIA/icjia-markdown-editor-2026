@@ -139,9 +139,9 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
                     {{ currentStep.title }}
                   </h2>
                 </div>
-                <UBadge color="neutral" variant="subtle" size="xs">
+                <div class="tour-progress-badge">
                   {{ progress.current }} / {{ progress.total }}
-                </UBadge>
+                </div>
               </div>
             </template>
             
@@ -274,6 +274,32 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
   color: var(--ui-text);
   margin: 0;
   line-height: 1.3;
+}
+
+.tour-progress-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: #334155;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  border-radius: 9999px;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+  min-width: 3.5rem;
+}
+
+/* Dark mode progress badge */
+.dark .tour-progress-badge,
+:root.dark .tour-progress-badge {
+  color: #e2e8f0;
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  border-color: #475569;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 /* Fixed height body area so footer stays in same position */

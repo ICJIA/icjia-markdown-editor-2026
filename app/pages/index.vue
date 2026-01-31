@@ -61,8 +61,9 @@ function handleWelcomeSkip() {
 }
 
 // Handle tour start from header button (manual trigger)
+// Shows welcome screen first, then starts tour
 function handleStartTour() {
-  tour.start()
+  showWelcome.value = true
 }
 
 // Provide tour start function to child components
