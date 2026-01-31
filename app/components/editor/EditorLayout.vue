@@ -7,7 +7,7 @@
 
 const { wordCountDisplay, wordCount } = useMarkdown()
 const { isTableBuilderOpen, closeTableBuilder } = useTableBuilderModal()
-const { insertText, resetContent } = useEditor()
+const { insertText, resetContent, isShowingDefaultContent, startEditing } = useEditor()
 const { announce } = useAccessibility()
 
 // Inject tour start function from parent
@@ -28,6 +28,14 @@ function handleReset() {
     resetContent()
     announce('Content reset to default')
   }
+}
+
+/**
+ * Handle start editing button click - clears default content
+ */
+function handleStartEditing() {
+  startEditing()
+  announce('Editor cleared. Ready to start writing.')
 }
 
 function handleTableInsert(markdown: string) {
@@ -126,10 +134,26 @@ function setupScrollSync(): void {
             </span>
           </div>
           <EditorPane
-          ref="editorPaneRef"
-          @cursor-line="(line) => syncToCursor(line, false)"
-          @cursor-line-immediate="(line) => syncToCursor(line, true)"
-        />
+            ref="editorPaneRef"
+            @cursor-line="(line) => syncToCursor(line, false)"
+            @cursor-line-immediate="(line) => syncToCursor(line, true)"
+          />
+          
+          <!-- Start Editing Button - centered at bottom of editor pane -->
+          <Transition name="start-editing">
+            <div v-if="isShowingDefaultContent" class="start-editing-overlay">
+              <button 
+                type="button"
+                class="start-editing-button"
+                @click="handleStartEditing"
+                aria-label="Clear the tutorial content and start with a blank editor"
+              >
+                <UIcon name="i-heroicons-pencil" class="start-editing-icon" />
+                <span>Start Editing</span>
+              </button>
+              <p class="start-editing-hint">Click to clear this tutorial and start editing</p>
+            </div>
+          </Transition>
         </div>
         
         <!-- Divider -->
@@ -270,7 +294,99 @@ function setupScrollSync(): void {
 }
 
 .editor-pane-wrapper {
+  position: relative;
   border-right: 1px solid var(--color-border, #334155);
+}
+
+/* Start Editing Button Overlay - centered at bottom of editor pane */
+.start-editing-overlay {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  z-index: 20;
+  padding: 1rem 0.75rem;
+  background: radial-gradient(ellipse at center, rgba(88, 28, 135, 1) 0%, rgba(88, 28, 135, 1) 60%, rgba(88, 28, 135, 0.5) 85%, rgba(88, 28, 135, 0) 100%);
+  border-radius: 0.75rem;
+}
+
+/* Light mode background - softer purple tint */
+:root:not(.dark) .start-editing-overlay,
+.light .start-editing-overlay {
+  background: radial-gradient(ellipse at center, rgba(243, 232, 255, 1) 0%, rgba(243, 232, 255, 1) 60%, rgba(243, 232, 255, 0.5) 85%, rgba(243, 232, 255, 0) 100%);
+}
+
+.start-editing-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #a855f7 0%, #9333ea 50%, #7c3aed 100%);
+  border: none;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.4), 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.start-editing-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5), 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.start-editing-button:active {
+  transform: translateY(0);
+}
+
+.start-editing-button:focus-visible {
+  outline: 2px solid #c084fc;
+  outline-offset: 3px;
+}
+
+.start-editing-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.start-editing-hint {
+  margin: 0;
+  font-size: 0.6875rem;
+  /* White text on dark purple bg: provides 10.5:1 contrast ratio */
+  color: #ffffff;
+  text-align: center;
+}
+
+/* Light mode adjustments - dark text on light purple bg */
+:root:not(.dark) .start-editing-hint,
+.light .start-editing-hint {
+  /* Dark purple text on light purple bg: provides 8.1:1 contrast ratio */
+  color: #581c87;
+}
+
+/* Transition for entering/leaving */
+.start-editing-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.start-editing-leave-active {
+  transition: all 0.2s ease-in;
+}
+
+.start-editing-enter-from {
+  opacity: 0;
+  transform: translateX(-50%) translateY(20px);
+}
+
+.start-editing-leave-to {
+  opacity: 0;
+  transform: translateX(-50%) translateY(20px);
 }
 
 .pane-divider {

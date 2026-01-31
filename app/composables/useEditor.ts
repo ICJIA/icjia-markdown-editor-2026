@@ -255,6 +255,12 @@ const isModified = ref(false)
 const initialContent = ref('')
 
 /**
+ * Tracks whether the user has started editing (dismissed the default content).
+ * @type {Ref<boolean>}
+ */
+const hasStartedEditing = ref(false)
+
+/**
  * Store the default content for use when localStorage is empty.
  * @constant {string}
  */
@@ -309,11 +315,17 @@ export function useEditor() {
   /**
    * Updates the editor content and tracks modification status.
    * Called by the editor's change listener when content changes.
+   * Also marks as edited if the user modifies the default content.
    * 
    * @param {string} newContent - The new content from the editor
    * @returns {void}
    */
   function updateContent(newContent: string) {
+    // Check if user has started editing the default content
+    if (!hasStartedEditing.value && content.value === DEFAULT_CONTENT_VALUE && newContent !== DEFAULT_CONTENT_VALUE) {
+      hasStartedEditing.value = true
+    }
+    
     content.value = newContent
     isModified.value = newContent !== initialContent.value
   }
@@ -402,6 +414,43 @@ export function useEditor() {
     }
     // Set the default content
     setContent(DEFAULT_CONTENT_VALUE)
+    // Reset the editing flag so the "Start Editing" button reappears
+    hasStartedEditing.value = false
+  }
+  
+  /**
+   * Computed property to check if the editor is showing the default content.
+   * Used to show/hide the "Start Editing" button.
+   * 
+   * @returns {boolean} True if showing default content and user hasn't started editing
+   */
+  const isShowingDefaultContent = computed(() => {
+    return content.value === DEFAULT_CONTENT_VALUE && !hasStartedEditing.value
+  })
+  
+  /**
+   * Clears the default content and prepares the editor for user input.
+   * Called when user clicks "Start Editing" button.
+   * 
+   * @returns {void}
+   */
+  function startEditing(): void {
+    hasStartedEditing.value = true
+    setContent('')
+    // Focus the editor
+    focus()
+  }
+  
+  /**
+   * Marks that the user has started editing (for hiding the Start Editing button).
+   * Called when user makes any edit to the default content.
+   * 
+   * @returns {void}
+   */
+  function markAsEdited(): void {
+    if (!hasStartedEditing.value && content.value !== DEFAULT_CONTENT_VALUE) {
+      hasStartedEditing.value = true
+    }
   }
   
   /**
@@ -754,6 +803,7 @@ export function useEditor() {
     cursorPosition: readonly(cursorPosition),
     isModified: readonly(isModified),
     isContentReady: readonly(isContentReady),
+    isShowingDefaultContent,
     
     // Setters
     setEditorView,
@@ -765,6 +815,8 @@ export function useEditor() {
     markContentReady,
     getDefaultContent,
     resetContent,
+    startEditing,
+    markAsEdited,
     
     // Editor actions
     insertText,
