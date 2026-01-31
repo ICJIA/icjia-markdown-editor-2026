@@ -203,18 +203,18 @@ function setupScrollSync(): void {
           </button>
         </UTooltip>
         <UTooltip
-          text="Display the default tutorial content in the editor"
+          text="Reset editor and display the default tutorial content"
           :content="{ side: 'top', sideOffset: 8, avoidCollisions: true }"
         >
           <button
             type="button"
             class="reset-button"
             data-tour="reset"
-            aria-label="Display default tutorial content"
+            aria-label="Reset editor and display default tutorial content"
             @click="handleReset"
           >
             <UIcon name="i-heroicons-arrow-path" class="reset-icon" />
-            <span class="reset-text">Display Tutorial</span>
+            <span class="reset-text">Reset & Display Tutorial</span>
           </button>
         </UTooltip>
         <UTooltip
