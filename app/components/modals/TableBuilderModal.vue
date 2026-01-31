@@ -112,7 +112,8 @@ const previewMarkdown = computed(() => generateTableMarkdown(table.value))
     title="Insert Table"
     description="Set rows and columns, edit headers and cells, choose column alignment, then insert markdown at the cursor."
     :ui="{
-      overlay: 'bg-black/60 backdrop-blur-sm'
+      content: 'bg-slate-800 dark:bg-slate-800 border border-slate-600 w-[95vw] max-w-3xl',
+      overlay: 'bg-black/70 backdrop-blur-sm'
     }"
   >
     <template #content>
@@ -283,12 +284,28 @@ const previewMarkdown = computed(() => generateTableMarkdown(table.value))
 </template>
 
 <style scoped>
-/* Safety fix: Ensure modal is centered fixed overlay even if Tailwind utilities fail */
+/* Modal background - lighter to stand out from editor */
 :deep([role="dialog"]) {
-  position: fixed !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  z-index: 50 !important;
+  background: linear-gradient(180deg, #334155 0%, #1e293b 100%) !important;
+}
+
+.light :deep([role="dialog"]) {
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%) !important;
+}
+
+/* Mobile responsiveness for table builder */
+@media (max-width: 639px) {
+  :deep([role="dialog"]) {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    transform: none !important;
+    border-radius: 0 !important;
+  }
 }
 </style>

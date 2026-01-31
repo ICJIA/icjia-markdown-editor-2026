@@ -40,6 +40,7 @@ export function useExport() {
   const { content, setContent } = useEditor()
   const { renderedHtml } = useMarkdown()
   const { announce } = useAccessibility()
+  const toast = useToast()
   
   /**
    * Flag indicating markdown copy is in progress.
@@ -88,6 +89,14 @@ export function useExport() {
       copyMarkdownSuccess.value = true
       announce('Markdown copied to clipboard')
       
+      // Show success toast
+      toast.add({
+        title: 'Markdown Copied',
+        description: 'Markdown content copied to clipboard',
+        icon: 'i-heroicons-clipboard-document-check',
+        color: 'success'
+      })
+      
       // Reset success state after 2 seconds
       setTimeout(() => {
         copyMarkdownSuccess.value = false
@@ -97,6 +106,15 @@ export function useExport() {
     } catch (e) {
       console.error('Failed to copy markdown:', e)
       announce('Failed to copy markdown to clipboard')
+      
+      // Show error toast
+      toast.add({
+        title: 'Copy Failed',
+        description: 'Failed to copy markdown to clipboard',
+        icon: 'i-heroicons-exclamation-circle',
+        color: 'error'
+      })
+      
       return false
     } finally {
       isCopyingMarkdown.value = false
@@ -118,6 +136,14 @@ export function useExport() {
       copyHtmlSuccess.value = true
       announce('HTML copied to clipboard')
       
+      // Show success toast
+      toast.add({
+        title: 'HTML Copied',
+        description: 'HTML content copied to clipboard',
+        icon: 'i-heroicons-code-bracket',
+        color: 'success'
+      })
+      
       setTimeout(() => {
         copyHtmlSuccess.value = false
       }, 2000)
@@ -126,6 +152,15 @@ export function useExport() {
     } catch (e) {
       console.error('Failed to copy HTML:', e)
       announce('Failed to copy HTML to clipboard')
+      
+      // Show error toast
+      toast.add({
+        title: 'Copy Failed',
+        description: 'Failed to copy HTML to clipboard',
+        icon: 'i-heroicons-exclamation-circle',
+        color: 'error'
+      })
+      
       return false
     } finally {
       isCopyingHtml.value = false

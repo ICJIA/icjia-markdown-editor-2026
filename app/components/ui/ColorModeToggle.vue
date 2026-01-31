@@ -28,16 +28,21 @@ const label = computed(() => isDark.value ? 'Dark mode active. Click to switch t
 </script>
 
 <template>
-  <button
-    type="button"
-    class="color-mode-button"
-    :aria-label="label"
-    data-tour="color-mode"
-    @click="toggleColorMode"
+  <UTooltip
+    :text="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+    :content="{ side: 'bottom', sideOffset: 8, avoidCollisions: true }"
   >
-    <UIcon :name="icon" class="mode-icon" />
-    <span class="mode-label">{{ isDark ? 'Dark' : 'Light' }}</span>
-  </button>
+    <button
+      type="button"
+      class="color-mode-button"
+      :aria-label="label"
+      data-tour="color-mode"
+      @click="toggleColorMode"
+    >
+      <UIcon :name="icon" class="mode-icon" />
+      <span class="mode-label">{{ isDark ? 'Dark' : 'Light' }}</span>
+    </button>
+  </UTooltip>
 </template>
 
 <style scoped>
@@ -54,7 +59,7 @@ const label = computed(() => isDark.value ? 'Dark mode active. Click to switch t
   border: none;
   border-radius: 0.25rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   box-shadow: 
     0 1px 2px rgba(100, 116, 139, 0.3),
     0 2px 4px -1px rgba(100, 116, 139, 0.2),
@@ -63,18 +68,15 @@ const label = computed(() => isDark.value ? 'Dark mode active. Click to switch t
 
 .color-mode-button:hover {
   background: linear-gradient(135deg, #475569 0%, #334155 50%, #475569 100%);
+  transform: translateY(-1px);
   box-shadow: 
     0 2px 8px rgba(100, 116, 139, 0.4),
-    0 6px 12px -2px rgba(100, 116, 139, 0.3),
+    0 4px 12px -2px rgba(100, 116, 139, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
 }
 
 .color-mode-button:active {
   transform: translateY(0);
-  box-shadow: 
-    0 1px 2px rgba(100, 116, 139, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .color-mode-button:focus-visible {

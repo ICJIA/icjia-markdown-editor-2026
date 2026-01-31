@@ -46,11 +46,11 @@ const fileTypeIcon = computed(() => {
     v-model:open="isOpen"
     :dismissible="true"
     :ui="{
-      content: 'bg-neutral-900 dark:bg-neutral-900 border border-neutral-700 shadow-2xl max-w-md w-full',
-      header: 'border-b border-neutral-700 px-6 py-4',
-      body: 'px-6 py-5',
-      footer: 'border-t border-neutral-700 px-6 py-4',
-      overlay: 'bg-black/60 backdrop-blur-sm'
+      content: 'bg-slate-800 dark:bg-slate-800 border border-slate-600 shadow-2xl w-[95vw] max-w-md',
+      header: 'border-b border-slate-600 px-4 sm:px-6 py-3 sm:py-4',
+      body: 'px-4 sm:px-6 py-4 sm:py-5',
+      footer: 'border-t border-slate-600 px-4 sm:px-6 py-3 sm:py-4',
+      overlay: 'bg-black/70 backdrop-blur-sm'
     }"
     @update:open="(open: boolean) => !open && cancel()"
   >
@@ -127,8 +127,12 @@ const fileTypeIcon = computed(() => {
 </template>
 
 <style scoped>
-/* Ensure modal has solid background */
+/* Ensure modal has solid lighter background to stand out */
 :deep([role="dialog"]) {
-  background-color: #171717 !important;
+  background: linear-gradient(180deg, #334155 0%, #1e293b 100%) !important;
+}
+
+.light :deep([role="dialog"]) {
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%) !important;
 }
 </style>

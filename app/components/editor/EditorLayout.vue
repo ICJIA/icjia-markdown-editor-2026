@@ -159,38 +159,54 @@ function setupScrollSync(): void {
         </span>
       </div>
       <div class="status-right">
-        <button
-          type="button"
-          class="tour-button"
-          data-tour="tour-button"
-          aria-label="Start guided tour"
-          @click="handleStartTour"
+        <UTooltip
+          text="Take a guided tour of the editor features"
+          :content="{ side: 'top', sideOffset: 8, avoidCollisions: true }"
         >
-          <UIcon name="i-heroicons-academic-cap" class="tour-icon" />
-          <span class="tour-text">Tour</span>
-        </button>
-        <button
-          type="button"
-          class="reset-button"
-          data-tour="reset"
-          aria-label="Reset to default content"
-          @click="handleReset"
+          <button
+            type="button"
+            class="tour-button"
+            data-tour="tour-button"
+            aria-label="Start guided tour"
+            @click="handleStartTour"
+          >
+            <UIcon name="i-heroicons-academic-cap" class="tour-icon" />
+            <span class="tour-text">Tour</span>
+          </button>
+        </UTooltip>
+        <UTooltip
+          text="Reset editor to default sample content"
+          :content="{ side: 'top', sideOffset: 8, avoidCollisions: true }"
         >
-          <UIcon name="i-heroicons-arrow-path" class="reset-icon" />
-          <span class="reset-text">Reset</span>
-        </button>
-        <a 
-          href="https://github.com/ICJIA/icjia-markdown-editor-2026"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="github-link"
-          aria-label="View source code on GitHub (opens in new window)"
+          <button
+            type="button"
+            class="reset-button"
+            data-tour="reset"
+            aria-label="Reset to default content"
+            @click="handleReset"
+          >
+            <UIcon name="i-heroicons-arrow-path" class="reset-icon" />
+            <span class="reset-text">Reset</span>
+          </button>
+        </UTooltip>
+        <UTooltip
+          text="View source code on GitHub (opens in new tab)"
+          :content="{ side: 'top', sideOffset: 8, avoidCollisions: true }"
         >
-          <svg class="github-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-          </svg>
-          <span class="github-text">GitHub</span>
-        </a>
+          <a 
+            href="https://github.com/ICJIA/icjia-markdown-editor-2026"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="github-link"
+            data-tour="github"
+            aria-label="View source code on GitHub (opens in new window)"
+          >
+            <svg class="github-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+            <span class="github-text">GitHub</span>
+          </a>
+        </UTooltip>
       </div>
     </div>
   </div>
@@ -276,6 +292,11 @@ function setupScrollSync(): void {
   /* WCAG AAA compliant - 7:1+ contrast ratio */
   color: #e2e8f0; /* slate-200 for dark mode */
   flex-shrink: 0;
+  /* Fixed height to prevent layout shift on hover */
+  height: 2.25rem;
+  min-height: 2.25rem;
+  max-height: 2.25rem;
+  overflow: visible; /* Allow tooltips to overflow */
 }
 
 /* Light mode override for status bar */
@@ -486,6 +507,41 @@ function setupScrollSync(): void {
   .show-preview-only .preview-pane-wrapper {
     height: 100%;
     border-bottom: none;
+  }
+}
+
+/* Small screen adjustments for status bar */
+@media (max-width: 480px) {
+  .status-bar {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.6875rem;
+    height: 2rem;
+    min-height: 2rem;
+    max-height: 2rem;
+  }
+  
+  .status-left {
+    gap: 0.5rem;
+  }
+  
+  .status-right {
+    gap: 0.375rem;
+  }
+  
+  .reading-time {
+    display: none;
+  }
+  
+  .github-text,
+  .reset-text,
+  .tour-text {
+    display: none;
+  }
+  
+  .tour-button,
+  .reset-button,
+  .github-link {
+    padding: 0.375rem;
   }
 }
 </style>

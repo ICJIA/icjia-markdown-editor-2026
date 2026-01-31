@@ -31,8 +31,9 @@ export const tourConfig: TourConfig = {
    * v4: Reordered steps, added Win shortcuts
    * v5: Added Undo/Redo step, reordered to toolbar → header → panes → status bar
    * v6: Moved Tour button to status bar, added Tour button step
+   * v7: Added GitHub link step highlighting open source project
    */
-  version: 6,
+  version: 7,
 
   /**
    * Auto-start the tour for first-time visitors.
@@ -247,6 +248,16 @@ export const tourConfig: TourConfig = {
       tip: 'This will delete all your current work from browser storage!',
       position: 'top',
       icon: 'i-heroicons-arrow-path'
+    },
+
+    {
+      id: 'github',
+      target: '[data-tour="github"]',
+      title: 'Open Source Project',
+      content: 'This editor is an open source project created by the Illinois Criminal Justice Information Authority (ICJIA). View the source code, report issues, or contribute on GitHub.',
+      tip: 'Contributions and feedback are welcome!',
+      position: 'top',
+      icon: 'i-heroicons-code-bracket'
     }
   ]
 }

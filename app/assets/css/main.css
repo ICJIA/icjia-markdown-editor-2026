@@ -155,18 +155,85 @@ a:focus-visible {
    ============================================ */
 
 /* Global Fix: Ensure all dialogs are centered fixed overlays (Nuxt UI v4 fallback) */
-[role="dialog"] {
-  position: fixed !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  z-index: 9999 !important;
-  background: var(--color-surface, #1e293b) !important;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-  border-radius: 0.5rem !important;
-  max-width: 90vw !important;
-  max-height: 90vh !important;
-  overflow: auto !important;
+/* Note: Dialogs use lighter background to stand out from editor/preview panes */
+/* Exclude .tour-dialog which has its own dynamic positioning */
+[role="dialog"]:not(.tour-dialog) {
+  position: fixed;
+  z-index: 9999;
+  background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border-radius: 0.5rem;
+  border: 1px solid #475569;
+}
+
+/* Light mode dialog background */
+.light [role="dialog"]:not(.tour-dialog),
+:root:not(.dark) [role="dialog"]:not(.tour-dialog) {
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+  border-color: #e2e8f0;
+}
+
+/* Mobile-friendly dialog positioning (excludes tour dialogs) */
+@media (max-width: 639px) {
+  [role="dialog"]:not(.tour-dialog) {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    transform: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+  
+  /* Modal wrapper should fill and flex */
+  [role="dialog"]:not(.tour-dialog) > div {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+  }
+  
+  /* Header stays at top */
+  [role="dialog"]:not(.tour-dialog) [data-slot="header"] {
+    flex-shrink: 0 !important;
+  }
+  
+  /* Modal body should scroll */
+  [role="dialog"]:not(.tour-dialog) [data-slot="body"],
+  [role="dialog"]:not(.tour-dialog) [class*="body"] {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    min-height: 0 !important;
+  }
+  
+  /* Footer stays at bottom */
+  [role="dialog"]:not(.tour-dialog) [data-slot="footer"] {
+    flex-shrink: 0 !important;
+  }
+}
+
+/* Desktop dialog centering (excludes tour dialogs) */
+@media (min-width: 640px) {
+  [role="dialog"]:not(.tour-dialog) {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow: auto;
+  }
 }
 
 .sr-only {

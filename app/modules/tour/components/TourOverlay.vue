@@ -31,63 +31,9 @@ const emit = defineEmits<{
 // Reference to the dialog for focus management
 const dialogRef = ref<HTMLElement | null>(null)
 
-// Computed target element based on current step
-const targetElement = computed(() => {
-  if (!props.currentStep?.target || !import.meta.client) return null
-  return document.querySelector(props.currentStep.target) as HTMLElement | null
-})
-
-// Calculate dialog position based on target element and preferred position
-// Position dialog close to the target element with minimal gap
+// Always center the dialog on screen for consistent UX
 const dialogStyle = computed(() => {
-  if (!targetElement.value || !import.meta.client) {
-    return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }
-  }
-  
-  const rect = targetElement.value.getBoundingClientRect()
-  const position = props.currentStep?.position ?? 'bottom'
-  const dialogWidth = 384 // w-96 = 24rem = 384px
-  const dialogHeight = 280 // Fixed height for consistent button position
-  const gap = 8 // Reduced from 16px to keep dialog closer to target
-  const viewportWidth = window.innerWidth
-  const viewportHeight = window.innerHeight
-  
-  let top = 0
-  let left = 0
-  
-  // Calculate position based on preference - keep dialog adjacent to target
-  switch (position) {
-    case 'bottom':
-      top = rect.bottom + gap
-      left = rect.left + (rect.width / 2) - (dialogWidth / 2)
-      break
-    case 'top':
-      top = rect.top - dialogHeight - gap
-      left = rect.left + (rect.width / 2) - (dialogWidth / 2)
-      break
-    case 'left':
-      top = rect.top + (rect.height / 2) - (dialogHeight / 2)
-      left = rect.left - dialogWidth - gap
-      break
-    case 'right':
-      top = rect.top + (rect.height / 2) - (dialogHeight / 2)
-      left = rect.right + gap
-      break
-  }
-  
-  // Clamp to viewport bounds with small margin
-  left = Math.max(8, Math.min(left, viewportWidth - dialogWidth - 8))
-  top = Math.max(8, Math.min(top, viewportHeight - dialogHeight - 8))
-  
-  // If dialog would be off-screen, center it
-  if (top < 0 || top > viewportHeight - 100) {
-    top = viewportHeight / 2 - dialogHeight / 2
-  }
-  
-  return {
-    top: `${top}px`,
-    left: `${left}px`
-  }
+  return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }
 })
 
 // Global keyboard navigation handler
@@ -289,17 +235,17 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
 
 .tour-card {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  background: var(--ui-bg, #ffffff) !important;
+  background: #f8fafc !important;
   /* Fixed size so Next button stays in same position */
   min-height: 280px;
   display: flex;
   flex-direction: column;
 }
 
-/* Ensure solid background in dark mode */
+/* Ensure solid lighter background in dark mode to stand out from editor */
 .dark .tour-card,
 :root.dark .tour-card {
-  background: var(--ui-bg, #1e293b) !important;
+  background: linear-gradient(180deg, #475569 0%, #334155 100%) !important;
 }
 
 .tour-header {

@@ -35,11 +35,11 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
     v-model:open="isOpen"
     :dismissible="true"
     :ui="{
-      content: 'conversion-modal-content bg-neutral-950 dark:bg-neutral-950 border border-neutral-800 shadow-2xl max-w-4xl w-full',
-      header: 'border-b border-neutral-800 px-6 py-5',
-      body: 'px-6 py-6 max-h-[60vh] overflow-y-auto',
-      footer: 'border-t border-neutral-800 px-6 py-4',
-      overlay: 'bg-black/60 backdrop-blur-sm'
+      content: 'conversion-modal-content bg-slate-800 dark:bg-slate-800 border border-slate-600 shadow-2xl w-[95vw] max-w-[720px] flex flex-col max-h-[90vh] sm:max-h-[85vh]',
+      header: 'border-b border-slate-600 px-4 sm:px-6 py-4 sm:py-5 flex-shrink-0',
+      body: 'px-4 sm:px-6 py-4 sm:py-6 overflow-y-auto flex-1 min-h-0',
+      footer: 'border-t border-slate-600 px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0',
+      overlay: 'bg-black/70 backdrop-blur-sm'
     }"
     @update:open="(open: boolean) => !open && closeModal()"
   >
@@ -119,22 +119,22 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
 
     <template #footer>
       <div class="flex justify-end">
-        <UButton
-          variant="ghost"
-          color="neutral"
+        <button
+          type="button"
+          class="close-button"
           @click="closeModal"
         >
           Close
-        </UButton>
+        </button>
       </div>
     </template>
   </UModal>
 </template>
 
 <style scoped>
-/* Modal content override */
+/* Modal content override - lighter background to stand out from editor */
 :deep(.conversion-modal-content) {
-  background: linear-gradient(180deg, #0a0a0a 0%, #171717 100%) !important;
+  background: linear-gradient(180deg, #334155 0%, #1e293b 100%) !important;
 }
 
 /* Header icon with gradient */
@@ -154,43 +154,31 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
 /* Tools grid - flexible centered layout for 2-4+ cards */
 .tools-grid {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: column;
   gap: 1rem;
+  width: 100%;
 }
 
 /* Card sizing */
 .tools-grid > .tool-card {
-  flex: 0 1 100%;
-  max-width: 320px;
+  width: 100%;
 }
 
 /* For medium screens, show 2 cards side by side */
-@media (min-width: 640px) {
+@media (min-width: 540px) {
   .tools-grid {
-    gap: 1.25rem;
-  }
-  
-  .tools-grid > .tool-card {
-    flex: 0 1 calc(50% - 0.625rem);
-    max-width: 320px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
 }
 
-/* For larger screens, allow up to 3 cards */
-@media (min-width: 1024px) {
-  .tools-grid > .tool-card {
-    flex: 0 1 calc(33.333% - 0.833rem);
-    max-width: 300px;
-  }
-}
-
-/* Tool card */
+/* Tool card - darker than modal background for contrast */
 .tool-card {
   position: relative;
   border-radius: 1rem;
-  background: linear-gradient(145deg, #1a1a1a 0%, #0d0d0d 100%);
-  border: 1px solid #2a2a2a;
+  background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+  border: 1px solid #475569;
   overflow: hidden;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -373,6 +361,106 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
     0 0 0 1px rgba(20, 184, 166, 0.1);
 }
 
+/* Mobile optimizations for tool cards */
+@media (max-width: 639px) {
+  .tools-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+    width: 100% !important;
+    visibility: visible !important;
+  }
+  
+  .tool-card {
+    display: flex !important;
+    flex-direction: column !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    border-radius: 0.75rem;
+    background: #1e293b !important;
+    border: 1px solid #475569 !important;
+    min-height: 200px;
+  }
+  
+  .tool-card__gradient {
+    display: none !important;
+  }
+  
+  .tool-card__content {
+    padding: 1rem;
+    position: relative;
+    z-index: 1;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  .tool-card__header {
+    margin-bottom: 0.75rem;
+  }
+  
+  .tool-card__icon-wrapper {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  
+  .tool-card__icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  
+  .tool-card__name {
+    font-size: 1rem;
+    color: #f1f5f9 !important;
+  }
+  
+  .tool-card__description {
+    font-size: 0.8125rem;
+    margin-bottom: 0.75rem;
+    color: #94a3b8 !important;
+  }
+  
+  .tool-card__features {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .tool-card__feature {
+    font-size: 0.6875rem;
+    color: #94a3b8 !important;
+  }
+  
+  .tool-card__check {
+    width: 0.75rem;
+    height: 0.75rem;
+    color: #22c55e !important;
+  }
+  
+  .tool-card__cta {
+    padding-top: 0.75rem;
+    border-top: 1px solid #475569;
+  }
+  
+  .tool-card__cta-text {
+    font-size: 0.75rem;
+    color: #e2e8f0 !important;
+  }
+  
+  .tool-card__cta-arrow {
+    color: #94a3b8 !important;
+  }
+  
+  /* Disable hover effects on touch devices */
+  .tool-card:hover {
+    transform: none;
+  }
+  
+  .tool-card:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
 /* Info note */
 .tools-note {
   display: flex;
@@ -398,6 +486,65 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
   color: #a3a3a3;
   line-height: 1.5;
   margin: 0;
+}
+
+/* Close button - elevated button style */
+.close-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  background: linear-gradient(to bottom, #475569 0%, #334155 50%, #1e293b 100%);
+  border: 1px solid #64748b;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 
+    0 1px 0 rgba(255, 255, 255, 0.1) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.2) inset,
+    0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.close-button:hover {
+  background: linear-gradient(to bottom, #64748b 0%, #475569 50%, #334155 100%);
+  border-color: #94a3b8;
+  color: #f8fafc;
+  box-shadow: 
+    0 1px 0 rgba(255, 255, 255, 0.15) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.2) inset,
+    0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.close-button:active {
+  transform: translateY(1px);
+  box-shadow: 
+    0 1px 0 rgba(255, 255, 255, 0.1) inset,
+    0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.close-button:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+/* Light mode close button */
+.light .close-button {
+  color: #374151;
+  background: linear-gradient(to bottom, #ffffff 0%, #f1f5f9 50%, #e2e8f0 100%);
+  border-color: #cbd5e1;
+  box-shadow: 
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.05) inset,
+    0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.light .close-button:hover {
+  background: linear-gradient(to bottom, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+  border-color: #94a3b8;
+  color: #1f2937;
 }
 
 /* Light mode adjustments */
@@ -476,12 +623,12 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
     0 0 0 1px rgba(20, 184, 166, 0.1);
 }
 
-/* Dialog background override */
+/* Dialog background override - lighter to stand out from editor */
 :deep([role="dialog"]) {
-  background: linear-gradient(180deg, #0a0a0a 0%, #171717 100%) !important;
+  background: linear-gradient(180deg, #334155 0%, #1e293b 100%) !important;
 }
 
 .light :deep([role="dialog"]) {
-  background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%) !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%) !important;
 }
 </style>

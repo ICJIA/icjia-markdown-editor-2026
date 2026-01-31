@@ -27,6 +27,23 @@ const { copyMarkdown, copyHtml, downloadMarkdown, downloadHtml, uploadMarkdown, 
 const { announce } = useAccessibility()
 const { enabled: scrollSyncEnabled, toggle: toggleScrollSync } = useScrollSync()
 
+// Mobile menu state
+const isMobileMenuOpen = ref(false)
+
+function toggleMobileMenu() {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value
+}
+
+function closeMobileMenu() {
+  isMobileMenuOpen.value = false
+}
+
+// Execute action and close menu
+function mobileAction(action: () => void) {
+  action()
+  closeMobileMenu()
+}
+
 function handleToggleScrollSync() {
   const wasEnabled = scrollSyncEnabled.value
   toggleScrollSync()
@@ -159,12 +176,136 @@ const headingItems = [
     },
   ],
 ]
+
+// Mobile menu items organized by section
+const mobileMenuSections = [
+  {
+    title: 'History',
+    items: [
+      { icon: 'i-heroicons-arrow-uturn-left', label: 'Undo', action: handleUndo },
+      { icon: 'i-heroicons-arrow-uturn-right', label: 'Redo', action: handleRedo },
+    ]
+  },
+  {
+    title: 'Formatting',
+    items: [
+      { icon: 'i-heroicons-bold', label: 'Bold', action: handleBold },
+      { icon: 'i-heroicons-italic', label: 'Italic', action: handleItalic },
+      { icon: 'i-heroicons-code-bracket', label: 'Inline Code', action: handleInlineCode },
+    ]
+  },
+  {
+    title: 'Headings',
+    items: [
+      { icon: 'i-lucide-heading-1', label: 'Heading 1', action: () => handleHeading(1) },
+      { icon: 'i-lucide-heading-2', label: 'Heading 2', action: () => handleHeading(2) },
+      { icon: 'i-lucide-heading-3', label: 'Heading 3', action: () => handleHeading(3) },
+    ]
+  },
+  {
+    title: 'Blocks',
+    items: [
+      { icon: 'i-heroicons-chat-bubble-bottom-center-text', label: 'Block Quote', action: handleQuote },
+      { icon: 'i-heroicons-code-bracket-square', label: 'Code Block', action: handleCodeBlock },
+      { icon: 'i-heroicons-minus', label: 'Horizontal Rule', action: handleHorizontalRule },
+    ]
+  },
+  {
+    title: 'Lists',
+    items: [
+      { icon: 'i-heroicons-list-bullet', label: 'Bullet List', action: handleBulletList },
+      { icon: 'i-heroicons-numbered-list', label: 'Numbered List', action: handleNumberedList },
+    ]
+  },
+  {
+    title: 'Insert',
+    items: [
+      { icon: 'i-heroicons-table-cells', label: 'Table', action: openTableBuilder },
+      { icon: 'i-heroicons-link', label: 'Link', action: handleLink },
+    ]
+  },
+  {
+    title: 'File',
+    items: [
+      { icon: 'i-heroicons-arrow-up-tray', label: 'Upload', action: handleUploadMarkdown },
+      { icon: 'i-heroicons-arrow-down-tray', label: 'Download', action: handleDownloadMarkdown },
+      { icon: 'i-heroicons-clipboard-document', label: 'Copy Markdown', action: handleCopyMarkdown },
+      { icon: 'i-heroicons-code-bracket', label: 'Copy HTML', action: handleCopyHtml },
+    ]
+  },
+]
 </script>
 
 <template>
-  <div class="editor-toolbar" role="toolbar" aria-label="Formatting toolbar">
-    <!-- Undo/Redo group -->
-    <div class="toolbar-group" role="group" aria-label="History" data-tour="history">
+  <div class="toolbar-container">
+    <!-- Mobile hamburger menu button -->
+    <div class="mobile-toolbar">
+      <button
+        type="button"
+        class="hamburger-button"
+        :aria-expanded="isMobileMenuOpen"
+        aria-controls="mobile-menu"
+        aria-label="Toggle formatting menu"
+        @click="toggleMobileMenu"
+      >
+        <UIcon :name="isMobileMenuOpen ? 'i-heroicons-x-mark' : 'i-heroicons-bars-3'" class="hamburger-icon" />
+        <span class="hamburger-text">Format</span>
+      </button>
+      
+      <!-- Scroll sync toggle - always visible on mobile -->
+      <button
+        type="button"
+        :aria-label="`${scrollSyncEnabled ? 'Scroll Sync ON' : 'Scroll Sync OFF'}. Click to toggle.`"
+        :aria-pressed="scrollSyncEnabled"
+        class="mobile-scroll-sync"
+        :class="scrollSyncEnabled ? 'scroll-sync-on' : 'scroll-sync-off'"
+        @click="handleToggleScrollSync"
+      >
+        <UIcon name="i-heroicons-arrows-up-down" class="mobile-sync-icon" />
+      </button>
+      
+      <!-- Quick actions on mobile -->
+      <div class="mobile-quick-actions">
+        <button type="button" class="quick-action-btn" aria-label="Upload" @click="handleUploadMarkdown">
+          <UIcon name="i-heroicons-arrow-up-tray" />
+        </button>
+        <button type="button" class="quick-action-btn" aria-label="Download" @click="handleDownloadMarkdown">
+          <UIcon name="i-heroicons-arrow-down-tray" />
+        </button>
+      </div>
+    </div>
+    
+    <!-- Mobile menu panel -->
+    <Transition name="slide">
+      <div v-if="isMobileMenuOpen" id="mobile-menu" class="mobile-menu-panel">
+        <div class="mobile-menu-content">
+          <div 
+            v-for="section in mobileMenuSections" 
+            :key="section.title" 
+            class="mobile-menu-section"
+          >
+            <h3 class="mobile-menu-section-title">{{ section.title }}</h3>
+            <div class="mobile-menu-items">
+              <button
+                v-for="item in section.items"
+                :key="item.label"
+                type="button"
+                class="mobile-menu-item"
+                @click="mobileAction(item.action)"
+              >
+                <UIcon :name="item.icon" class="mobile-menu-item-icon" />
+                <span>{{ item.label }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Transition>
+    
+    <!-- Desktop toolbar -->
+    <div class="editor-toolbar desktop-toolbar" role="toolbar" aria-label="Formatting toolbar">
+      <!-- Undo/Redo group -->
+      <div class="toolbar-group" role="group" aria-label="History" data-tour="history">
       <ToolbarButton 
         icon="i-heroicons-arrow-uturn-left" 
         label="Undo" 
@@ -328,34 +469,227 @@ const headingItems = [
     
     <ToolbarDivider />
     
-    <!-- Export group -->
-    <div class="toolbar-group" role="group" aria-label="Export" data-tour="export">
-      <ToolbarButton 
-        icon="i-heroicons-clipboard-document"
-        :label="copyMarkdownSuccess ? 'Copied!' : 'Copy Markdown'"
-        shortcut="Mod+Shift+C"
-        :active="copyMarkdownSuccess"
-        @click="handleCopyMarkdown" 
-      />
-      <ToolbarButton 
-        icon="i-heroicons-code-bracket"
-        :label="copyHtmlSuccess ? 'Copied!' : 'Copy HTML'"
-        shortcut="Mod+Shift+H"
-        :active="copyHtmlSuccess"
-        @click="handleCopyHtml" 
-      />
+      <!-- Export group -->
+      <div class="toolbar-group" role="group" aria-label="Export" data-tour="export">
+        <ToolbarButton 
+          icon="i-heroicons-clipboard-document"
+          :label="copyMarkdownSuccess ? 'Copied!' : 'Copy Markdown'"
+          shortcut="Mod+Shift+C"
+          :active="copyMarkdownSuccess"
+          @click="handleCopyMarkdown" 
+        />
+        <ToolbarButton 
+          icon="i-heroicons-code-bracket"
+          :label="copyHtmlSuccess ? 'Copied!' : 'Copy HTML'"
+          shortcut="Mod+Shift+H"
+          :active="copyHtmlSuccess"
+          @click="handleCopyHtml" 
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+/* Toolbar container */
+.toolbar-container {
+  background: var(--color-surface, #1e293b);
+  border-bottom: 1px solid var(--color-border, #334155);
+}
+
+/* Mobile toolbar - hamburger and quick actions */
+.mobile-toolbar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  gap: 0.5rem;
+}
+
+.hamburger-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hamburger-button:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.hamburger-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.hamburger-text {
+  /* Label text */
+}
+
+.mobile-scroll-sync {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  border: 2px solid;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mobile-scroll-sync.scroll-sync-on {
+  background-color: #166534;
+  border-color: #22c55e;
+  color: #ffffff;
+}
+
+.mobile-scroll-sync.scroll-sync-off {
+  background-color: #7f1d1d;
+  border-color: #ef4444;
+  color: #fca5a5;
+}
+
+.mobile-sync-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.mobile-quick-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.quick-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.quick-action-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #f1f5f9;
+}
+
+.quick-action-btn :deep(svg) {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Mobile menu panel */
+.mobile-menu-panel {
+  background: var(--color-surface, #1e293b);
+  border-top: 1px solid var(--color-border, #334155);
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.mobile-menu-content {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  padding: 0.75rem;
+}
+
+@media (min-width: 400px) {
+  .mobile-menu-content {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.mobile-menu-section {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+.mobile-menu-section-title {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin: 0 0 0.375rem 0;
+  padding: 0 0.25rem;
+}
+
+.mobile-menu-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.mobile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: transparent;
+  color: #e2e8f0;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.mobile-menu-item:hover {
+  background: rgba(59, 130, 246, 0.2);
+  color: #ffffff;
+}
+
+.mobile-menu-item-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: #94a3b8;
+}
+
+.mobile-menu-item:hover .mobile-menu-item-icon {
+  color: #3b82f6;
+}
+
+/* Slide transition for mobile menu */
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.2s ease;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+}
+
+.slide-enter-to,
+.slide-leave-from {
+  opacity: 1;
+  max-height: 60vh;
+}
+
+/* Desktop toolbar */
 .editor-toolbar {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1.25rem;
-  background: var(--color-surface, #1e293b);
-  border-bottom: 1px solid var(--color-border, #334155);
   flex-wrap: nowrap;
   min-height: 3.5rem;
   overflow-x: auto;
@@ -366,6 +700,45 @@ const headingItems = [
 .editor-toolbar::-webkit-scrollbar {
   height: 0;
   display: none;
+}
+
+/* Responsive: show mobile toolbar, hide desktop on small screens */
+@media (max-width: 768px) {
+  .mobile-toolbar {
+    display: flex;
+  }
+  
+  .desktop-toolbar {
+    display: none;
+  }
+}
+
+/* Light mode adjustments */
+.light .mobile-menu-section {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.light .mobile-menu-item {
+  color: #1e293b;
+}
+
+.light .mobile-menu-item:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.light .mobile-menu-item-icon {
+  color: #64748b;
+}
+
+.light .quick-action-btn {
+  background: rgba(0, 0, 0, 0.05);
+  color: #64748b;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.light .quick-action-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #1e293b;
 }
 
 .toolbar-group {

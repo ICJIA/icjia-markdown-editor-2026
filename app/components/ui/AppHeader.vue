@@ -22,7 +22,7 @@ const { openModal: openConversionTools } = useConversionToolsModal()
         <!-- Auto-save status with countdown -->
         <UTooltip
           text="Your work is automatically saved to browser local storage"
-          :content="{ side: 'bottom', sideOffset: 8 }"
+          :content="{ side: 'bottom', sideOffset: 8, avoidCollisions: true }"
         >
           <div 
             class="autosave-status" 
@@ -46,7 +46,7 @@ const { openModal: openConversionTools } = useConversionToolsModal()
         <!-- View mode toggle - polished gradient button (purple) -->
         <UTooltip
           text="Click to cycle: Split → Editor → Preview"
-          :content="{ side: 'bottom', sideOffset: 8 }"
+          :content="{ side: 'bottom', sideOffset: 8, avoidCollisions: true }"
         >
           <button
             type="button"
@@ -63,7 +63,7 @@ const { openModal: openConversionTools } = useConversionToolsModal()
         <!-- Conversion Tools dropdown button -->
         <UTooltip
           text="PDF, image, and document conversion tools"
-          :content="{ side: 'bottom', sideOffset: 8 }"
+          :content="{ side: 'bottom', sideOffset: 8, avoidCollisions: true }"
         >
           <button
             type="button"
@@ -90,12 +90,19 @@ const { openModal: openConversionTools } = useConversionToolsModal()
   background: var(--color-surface, #1e293b);
   border-bottom: 1px solid var(--color-border, #334155);
   padding: 0.75rem 1rem;
+  height: 3.5rem; /* Fixed height to prevent layout shift */
+  min-height: 3.5rem;
+  max-height: 3.5rem;
+  display: flex;
+  align-items: center;
+  overflow: visible; /* Allow tooltips to overflow */
 }
 
 .header-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
   max-width: 100%;
   margin: 0 auto;
 }
@@ -135,7 +142,7 @@ const { openModal: openConversionTools } = useConversionToolsModal()
   border: none;
   border-radius: 0.25rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   box-shadow: 
     0 1px 2px rgba(139, 92, 246, 0.3),
     0 2px 4px -1px rgba(139, 92, 246, 0.2),
@@ -144,18 +151,15 @@ const { openModal: openConversionTools } = useConversionToolsModal()
 
 .view-mode-button:hover {
   background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 50%, #6d28d9 100%);
+  transform: translateY(-1px);
   box-shadow: 
     0 2px 8px rgba(139, 92, 246, 0.4),
-    0 6px 12px -2px rgba(139, 92, 246, 0.3),
+    0 4px 12px -2px rgba(139, 92, 246, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
 }
 
 .view-mode-button:active {
   transform: translateY(0);
-  box-shadow: 
-    0 1px 2px rgba(139, 92, 246, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .view-mode-button:focus-visible {
@@ -251,7 +255,7 @@ const { openModal: openConversionTools } = useConversionToolsModal()
   border: none;
   border-radius: 0.25rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   box-shadow: 
     0 1px 2px rgba(20, 184, 166, 0.3),
     0 2px 4px -1px rgba(20, 184, 166, 0.2),
@@ -260,18 +264,15 @@ const { openModal: openConversionTools } = useConversionToolsModal()
 
 .conversion-tools-button:hover {
   background: linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #115e59 100%);
+  transform: translateY(-1px);
   box-shadow: 
     0 2px 8px rgba(20, 184, 166, 0.4),
-    0 6px 12px -2px rgba(20, 184, 166, 0.3),
+    0 4px 12px -2px rgba(20, 184, 166, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
 }
 
 .conversion-tools-button:active {
   transform: translateY(0);
-  box-shadow: 
-    0 1px 2px rgba(20, 184, 166, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .conversion-tools-button:focus-visible {
@@ -290,11 +291,6 @@ const { openModal: openConversionTools } = useConversionToolsModal()
   height: 0.625rem;
   flex-shrink: 0;
   opacity: 0.8;
-  transition: transform 0.2s ease;
-}
-
-.conversion-tools-button:hover .conversion-tools-chevron {
-  transform: translateY(1px);
 }
 
 /* Dark mode adjustments for conversion tools button */
@@ -319,5 +315,62 @@ const { openModal: openConversionTools } = useConversionToolsModal()
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 640px) {
+  .app-header {
+    padding: 0.5rem 0.75rem;
+    height: 3rem;
+    min-height: 3rem;
+    max-height: 3rem;
+  }
+  
+  .app-title {
+    font-size: 0.875rem;
+  }
+  
+  .title-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  .header-actions {
+    gap: 0.375rem;
+  }
+  
+  .autosave-text {
+    display: none;
+  }
+  
+  .autosave-label,
+  .autosave-saved {
+    font-size: 0.625rem;
+  }
+  
+  .view-mode-button span,
+  .conversion-tools-button span {
+    display: none;
+  }
+  
+  .conversion-tools-chevron {
+    display: none;
+  }
+  
+  .view-mode-button,
+  .conversion-tools-button {
+    padding: 0.375rem;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 400px) {
+  .app-title {
+    font-size: 0.75rem;
+  }
+  
+  .autosave-status {
+    display: none;
+  }
 }
 </style>

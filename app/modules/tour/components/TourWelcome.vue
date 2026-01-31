@@ -172,13 +172,13 @@ onUnmounted(() => {
 
 .welcome-card {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  background: var(--ui-bg, #ffffff) !important;
+  background: #f8fafc !important;
 }
 
-/* Ensure solid background in dark mode */
+/* Ensure solid lighter background in dark mode to stand out from editor */
 .dark .welcome-card,
 :root.dark .welcome-card {
-  background: var(--ui-bg, #1e293b) !important;
+  background: linear-gradient(180deg, #475569 0%, #334155 100%) !important;
 }
 
 .welcome-header {

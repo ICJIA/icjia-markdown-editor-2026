@@ -13,8 +13,7 @@ provide('announce', announce)
 
 <template>
   <!-- UApp provides required context providers (TooltipProvider, etc.) -->
-  <!-- Disable toaster since we don't use toasts - prevents empty <ol> a11y violation -->
-  <UApp :toaster="null">
+  <UApp :toaster="{ position: 'bottom-right', duration: 3000 }">
     <div id="app">
       <!-- Skip link - first focusable element (WCAG 2.4.1) -->
       <SkipLink />
