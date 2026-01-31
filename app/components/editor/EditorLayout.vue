@@ -199,22 +199,22 @@ function setupScrollSync(): void {
             @click="handleStartTour"
           >
             <UIcon name="i-heroicons-academic-cap" class="tour-icon" />
-            <span class="tour-text">Tour</span>
+            <span class="tour-text">Take Tour</span>
           </button>
         </UTooltip>
         <UTooltip
-          text="Reset editor to default tutorial content"
+          text="Display the default tutorial content in the editor"
           :content="{ side: 'top', sideOffset: 8, avoidCollisions: true }"
         >
           <button
             type="button"
             class="reset-button"
             data-tour="reset"
-            aria-label="Reset to default tutorial content"
+            aria-label="Display default tutorial content"
             @click="handleReset"
           >
             <UIcon name="i-heroicons-arrow-path" class="reset-icon" />
-            <span class="reset-text">Tutorial</span>
+            <span class="reset-text">Display Tutorial</span>
           </button>
         </UTooltip>
         <UTooltip

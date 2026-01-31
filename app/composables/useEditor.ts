@@ -107,6 +107,27 @@ Despite its technical-sounding name, **Markdown is not programming or coding**�
 | Strikethrough | \`~~text~~\` | ~~crossed out~~ |
 | Inline Code | \`\\\`code\\\`\` | \`code snippet\` |
 
+### Line Breaks & Paragraphs
+
+This is one of the most common sources of confusion for beginners!
+
+**Paragraphs:** Press **Enter twice** (leave a blank line) to create a new paragraph.
+
+**Line breaks:** If you want a line break *without* starting a new paragraph, add **two spaces** at the end of the line, then press Enter once. Or use \`<br>\` for an explicit break.
+
+**Example:**
+
+\`\`\`markdown
+This is the first paragraph.
+
+This is the second paragraph (blank line above).
+
+This line has two spaces at the end  
+so this appears on a new line but same paragraph.
+\`\`\`
+
+> **Common mistake:** Pressing Enter once without two trailing spaces will NOT create a visible line break—the text will continue on the same line when rendered.
+
 ### Headings
 
 Use hash symbols for headings: \`# H1\`, \`## H2\`, \`### H3\`, and so on up to \`###### H6\`.
@@ -162,6 +183,80 @@ Use \`>\` at the start of a line:
 
 > "The only way to do great work is to love what you do." — Steve Jobs
 
+### Horizontal Rules
+
+Create a horizontal line to separate sections using three or more hyphens, asterisks, or underscores:
+
+\`\`\`markdown
+---
+***
+___
+\`\`\`
+
+All three produce a horizontal rule like the ones you see separating sections in this document.
+
+### Code Blocks
+
+For **inline code** (single words or short snippets), wrap text in single backticks: \`\\\`code\\\`\`
+
+For **multi-line code blocks**, use triple backticks with an optional language name for syntax highlighting:
+
+\`\`\`markdown
+\\\`\\\`\\\`javascript
+function greet(name) {
+  return \`Hello, \${name}!\`;
+}
+\\\`\\\`\\\`
+\`\`\`
+
+This renders as:
+
+\`\`\`javascript
+function greet(name) {
+  return \`Hello, \${name}!\`;
+}
+\`\`\`
+
+Common language identifiers: \`javascript\`, \`python\`, \`html\`, \`css\`, \`json\`, \`bash\`, \`sql\`
+
+### Mathematical Notation (LaTeX/KaTeX)
+
+This editor supports mathematical notation using **KaTeX**—a fast math typesetting library. Use LaTeX syntax to write equations.
+
+**Inline Math:** Wrap expressions in single dollar signs \`$...$\`
+
+- Type \`$E = mc^2$\` to get $E = mc^2$
+- Type \`$\\alpha + \\beta = \\gamma$\` to get $\\alpha + \\beta = \\gamma$
+
+**Block Math:** Wrap expressions in double dollar signs \`$$...$$\`
+
+$$
+\\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}
+$$
+
+This is the quadratic formula, written as: \`$$\\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$\`
+
+**Common Math Symbols:**
+
+| Symbol | LaTeX | Result |
+|:-------|:------|:-------|
+| Fraction | \`$\\frac{a}{b}$\` | $\\frac{a}{b}$ |
+| Square root | \`$\\sqrt{x}$\` | $\\sqrt{x}$ |
+| Exponent | \`$x^2$\` | $x^2$ |
+| Subscript | \`$x_i$\` | $x_i$ |
+| Summation | \`$\\sum_{i=1}^n$\` | $\\sum_{i=1}^n$ |
+| Greek letters | \`$\\alpha, \\beta, \\pi$\` | $\\alpha, \\beta, \\pi$ |
+| Comparison | \`$\\leq, \\geq, \\neq$\` | $\\leq, \\geq, \\neq$ |
+| Mean/Average | \`$\\bar{x}$\` | $\\bar{x}$ |
+
+**Example — Statistical Formula:**
+
+$$
+\\bar{x} = \\frac{1}{n} \\sum_{i=1}^{n} x_i
+$$
+
+> **Tip:** KaTeX supports hundreds of LaTeX commands. For a complete reference, see the [KaTeX documentation](https://katex.org/docs/supported.html).
+
 ### Tables
 
 Create tables with pipes \`|\` and hyphens \`-\`:
@@ -185,8 +280,9 @@ Markdown supports **inline HTML** for cases where you need more control—especi
 - Familiar syntax if you know basic HTML
 - Works when Markdown tables become unwieldy
 
-**Example — HTML Table:**
+**Example — HTML Table Code:**
 
+\`\`\`html
 <table>
   <caption>Quarterly Report Summary</caption>
   <thead>
@@ -207,17 +303,57 @@ Markdown supports **inline HTML** for cases where you need more control—especi
       <td>$1.4M</td>
       <td>+17%</td>
     </tr>
-    <tr>
-      <td>Q3 2025</td>
-      <td>$1.5M</td>
-      <td>+7%</td>
-    </tr>
   </tbody>
 </table>
+\`\`\`
 
-> **Note:** When using HTML in Markdown, leave a blank line before and after the HTML block. The HTML above renders as a proper accessible table with semantic structure.
+> **Note:** When using HTML in Markdown, leave a blank line before and after the HTML block. Copy the code above and paste it into your document—it will render as a proper accessible table.
 
 > **⚠️ Caution:** While embedding HTML in Markdown is valid, it **increases complexity** and creates a higher potential for errors. You're mixing two different syntaxes, which can make files harder to read, edit, and maintain. Use HTML sparingly—only when Markdown tables can't meet your needs (e.g., accessibility requirements, complex layouts, or row/column spanning).
+
+### Escaping Special Characters
+
+Sometimes you want to display characters that normally trigger formatting. Use a backslash \`\\\` to escape them:
+
+| Character | Escaped | Result |
+|:----------|:--------|:-------|
+| Asterisk | \`\\*text\\*\` | \*text\* |
+| Underscore | \`\\_text\\_\` | \_text\_ |
+| Backtick | \`\\\\\\\`code\\\\\\\`\` | \\\`code\\\` |
+| Hash | \`\\# Not a heading\` | \# Not a heading |
+| Bracket | \`\\[not a link\\]\` | \[not a link\] |
+
+---
+
+## Common Mistakes & Tips
+
+New to Markdown? Here are the most common issues and how to fix them:
+
+**1. Line breaks not working**
+- **Problem:** Pressing Enter once doesn't create a new line
+- **Fix:** Use two spaces at the end of the line, or press Enter twice for a new paragraph
+
+**2. Lists not rendering**
+- **Problem:** Your list appears as plain text
+- **Fix:** Make sure there's a blank line before the list, and a space after the \`-\` or number
+
+**3. Links showing raw syntax**
+- **Problem:** \`[text](url)\` appears as-is instead of a clickable link
+- **Fix:** Ensure no spaces between the \`]\` and \`(\`, and the URL is complete (includes \`https://\`)
+
+**4. Nested lists not indenting**
+- **Problem:** Sub-items appear at the same level as parent items
+- **Fix:** Use 2-4 spaces (or one tab) before the \`-\` for nested items
+
+**5. Special characters appearing literally**
+- **Problem:** You see \`**text**\` instead of **bold text**
+- **Fix:** Make sure there are no spaces between the asterisks and the text
+
+**6. Tables look broken**
+- **Problem:** Table columns are misaligned or not rendering
+- **Fix:** Ensure the header separator row (\`|---|---|---|\`) has the same number of columns as your data
+
+> **Pro tip:** When in doubt, add a blank line before and after any Markdown element (lists, code blocks, tables, blockquotes). This helps ensure proper rendering.
 
 ---
 
@@ -231,6 +367,8 @@ Markdown supports **inline HTML** for cases where you need more control—especi
 | Inline Code | ⌘ + E | Ctrl + E |
 | Headings | ⌘ + 1-6 | Ctrl + 1-6 |
 | Insert Table | ⌘ + T | Ctrl + T |
+| Toggle Scroll Sync | ⌘ + \\ | Ctrl + \\ |
+| Upload File | ⌘ + O | Ctrl + O |
 | Copy Markdown | ⌘ + Shift + C | Ctrl + Shift + C |
 | Copy HTML | ⌘ + Shift + H | Ctrl + Shift + H |
 | Download | ⌘ + Shift + S | Ctrl + Shift + S |
@@ -480,12 +618,14 @@ export function useEditor() {
   /**
    * Clears the default content and prepares the editor for user input.
    * Called when user clicks "Start Editing" button.
+   * Adds placeholder text to guide the user.
    * 
    * @returns {void}
    */
   function startEditing(): void {
     hasStartedEditing.value = true
-    setContent('')
+    // Add placeholder text to guide the user
+    setContent('Enter your markdown here.\n\n')
     // Focus the editor
     focus()
   }

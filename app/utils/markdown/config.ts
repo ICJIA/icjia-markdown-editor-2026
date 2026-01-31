@@ -8,6 +8,7 @@
  * @requires markdown-it-footnote
  * @requires markdown-it-anchor
  * @requires highlight.js
+ * @requires @traptitech/markdown-it-katex
  * 
  * Features:
  * - Syntax highlighting for 190+ languages via highlight.js
@@ -15,6 +16,7 @@
  * - Heading anchors for navigation
  * - External link security (rel="noopener noreferrer")
  * - Lazy loading for images
+ * - Math/LaTeX rendering via KaTeX
  */
 
 import MarkdownIt from 'markdown-it'
@@ -27,6 +29,7 @@ import taskLists from 'markdown-it-task-lists'
 import strikethrough from 'markdown-it-strikethrough-alt'
 // @ts-expect-error - no type declarations available
 import mark from 'markdown-it-mark'
+import katex from '@traptitech/markdown-it-katex'
 import hljs from 'highlight.js'
 
 /**
@@ -77,6 +80,12 @@ export function createMarkdownIt(): MarkdownIt {
   
   // Add highlight/mark support (==text==)
   md.use(mark)
+  
+  // Add KaTeX math support ($inline$ and $$block$$)
+  md.use(katex, {
+    throwOnError: false,
+    errorColor: '#cc0000',
+  })
   
   // Add task list support (checkboxes: - [ ] and - [x])
   md.use(taskLists, {
