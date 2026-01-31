@@ -1,7 +1,8 @@
 /**
  * @fileoverview markdown-it Configuration
  * @description Configures the markdown parser with plugins and custom renderers.
- * Security-focused: raw HTML is disabled and external links have rel="noopener".
+ * Raw HTML is enabled for embedding tables and other HTML elements.
+ * External links have rel="noopener" for security.
  * 
  * @module utils/markdown/config
  * @requires markdown-it
@@ -36,7 +37,7 @@ import hljs from 'highlight.js'
  * Creates and configures a markdown-it instance with all plugins and custom renderers.
  * 
  * Configuration:
- * - Raw HTML disabled for security
+ * - Raw HTML enabled for embedding tables and custom elements
  * - XHTML-compliant output
  * - Automatic line breaks
  * - URL auto-linking
@@ -47,7 +48,7 @@ import hljs from 'highlight.js'
  */
 export function createMarkdownIt(): MarkdownIt {
   const md = new MarkdownIt({
-    html: false,          // Disable raw HTML for security
+    html: true,           // Enable raw HTML for embedding tables, etc.
     xhtmlOut: true,       // Use XHTML-compliant output
     breaks: true,         // Convert \n to <br>
     linkify: true,        // Auto-convert URLs to links

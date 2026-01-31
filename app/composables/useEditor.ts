@@ -307,7 +307,32 @@ Markdown supports **inline HTML** for cases where you need more control—especi
 </table>
 \`\`\`
 
-> **Note:** When using HTML in Markdown, leave a blank line before and after the HTML block. Copy the code above and paste it into your document—it will render as a proper accessible table.
+**Rendered Result:**
+
+<table>
+  <caption>Quarterly Report Summary</caption>
+  <thead>
+    <tr>
+      <th scope="col">Quarter</th>
+      <th scope="col">Revenue</th>
+      <th scope="col">Growth</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Q1 2025</td>
+      <td>$1.2M</td>
+      <td>+12%</td>
+    </tr>
+    <tr>
+      <td>Q2 2025</td>
+      <td>$1.4M</td>
+      <td>+17%</td>
+    </tr>
+  </tbody>
+</table>
+
+> **Note:** When using HTML in Markdown, leave a blank line before and after the HTML block. The code example above shows the HTML syntax, and directly below it you can see how it renders as a proper accessible table.
 
 > **⚠️ Caution:** While embedding HTML in Markdown is valid, it **increases complexity** and creates a higher potential for errors. You're mixing two different syntaxes, which can make files harder to read, edit, and maintain. Use HTML sparingly—only when Markdown tables can't meet your needs (e.g., accessibility requirements, complex layouts, or row/column spanning).
 
