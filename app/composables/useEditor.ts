@@ -408,10 +408,9 @@ export function useEditor() {
    * @returns {void}
    */
   function resetContent(): void {
-    // Clear localStorage
-    if (import.meta.client) {
-      localStorage.removeItem('icjia-markdown-editor-content')
-    }
+    // Note: We intentionally do NOT clear localStorage here.
+    // The user's auto-saved content is preserved so they can recover it
+    // by reloading the page (before the tutorial content is auto-saved).
     // Set the default content
     setContent(DEFAULT_CONTENT_VALUE)
     // Reset the editing flag so the "Start Editing" button reappears

@@ -185,6 +185,8 @@ export interface UseTourReturn {
   handleKeydown: (event: KeyboardEvent) => void
   /** Mark tour as seen with explicit localStorage write for Safari */
   markAsSeen: () => void
+  /** Reset tour completion status so tour will auto-start again */
+  resetCompletion: () => void
 }
 
 // Re-export Ref types for external use

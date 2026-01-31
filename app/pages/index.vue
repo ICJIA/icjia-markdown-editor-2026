@@ -87,8 +87,15 @@ function handleStartTour() {
   showWelcome.value = true
 }
 
-// Provide tour start function to child components
+// Reset tour completion and show welcome again (for Tutorial button)
+function handleResetTour() {
+  tour.resetCompletion()
+  showWelcome.value = true
+}
+
+// Provide tour functions to child components
 provide('startTour', handleStartTour)
+provide('resetTour', handleResetTour)
 </script>
 
 <template>

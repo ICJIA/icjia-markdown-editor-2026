@@ -211,6 +211,23 @@ export function useTour(config: TourConfig): UseTourReturn {
   }
   
   /**
+   * Reset the tour completion status so the tour will auto-start again.
+   * Used when user clicks "Tutorial" button to review the onboarding experience.
+   */
+  function resetCompletion(): void {
+    hasCompletedTour.value = false
+    // Explicitly remove from localStorage for Safari compatibility
+    if (import.meta.client) {
+      try {
+        localStorage.removeItem(storageKey)
+      } catch {
+        // localStorage may be unavailable (private mode, quota exceeded, etc.)
+        // The reactive ref will still work for the current session
+      }
+    }
+  }
+  
+  /**
    * Cancel the tour and mark as seen so it won't auto-start again.
    * Users can still manually restart via the Tour button.
    */
@@ -304,6 +321,7 @@ export function useTour(config: TourConfig): UseTourReturn {
     getStepById,
     getStepIndex,
     handleKeydown,
-    markAsSeen
+    markAsSeen,
+    resetCompletion
   }
 }

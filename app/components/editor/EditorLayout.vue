@@ -10,8 +10,9 @@ const { isTableBuilderOpen, closeTableBuilder } = useTableBuilderModal()
 const { insertText, resetContent, isShowingDefaultContent, startEditing } = useEditor()
 const { announce } = useAccessibility()
 
-// Inject tour start function from parent
+// Inject tour functions from parent
 const startTour = inject<() => void>('startTour', () => {})
+const resetTour = inject<() => void>('resetTour', () => {})
 
 /**
  * Handle tour button click
@@ -22,11 +23,14 @@ function handleStartTour() {
 
 /**
  * Handle reset button click with confirmation
+ * Resets editor to tutorial content and shows the welcome tour again.
+ * Note: The user's auto-saved content is preserved in localStorage.
  */
 function handleReset() {
-  if (confirm('Reset to markdown tutorial?\n\nThis will delete your current work and any auto-saved content in this browser\'s local storage.\n\nOnly proceed if you are okay with removing your saved content.')) {
+  if (confirm('Reset to markdown tutorial?\n\nThis will show the tutorial content and restart the onboarding tour.\n\nYour auto-saved content is preserved. Reload the page to restore it.')) {
     resetContent()
-    announce('Content reset to markdown tutorial')
+    resetTour()
+    announce('Content reset to markdown tutorial. Welcome tour will appear.')
   }
 }
 
