@@ -52,7 +52,7 @@ const conversionTools: ConversionTool[] = [
   },
   {
     id: 'tablesgenerator',
-    name: 'Tables Generator',
+    name: 'Table Generator',
     description: 'Advanced markdown table generator with spreadsheet-like editing and CSV import.',
     url: 'https://www.tablesgenerator.com/markdown_tables',
     icon: 'i-heroicons-table-cells',
