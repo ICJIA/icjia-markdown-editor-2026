@@ -21,7 +21,8 @@ A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. Designe
 - **Reset Button** - Clear saved content and reset to default with one click
 - **Export Options** - Copy as Markdown, copy as HTML, or download files with custom filenames
 - **Footnote Support** - Full footnote syntax with automatic numbering and back-references
-- **Guided Tour** - Interactive 14-step onboarding covering all features (runs once, restartable anytime)
+- **Guided Tour** - Interactive 19-step onboarding with welcome screen covering all features (runs once, restartable anytime)
+- **Undo/Redo** - Full history support with keyboard shortcuts (Cmd/Ctrl+Z)
 - **Accessibility First** - WCAG 2.1 Level AA compliant with full keyboard navigation and screen reader support
 - **Static Deployment** - Deploy anywhere as a static site (Netlify-ready)
 - **Fully Documented** - Comprehensive JSDoc comments on all composables and utilities
@@ -84,10 +85,14 @@ A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. Designe
 
 | Status | Feature |
 |:------:|:--------|
-| ✅ | Guided tour/onboarding module (WCAG 2.1 AA compliant, 14 steps) |
+| ✅ | Guided tour/onboarding module (WCAG 2.1 AA compliant, 19 steps) |
+| ✅ | Welcome screen with ICJIA logo (first-time users + manual tour trigger) |
+| ✅ | Tour progress indicator with modern pill design and WCAG AA contrast |
 | ✅ | Reusable tour module architecture for other projects |
 | ✅ | Safari localStorage compatibility fix |
 | ✅ | WCAG 1.4.12 text spacing compliance for code blocks |
+| ✅ | CodeMirror v6 type compatibility fixes (undo/redo functions) |
+| ✅ | Cursor pointer styling for all interactive tour buttons |
 | ⬜ | Full accessibility audit (axe-core, WAVE) |
 | ⬜ | Screen reader testing (VoiceOver, NVDA) |
 | ⬜ | Keyboard navigation refinement |
@@ -139,6 +144,8 @@ cd icjia-markdown-editor-2026
 # Install dependencies
 yarn install
 ```
+
+**Note:** If you encounter TypeScript errors related to CodeMirror during build, the project includes type compatibility fixes for CodeMirror v6 commands (undo/redo).
 
 ### Development
 
@@ -212,37 +219,46 @@ This project is committed to WCAG 2.1 Level AA compliance. Key accessibility fea
 
 ## Guided Tour / Onboarding
 
-The application includes an interactive guided tour that introduces users to all major features. The tour is:
+The application includes an interactive guided tour with a welcome screen that introduces users to all major features. The tour is:
 
-- **WCAG 2.1 AA Compliant** - Full keyboard navigation (←/→/Esc), screen reader announcements
+- **WCAG 2.1 AA Compliant** - Full keyboard navigation (←/→/Esc), screen reader announcements, AA contrast ratios
+- **Welcome Screen** - Professional welcome modal with ICJIA logo for first-time users
 - **Runs Once by Default** - Automatically starts for first-time visitors
 - **Cancellable Anytime** - Users can skip with a button or press Escape
-- **Manually Restartable** - Click the ? button in the header to restart
+- **Manually Restartable** - Click the Tour button in the status bar to see the full experience again
+- **Modern Design** - Pill-shaped progress indicator (e.g., "1 / 19") with proper spacing and contrast
 - **Responsive** - Works on desktop and mobile devices
 
 ### Tour Steps
 
-The tour follows a logical left-to-right, top-to-bottom order:
+The tour follows a logical left-to-right, top-to-bottom order covering 19 features:
 
 **Toolbar (left to right):**
-1. **Text Formatting** - Bold, italic, inline code
-2. **Headings** - H1-H6 with keyboard shortcuts
-3. **Block Elements** - Quotes, code blocks, horizontal rules
-4. **Lists** - Bullet and numbered lists
-5. **Tables & Links** - Visual table builder, link insertion
-6. **Scroll Sync** - Synchronized scrolling toggle
-7. **Upload & Download** - File operations
-8. **Copy to Clipboard** - Markdown and HTML export
+1. **Undo & Redo** - History navigation with keyboard shortcuts
+2. **Text Formatting** - Bold, italic, inline code
+3. **Headings** - H1-H6 with keyboard shortcuts
+4. **Block Elements** - Quotes, code blocks, horizontal rules
+5. **Lists** - Bullet and numbered lists
+6. **Tables & Links** - Visual table builder, link insertion
+7. **Scroll Sync** - Synchronized scrolling toggle
+8. **Upload & Download** - File operations
+9. **Copy to Clipboard** - Markdown and HTML export
+
+**Header Controls (left to right):**
+10. **Auto-Save** - Browser localStorage with countdown timer
+11. **View Modes** - Split/editor/preview toggle
+12. **Conversion Tools** - External privacy-first utilities
+13. **Light/Dark Mode** - Theme toggle
 
 **Main Content:**
-9. **Editor Pane** - Where to write markdown
-10. **Preview Pane** - Live rendering
+14. **Editor Pane** - Where to write markdown
+15. **Preview Pane** - Live rendering
 
-**Header Controls:**
-11. **Auto-Save** - Browser localStorage with countdown timer
-12. **View Modes** - Split/editor/preview toggle
-13. **Reset** - Clear saved content and reset to default
-14. **Light/Dark Mode** - Theme toggle
+**Status Bar (bottom toolbar, left to right):**
+16. **Document Statistics** - Word count, character count, reading time
+17. **Tour Button** - Restart the guided tour anytime
+18. **Reset** - Clear saved content and reset to default
+19. **GitHub Source Code** - Link to open source repository
 
 ### Reusing the Tour Module
 

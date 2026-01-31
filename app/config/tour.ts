@@ -253,7 +253,7 @@ export const tourConfig: TourConfig = {
     {
       id: 'github',
       target: '[data-tour="github"]',
-      title: 'Open Source Project',
+      title: 'GitHub Source Code',
       content: 'This editor is an open source project created by the Illinois Criminal Justice Information Authority (ICJIA). View the source code, report issues, or contribute on GitHub.',
       tip: 'Contributions and feedback are welcome!',
       position: 'top',
