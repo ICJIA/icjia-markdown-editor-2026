@@ -134,7 +134,7 @@ function setupScrollSync(): void {
           <div class="pane-header">
             <span class="pane-title">
               <UIcon name="i-heroicons-pencil-square" />
-              Editor
+              Markdown Editor
             </span>
           </div>
           <EditorPane
@@ -168,7 +168,7 @@ function setupScrollSync(): void {
           <div class="pane-header">
             <span class="pane-title">
               <UIcon name="i-heroicons-eye" />
-              Preview
+              Web Preview
             </span>
           </div>
           <PreviewPane ref="previewPaneRef" />
@@ -203,18 +203,18 @@ function setupScrollSync(): void {
           </button>
         </UTooltip>
         <UTooltip
-          text="Reset editor and display the default tutorial content"
+          text="Reset editor to the default tutorial text"
           :content="{ side: 'top', sideOffset: 8, avoidCollisions: true }"
         >
           <button
             type="button"
             class="reset-button"
             data-tour="reset"
-            aria-label="Reset editor and display default tutorial content"
+            aria-label="Reset editor to the default tutorial text"
             @click="handleReset"
           >
             <UIcon name="i-heroicons-arrow-path" class="reset-icon" />
-            <span class="reset-text">Reset & Display Tutorial</span>
+            <span class="reset-text">Reset to Tutorial Text</span>
           </button>
         </UTooltip>
         <UTooltip
