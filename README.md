@@ -5,8 +5,7 @@
 [![Vue](https://img.shields.io/badge/Vue-3.5+-4FC08D?logo=vue.js)](https://vuejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)](https://www.typescriptlang.org)
 [![WCAG 2.1 AA](https://img.shields.io/badge/WCAG-2.1_AA-green)](https://www.w3.org/WAI/WCAG21/quickref/)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/placeholder/deploy-status)](https://markdown.icjia.cloud)
-
+[![Netlify Status](https://api.netlify.com/api/v1/badges/efc7c372-8945-4089-acbd-5201f59a753e/deploy-status)](https://app.netlify.com/projects/nostalgic-shaw-a15a61/deploys)
 A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. This is the **updated version** of the original ICJIA Markdown Editor, rebuilt from the ground up with modern web technologies. Designed for ICJIA researchers to write reports, policy briefs, and documentation with full WCAG 2.1 AA compliance.
 
 **[Live Demo →](https://markdown.icjia.cloud)**
@@ -33,105 +32,105 @@ A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. This is
 
 ## Documentation
 
-| Document | Description |
-|----------|-------------|
-| [Design Document](./documentation/icjia-markdown-editor-design-doc.md) | Features, UX requirements, user personas, accessibility gates |
-| [Technical Architecture](./documentation/icjia-markdown-editor-technical-architecture.md) | Implementation details, code examples, component specs |
-| [Accessibility Checklist](./documentation/ACCESSIBILITY_CHECKLIST.md) | Manual testing procedures for WCAG 2.1 AA |
-| [Quick Start Guide](./documentation/QUICK_START.md) | Getting started in 5 minutes |
-| [Browser Support](./documentation/BROWSER_SUPPORT.md) | Supported browsers and screen readers |
-| [Troubleshooting](./documentation/TROUBLESHOOTING.md) | Common issues and solutions |
-| [Tour Module](./app/modules/tour/README.md) | Reusable guided tour module documentation |
+| Document                                                                                  | Description                                                   |
+| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| [Design Document](./documentation/icjia-markdown-editor-design-doc.md)                    | Features, UX requirements, user personas, accessibility gates |
+| [Technical Architecture](./documentation/icjia-markdown-editor-technical-architecture.md) | Implementation details, code examples, component specs        |
+| [Accessibility Checklist](./documentation/ACCESSIBILITY_CHECKLIST.md)                     | Manual testing procedures for WCAG 2.1 AA                     |
+| [Quick Start Guide](./documentation/QUICK_START.md)                                       | Getting started in 5 minutes                                  |
+| [Browser Support](./documentation/BROWSER_SUPPORT.md)                                     | Supported browsers and screen readers                         |
+| [Troubleshooting](./documentation/TROUBLESHOOTING.md)                                     | Common issues and solutions                                   |
+| [Tour Module](./app/modules/tour/README.md)                                               | Reusable guided tour module documentation                     |
 
 ## Development Progress
 
 ### ✅ Phase 1: Foundation — COMPLETE
 
-| Status | Feature |
-|:------:|:--------|
-| ✅ | Nuxt 4 project setup with Nuxt UI |
-| ✅ | CodeMirror 6 integration with markdown syntax highlighting |
-| ✅ | Basic twin-pane layout (editor/preview) |
-| ✅ | Dark/light mode theming with system preference detection |
-| ✅ | markdown-it configuration with footnotes and syntax highlighting |
-| ✅ | Skip link and semantic HTML structure |
-| ✅ | Focus indicators on all interactive elements |
-| ✅ | `useAccessibility` composable with screen reader announcements |
+| Status | Feature                                                          |
+| :----: | :--------------------------------------------------------------- |
+|   ✅   | Nuxt 4 project setup with Nuxt UI                                |
+|   ✅   | CodeMirror 6 integration with markdown syntax highlighting       |
+|   ✅   | Basic twin-pane layout (editor/preview)                          |
+|   ✅   | Dark/light mode theming with system preference detection         |
+|   ✅   | markdown-it configuration with footnotes and syntax highlighting |
+|   ✅   | Skip link and semantic HTML structure                            |
+|   ✅   | Focus indicators on all interactive elements                     |
+|   ✅   | `useAccessibility` composable with screen reader announcements   |
 
 ### ✅ Phase 2: Core Features — COMPLETE
 
-| Status | Feature |
-|:------:|:--------|
-| ✅ | Formatting toolbar with all buttons (Bold, Italic, Code, etc.) |
-| ✅ | Keyboard shortcuts (Cmd+B, Cmd+I, Cmd+1-6, etc.) |
-| ✅ | Scroll synchronization between editor and preview |
-| ✅ | Copy Markdown to clipboard |
-| ✅ | Copy HTML to clipboard |
-| ✅ | Download as Markdown file |
-| ✅ | Upload Markdown file |
-| ✅ | Word count and character count in status bar |
+| Status | Feature                                                        |
+| :----: | :------------------------------------------------------------- |
+|   ✅   | Formatting toolbar with all buttons (Bold, Italic, Code, etc.) |
+|   ✅   | Keyboard shortcuts (Cmd+B, Cmd+I, Cmd+1-6, etc.)               |
+|   ✅   | Scroll synchronization between editor and preview              |
+|   ✅   | Copy Markdown to clipboard                                     |
+|   ✅   | Copy HTML to clipboard                                         |
+|   ✅   | Download as Markdown file                                      |
+|   ✅   | Upload Markdown file                                           |
+|   ✅   | Word count and character count in status bar                   |
 
 ### ✅ Phase 3: Advanced Features — COMPLETE
 
-| Status | Feature |
-|:------:|:--------|
-| ✅ | Table builder modal with visual grid editor |
-| ✅ | Footnote support via markdown-it-footnote |
-| ✅ | Auto-save to localStorage (every 30 seconds with countdown in header) |
-| ✅ | Tutorial button to reset to markdown tutorial content |
-| ✅ | Download modal with custom filename support |
-| ✅ | HTML export with styled document wrapper |
-| ✅ | Comprehensive JSDoc documentation for all composables and utilities |
-| ✅ | Save indicator with visual feedback |
+| Status | Feature                                                               |
+| :----: | :-------------------------------------------------------------------- |
+|   ✅   | Table builder modal with visual grid editor                           |
+|   ✅   | Footnote support via markdown-it-footnote                             |
+|   ✅   | Auto-save to localStorage (every 30 seconds with countdown in header) |
+|   ✅   | Tutorial button to reset to markdown tutorial content                 |
+|   ✅   | Download modal with custom filename support                           |
+|   ✅   | HTML export with styled document wrapper                              |
+|   ✅   | Comprehensive JSDoc documentation for all composables and utilities   |
+|   ✅   | Save indicator with visual feedback                                   |
 
 ### 🔄 Phase 4: Accessibility & Polish — IN PROGRESS
 
-| Status | Feature |
-|:------:|:--------|
-| ✅ | Guided tour/onboarding module (WCAG 2.1 AA compliant, 19 steps) |
-| ✅ | Welcome screen with ICJIA logo (first-time users + manual tour trigger) |
-| ✅ | Tour progress indicator with modern pill design and WCAG AA contrast |
-| ✅ | Reusable tour module architecture for other projects |
-| ✅ | Safari localStorage compatibility fix |
-| ✅ | WCAG 1.4.12 text spacing compliance for code blocks |
-| ✅ | CodeMirror v6 type compatibility fixes (undo/redo functions) |
-| ✅ | Cursor pointer styling for all interactive tour buttons |
-| ✅ | ICJIA logo in header (clickable to scroll to top) |
-| ✅ | "Start Editing" button to clear tutorial content for new users |
-| ✅ | High-contrast purple copy notifications (WCAG AA compliant) |
-| ⬜ | Full accessibility audit (axe-core, WAVE) |
-| ⬜ | Screen reader testing (VoiceOver, NVDA) |
-| ⬜ | Keyboard navigation refinement |
-| ⬜ | Help modal with shortcuts reference |
-| ⬜ | Image insertion modal with placeholder option |
-| ⬜ | Link insertion modal with URL validation |
-| ⬜ | Find & Replace functionality |
-| ⬜ | Error handling improvements |
-| ⬜ | Loading state refinements |
+| Status | Feature                                                                 |
+| :----: | :---------------------------------------------------------------------- |
+|   ✅   | Guided tour/onboarding module (WCAG 2.1 AA compliant, 19 steps)         |
+|   ✅   | Welcome screen with ICJIA logo (first-time users + manual tour trigger) |
+|   ✅   | Tour progress indicator with modern pill design and WCAG AA contrast    |
+|   ✅   | Reusable tour module architecture for other projects                    |
+|   ✅   | Safari localStorage compatibility fix                                   |
+|   ✅   | WCAG 1.4.12 text spacing compliance for code blocks                     |
+|   ✅   | CodeMirror v6 type compatibility fixes (undo/redo functions)            |
+|   ✅   | Cursor pointer styling for all interactive tour buttons                 |
+|   ✅   | ICJIA logo in header (clickable to scroll to top)                       |
+|   ✅   | "Start Editing" button to clear tutorial content for new users          |
+|   ✅   | High-contrast purple copy notifications (WCAG AA compliant)             |
+|   ⬜   | Full accessibility audit (axe-core, WAVE)                               |
+|   ⬜   | Screen reader testing (VoiceOver, NVDA)                                 |
+|   ⬜   | Keyboard navigation refinement                                          |
+|   ⬜   | Help modal with shortcuts reference                                     |
+|   ⬜   | Image insertion modal with placeholder option                           |
+|   ⬜   | Link insertion modal with URL validation                                |
+|   ⬜   | Find & Replace functionality                                            |
+|   ⬜   | Error handling improvements                                             |
+|   ⬜   | Loading state refinements                                               |
 
 ### ⬜ Phase 5: Testing & Launch — PENDING
 
-| Status | Feature |
-|:------:|:--------|
-| ⬜ | Unit tests for utilities |
-| ⬜ | Component tests |
-| ⬜ | E2E tests for critical paths |
-| ⬜ | Cross-browser testing |
-| ⬜ | Performance optimization |
-| ⬜ | Lighthouse score optimization (target: 100 accessibility) |
-| ⬜ | Production deployment documentation |
+| Status | Feature                                                   |
+| :----: | :-------------------------------------------------------- |
+|   ⬜   | Unit tests for utilities                                  |
+|   ⬜   | Component tests                                           |
+|   ⬜   | E2E tests for critical paths                              |
+|   ⬜   | Cross-browser testing                                     |
+|   ⬜   | Performance optimization                                  |
+|   ⬜   | Lighthouse score optimization (target: 100 accessibility) |
+|   ⬜   | Production deployment documentation                       |
 
 ## Tech Stack
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| Nuxt | 4.x | Application framework |
-| Vue | 3.5+ | Reactive UI |
-| TypeScript | 5.x | Type safety |
-| Nuxt UI | 3.x | Component library |
-| CodeMirror | 6.x | Text editor engine |
-| markdown-it | 14.x | Markdown parsing |
-| highlight.js | 11.x | Code syntax highlighting |
+| Technology   | Version | Purpose                  |
+| ------------ | ------- | ------------------------ |
+| Nuxt         | 4.x     | Application framework    |
+| Vue          | 3.5+    | Reactive UI              |
+| TypeScript   | 5.x     | Type safety              |
+| Nuxt UI      | 3.x     | Component library        |
+| CodeMirror   | 6.x     | Text editor engine       |
+| markdown-it  | 14.x    | Markdown parsing         |
+| highlight.js | 11.x    | Code syntax highlighting |
 
 ## Getting Started
 
@@ -174,31 +173,31 @@ npx serve dist
 
 ## Keyboard Shortcuts
 
-| Action | Mac | Windows/Linux |
-|--------|-----|---------------|
-| Bold | ⌘ + B | Ctrl + B |
-| Italic | ⌘ + I | Ctrl + I |
-| Inline Code | ⌘ + ` | Ctrl + ` |
-| Code Block | ⌘ + Shift + ` | Ctrl + Shift + ` |
-| Heading 1-6 | ⌘ + 1-6 | Ctrl + 1-6 |
-| Block Quote | ⌘ + Q | Ctrl + Q |
-| Bullet List | ⌘ + Shift + 8 | Ctrl + Shift + 8 |
-| Numbered List | ⌘ + Shift + 7 | Ctrl + Shift + 7 |
-| Insert Table | ⌘ + T | Ctrl + T |
-| Insert Link | ⌘ + K | Ctrl + K |
-| Horizontal Rule | ⌘ + - | Ctrl + - |
-| Copy Markdown | ⌘ + Shift + C | Ctrl + Shift + C |
-| Copy HTML | ⌘ + Shift + H | Ctrl + Shift + H |
-| Download | ⌘ + S | Ctrl + S |
-| Open File | ⌘ + O | Ctrl + O |
+| Action          | Mac           | Windows/Linux    |
+| --------------- | ------------- | ---------------- |
+| Bold            | ⌘ + B         | Ctrl + B         |
+| Italic          | ⌘ + I         | Ctrl + I         |
+| Inline Code     | ⌘ + `         | Ctrl + `         |
+| Code Block      | ⌘ + Shift + ` | Ctrl + Shift + ` |
+| Heading 1-6     | ⌘ + 1-6       | Ctrl + 1-6       |
+| Block Quote     | ⌘ + Q         | Ctrl + Q         |
+| Bullet List     | ⌘ + Shift + 8 | Ctrl + Shift + 8 |
+| Numbered List   | ⌘ + Shift + 7 | Ctrl + Shift + 7 |
+| Insert Table    | ⌘ + T         | Ctrl + T         |
+| Insert Link     | ⌘ + K         | Ctrl + K         |
+| Horizontal Rule | ⌘ + -         | Ctrl + -         |
+| Copy Markdown   | ⌘ + Shift + C | Ctrl + Shift + C |
+| Copy HTML       | ⌘ + Shift + H | Ctrl + Shift + H |
+| Download        | ⌘ + S         | Ctrl + S         |
+| Open File       | ⌘ + O         | Ctrl + O         |
 
 ### Tour Navigation
 
-| Action | Key |
-|--------|-----|
-| Next Step | → (Arrow Right) |
-| Previous Step | ← (Arrow Left) |
-| Cancel Tour | Esc |
+| Action        | Key             |
+| ------------- | --------------- |
+| Next Step     | → (Arrow Right) |
+| Previous Step | ← (Arrow Left)  |
+| Cancel Tour   | Esc             |
 
 ## Code Documentation
 
@@ -286,7 +285,7 @@ cp -r app/modules/tour /path/to/your-project/app/modules/
 Add to your main CSS file:
 
 ```css
-@import '~/modules/tour/styles/tour.css';
+@import "~/modules/tour/styles/tour.css";
 ```
 
 #### 3. Create Your Configuration
@@ -294,25 +293,25 @@ Add to your main CSS file:
 Create `app/config/tour.ts`:
 
 ```typescript
-import type { TourConfig } from '~/modules/tour/types'
+import type { TourConfig } from "~/modules/tour/types";
 
 export const tourConfig: TourConfig = {
   version: 1,
   autoStart: true,
   autoStartDelay: 800,
-  storageKeyPrefix: 'my-app-tour',
+  storageKeyPrefix: "my-app-tour",
   steps: [
     {
-      id: 'welcome',
+      id: "welcome",
       target: '[data-tour="header"]',
-      title: 'Welcome!',
-      content: 'This is a quick tour of the main features.',
-      position: 'bottom',
-      icon: 'i-heroicons-hand-raised'
+      title: "Welcome!",
+      content: "This is a quick tour of the main features.",
+      position: "bottom",
+      icon: "i-heroicons-hand-raised",
     },
     // Add more steps...
-  ]
-}
+  ],
+};
 ```
 
 #### 4. Add Tour Targets
@@ -330,23 +329,23 @@ Add `data-tour` attributes to elements you want to highlight:
 
 ```vue
 <script setup lang="ts">
-import { useTour } from '~/modules/tour/composables/useTour'
-import TourOverlay from '~/modules/tour/components/TourOverlay.vue'
-import { tourConfig } from '~/config/tour'
+import { useTour } from "~/modules/tour/composables/useTour";
+import TourOverlay from "~/modules/tour/components/TourOverlay.vue";
+import { tourConfig } from "~/config/tour";
 
-const tour = useTour(tourConfig)
+const tour = useTour(tourConfig);
 
 onMounted(() => {
   if (tour.autoStart && !tour.hasCompletedTour.value) {
-    setTimeout(() => tour.start(), tour.autoStartDelay)
+    setTimeout(() => tour.start(), tour.autoStartDelay);
   }
-})
+});
 </script>
 
 <template>
   <!-- Add restart button -->
   <button @click="tour.start()">Start Tour</button>
-  
+
   <!-- Add tour overlay -->
   <TourOverlay
     :is-active="tour.isActive.value"
@@ -361,26 +360,26 @@ onMounted(() => {
 
 ### Tour Configuration Options
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `version` | `number` | - | Increment to reset completion for all users |
-| `autoStart` | `boolean` | `true` | Auto-start for first-time visitors |
-| `autoStartDelay` | `number` | `800` | Delay (ms) before auto-starting |
-| `storageKeyPrefix` | `string` | - | LocalStorage key prefix |
-| `steps` | `TourStep[]` | - | Array of tour step definitions |
+| Property           | Type         | Default | Description                                 |
+| ------------------ | ------------ | ------- | ------------------------------------------- |
+| `version`          | `number`     | -       | Increment to reset completion for all users |
+| `autoStart`        | `boolean`    | `true`  | Auto-start for first-time visitors          |
+| `autoStartDelay`   | `number`     | `800`   | Delay (ms) before auto-starting             |
+| `storageKeyPrefix` | `string`     | -       | LocalStorage key prefix                     |
+| `steps`            | `TourStep[]` | -       | Array of tour step definitions              |
 
 ### Step Configuration
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `id` | `string` | - | Unique identifier |
-| `target` | `string` | - | CSS selector (e.g., `[data-tour="id"]`) |
-| `title` | `string` | - | Step title |
-| `content` | `string` | - | Step description |
-| `tip` | `string` | - | Optional tip shown in highlighted box |
-| `position` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'bottom'` | Popover position |
-| `icon` | `string` | - | Iconify icon name |
-| `shortcut` | `string[]` | - | Keyboard shortcut to display |
+| Property   | Type                                     | Default    | Description                             |
+| ---------- | ---------------------------------------- | ---------- | --------------------------------------- |
+| `id`       | `string`                                 | -          | Unique identifier                       |
+| `target`   | `string`                                 | -          | CSS selector (e.g., `[data-tour="id"]`) |
+| `title`    | `string`                                 | -          | Step title                              |
+| `content`  | `string`                                 | -          | Step description                        |
+| `tip`      | `string`                                 | -          | Optional tip shown in highlighted box   |
+| `position` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'bottom'` | Popover position                        |
+| `icon`     | `string`                                 | -          | Iconify icon name                       |
+| `shortcut` | `string[]`                               | -          | Keyboard shortcut to display            |
 
 See `app/modules/tour/README.md` for complete documentation.
 
