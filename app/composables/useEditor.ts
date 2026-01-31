@@ -20,6 +20,7 @@
  */
 
 import type { EditorView } from '@codemirror/view'
+import type { EditorState } from '@codemirror/state'
 import { undo as cmUndo, redo as cmRedo } from '@codemirror/commands'
 
 /**
@@ -655,7 +656,10 @@ export function useEditor() {
    */
   function undo(): boolean {
     if (!editorView.value) return false
-    return cmUndo(editorView.value)
+    return cmUndo({
+      state: editorView.value.state as EditorState,
+      dispatch: editorView.value.dispatch,
+    })
   }
   
   /**
@@ -666,7 +670,10 @@ export function useEditor() {
    */
   function redo(): boolean {
     if (!editorView.value) return false
-    return cmRedo(editorView.value)
+    return cmRedo({
+      state: editorView.value.state as EditorState,
+      dispatch: editorView.value.dispatch,
+    })
   }
   
   /**
