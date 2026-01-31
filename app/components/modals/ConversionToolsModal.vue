@@ -11,7 +11,7 @@ const { announce } = useAccessibility()
 // Announce when modal opens
 watch(isOpen, (open) => {
   if (open) {
-    announce('Conversion tools dialog opened. Select a tool to open in a new window.')
+    announce('Tools and utilities dialog opened. Select a tool to open in a new window.')
   }
 })
 
@@ -50,10 +50,10 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
         </div>
         <div>
           <h2 id="conversion-modal-title" class="text-xl font-bold text-neutral-100">
-            Conversion Tools
+            Tools and Utilities
           </h2>
           <p class="text-sm text-neutral-400 mt-1">
-            External utilities for R&A staff workflows
+            Helpful resources for R&A staff workflows
           </p>
         </div>
       </div>
@@ -112,7 +112,7 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
       <div class="tools-note">
         <UIcon name="i-heroicons-information-circle" class="tools-note__icon" />
         <p class="tools-note__text">
-          These tools open in a new window. Your data stays private — both tools process files locally in your browser.
+          These tools open in a new window. BentoPDF, Vert.sh, and Ipsumify process files locally in your browser for privacy.
         </p>
       </div>
     </template>
@@ -246,12 +246,29 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
   box-shadow: 
     0 4px 12px rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  transition: all 0.3s ease;
+}
+
+/* Larger icon wrapper for medium+ screens */
+@media (min-width: 768px) {
+  .tool-card__icon-wrapper {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
 }
 
 .tool-card__icon {
   width: 1.5rem;
   height: 1.5rem;
   color: white;
+}
+
+/* Larger icon for medium+ screens */
+@media (min-width: 768px) {
+  .tool-card__icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
 }
 
 /* Title group */
@@ -262,10 +279,25 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
 }
 
 .tool-card__name {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: #fafafa;
   margin: 0;
+  line-height: 1.2;
+}
+
+/* Larger titles for medium screens */
+@media (min-width: 768px) {
+  .tool-card__name {
+    font-size: 1.5rem;
+  }
+}
+
+/* Even larger titles for wide screens */
+@media (min-width: 1024px) {
+  .tool-card__name {
+    font-size: 1.625rem;
+  }
 }
 
 .tool-card__external-icon {
@@ -273,6 +305,14 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
   height: 1rem;
   color: #525252;
   transition: color 0.2s ease, transform 0.2s ease;
+}
+
+/* Larger external icon for medium+ screens */
+@media (min-width: 768px) {
+  .tool-card__external-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 }
 
 .tool-card:hover .tool-card__external-icon {
@@ -359,6 +399,13 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
   box-shadow: 
     0 20px 40px -12px rgba(20, 184, 166, 0.3),
     0 0 0 1px rgba(20, 184, 166, 0.1);
+}
+
+/* Ipsumify specific hover glow */
+.tool-card--ipsumify:hover {
+  box-shadow: 
+    0 20px 40px -12px rgba(99, 102, 241, 0.3),
+    0 0 0 1px rgba(99, 102, 241, 0.1);
 }
 
 /* Mobile optimizations for tool cards */
@@ -621,6 +668,13 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
   box-shadow: 
     0 20px 40px -12px rgba(20, 184, 166, 0.2),
     0 0 0 1px rgba(20, 184, 166, 0.1);
+}
+
+/* Ipsumify light mode hover */
+.light .tool-card--ipsumify:hover {
+  box-shadow: 
+    0 20px 40px -12px rgba(99, 102, 241, 0.2),
+    0 0 0 1px rgba(99, 102, 241, 0.1);
 }
 
 /* Dialog background override - lighter to stand out from editor */

@@ -41,6 +41,15 @@ const conversionTools: ConversionTool[] = [
     gradient: 'from-emerald-500 via-teal-500 to-cyan-500',
     features: ['Image Conversion', 'Audio & Video', 'Document Formats', 'Batch Processing'],
   },
+  {
+    id: 'ipsumify',
+    name: 'Ipsumify',
+    description: 'Generate placeholder text and dummy content quickly for testing and mockups.',
+    url: 'https://ipsumify.com',
+    icon: 'i-heroicons-document-text',
+    gradient: 'from-blue-500 via-indigo-500 to-violet-500',
+    features: ['Lorem Ipsum', 'Custom Length', 'Multiple Formats', 'Instant Generation'],
+  },
 ]
 
 /**

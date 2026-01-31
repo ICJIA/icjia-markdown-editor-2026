@@ -7,6 +7,7 @@
 import { useTour } from '~/modules/tour/composables/useTour'
 import TourOverlay from '~/modules/tour/components/TourOverlay.vue'
 import TourWelcome from '~/modules/tour/components/TourWelcome.vue'
+import TourIntro from '~/modules/tour/components/TourIntro.vue'
 import { tourConfig } from '~/config/tour'
 
 // Page meta for SEO and accessibility
@@ -29,6 +30,9 @@ const tour = useTour(tourConfig)
 // Welcome modal state - shown for first-time users
 const showWelcome = ref(false)
 
+// Intro slides state - shown after welcome, before tour
+const showIntro = ref(false)
+
 onMounted(() => {
   // Small delay to ensure components are ready
   setTimeout(() => {
@@ -46,10 +50,27 @@ onMounted(() => {
 // Handle welcome modal - user wants to start tour
 function handleWelcomeStart() {
   showWelcome.value = false
-  // Small delay to let the welcome modal fade out
+  // Show intro slides after welcome
+  setTimeout(() => {
+    showIntro.value = true
+  }, 100)
+}
+
+// Handle intro slides - user completed intro, start actual tour
+function handleIntroNext() {
+  showIntro.value = false
+  // Small delay to let the intro modal fade out
   setTimeout(() => {
     tour.start()
   }, 100)
+}
+
+// Handle intro slides - user wants to skip tour
+function handleIntroSkip() {
+  showIntro.value = false
+  // Mark as seen so we don't ask again (uses explicit localStorage write for Safari)
+  tour.markAsSeen()
+  announce('Tour skipped. You can start it anytime from the Tour button in the header.')
 }
 
 // Handle welcome modal - user wants to skip tour
@@ -89,6 +110,13 @@ provide('startTour', handleStartTour)
       :is-visible="showWelcome"
       @start-tour="handleWelcomeStart"
       @skip-tour="handleWelcomeSkip"
+    />
+    
+    <!-- Guided Tour Intro Slides (What is Markdown?) -->
+    <TourIntro
+      :is-visible="showIntro"
+      @next="handleIntroNext"
+      @skip="handleIntroSkip"
     />
     
     <!-- Guided Tour Overlay -->

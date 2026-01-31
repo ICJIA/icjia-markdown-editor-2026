@@ -182,9 +182,9 @@ export const tourConfig: TourConfig = {
     {
       id: 'conversion-tools',
       target: '[data-tour="conversion-tools"]',
-      title: 'Conversion Tools',
-      content: 'Access external utilities for PDF conversion, image processing, and document format changes. These privacy-first tools process files locally in your browser.',
-      tip: 'Tools open in a new window. Your files never leave your device.',
+      title: 'Tools and Utilities',
+      content: 'Access helpful external utilities including PDF tools, file converters, and a lorem ipsum generator. Most tools process files locally in your browser for privacy.',
+      tip: 'Tools open in a new window.',
       position: 'bottom',
       icon: 'i-heroicons-wrench-screwdriver'
     },

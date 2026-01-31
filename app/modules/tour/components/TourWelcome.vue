@@ -110,11 +110,11 @@ onUnmounted(() => {
             <div id="welcome-description" class="welcome-content">
               <p class="welcome-text">
                 This is an accessible markdown editor designed for researchers and writers. 
-                Would you like a quick guided tour to learn about all the features?
+                Would you like a quick introduction and guided tour to learn about all the features?
               </p>
               <p class="welcome-subtext">
-                The tour takes about 2 minutes and covers all the main features including 
-                text formatting, keyboard shortcuts, and how your work is automatically saved.
+                We'll start with a brief explanation of what Markdown is and why it's useful, 
+                then take you through all the editor's features. The full tour takes about 2 minutes.
               </p>
             </div>
             
@@ -135,7 +135,7 @@ onUnmounted(() => {
                   icon="i-heroicons-play"
                   @click="emit('startTour')"
                 >
-                  Start Tour
+                  Start
                 </UButton>
               </div>
             </template>
