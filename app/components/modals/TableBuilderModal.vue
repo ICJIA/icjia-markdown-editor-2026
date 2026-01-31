@@ -133,6 +133,17 @@ const previewHtml = computed(() => {
 function toggleViewMode() {
   viewMode.value = viewMode.value === 'edit' ? 'preview' : 'edit'
 }
+
+// Copy markdown to clipboard (client-side only)
+async function copyToClipboard() {
+  if (import.meta.client && navigator?.clipboard) {
+    try {
+      await navigator.clipboard.writeText(previewMarkdown.value)
+    } catch (err) {
+      console.error('Failed to copy to clipboard:', err)
+    }
+  }
+}
 </script>
 
 <template>
@@ -374,7 +385,7 @@ function toggleViewMode() {
               type="button"
               class="copy-btn"
               aria-label="Copy markdown to clipboard"
-              @click="navigator.clipboard.writeText(previewMarkdown)"
+              @click="copyToClipboard"
             >
               <UIcon name="i-heroicons-clipboard-document" class="w-4 h-4" />
               <span>Copy</span>
