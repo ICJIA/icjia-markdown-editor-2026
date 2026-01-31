@@ -1,4 +1,4 @@
-# ICJIA Markdown Editor
+# ICJIA Markdown Editor 2.0
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Nuxt](https://img.shields.io/badge/Nuxt-4.x-00DC82?logo=nuxt.js)](https://nuxt.com)
@@ -7,7 +7,7 @@
 [![WCAG 2.1 AA](https://img.shields.io/badge/WCAG-2.1_AA-green)](https://www.w3.org/WAI/WCAG21/quickref/)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/placeholder/deploy-status)](https://markdown.icjia.cloud)
 
-A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. Designed for ICJIA researchers to write reports, policy briefs, and documentation with full WCAG 2.1 AA compliance.
+A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. This is the **updated version** of the original ICJIA Markdown Editor, rebuilt from the ground up with modern web technologies. Designed for ICJIA researchers to write reports, policy briefs, and documentation with full WCAG 2.1 AA compliance.
 
 **[Live Demo →](https://markdown.icjia.cloud)**
 
@@ -15,13 +15,16 @@ A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. Designe
 
 - **Real-time Preview** - See your formatted document as you type with synchronized scrolling
 - **Dark/Light Mode** - Easy on the eyes with dark mode default and system preference detection
+- **ICJIA Branding** - Header features the ICJIA logo (clickable to scroll to top)
 - **Keyboard Shortcuts** - Speed up your workflow with comprehensive shortcuts
 - **Table Builder** - Visual table creation modal (Cmd/Ctrl+T)
 - **Auto-save** - Never lose your work (saves every 30 seconds with live countdown in header)
-- **Reset Button** - Clear saved content and reset to default with one click
+- **Start Editing Button** - New users see a prominent button to clear the tutorial and start fresh
+- **Tutorial Reset** - Restore the markdown tutorial content anytime from the status bar
 - **Export Options** - Copy as Markdown, copy as HTML, or download files with custom filenames
+- **Copy Notifications** - High-contrast purple notifications appear in the header when content is copied
 - **Footnote Support** - Full footnote syntax with automatic numbering and back-references
-- **Guided Tour** - Interactive 19-step onboarding with welcome screen covering all features (runs once, restartable anytime)
+- **Guided Tour** - Interactive onboarding with markdown introduction slides and feature tour (runs once, restartable anytime)
 - **Undo/Redo** - Full history support with keyboard shortcuts (Cmd/Ctrl+Z)
 - **Accessibility First** - WCAG 2.1 Level AA compliant with full keyboard navigation and screen reader support
 - **Static Deployment** - Deploy anywhere as a static site (Netlify-ready)
@@ -75,7 +78,7 @@ A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. Designe
 | ✅ | Table builder modal with visual grid editor |
 | ✅ | Footnote support via markdown-it-footnote |
 | ✅ | Auto-save to localStorage (every 30 seconds with countdown in header) |
-| ✅ | Reset button to clear saved content |
+| ✅ | Tutorial button to reset to markdown tutorial content |
 | ✅ | Download modal with custom filename support |
 | ✅ | HTML export with styled document wrapper |
 | ✅ | Comprehensive JSDoc documentation for all composables and utilities |
@@ -93,6 +96,9 @@ A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. Designe
 | ✅ | WCAG 1.4.12 text spacing compliance for code blocks |
 | ✅ | CodeMirror v6 type compatibility fixes (undo/redo functions) |
 | ✅ | Cursor pointer styling for all interactive tour buttons |
+| ✅ | ICJIA logo in header (clickable to scroll to top) |
+| ✅ | "Start Editing" button to clear tutorial content for new users |
+| ✅ | High-contrast purple copy notifications (WCAG AA compliant) |
 | ⬜ | Full accessibility audit (axe-core, WAVE) |
 | ⬜ | Screen reader testing (VoiceOver, NVDA) |
 | ⬜ | Keyboard navigation refinement |
@@ -257,7 +263,7 @@ The tour follows a logical left-to-right, top-to-bottom order covering 19 featur
 **Status Bar (bottom toolbar, left to right):**
 16. **Document Statistics** - Word count, character count, reading time
 17. **Tour Button** - Restart the guided tour anytime
-18. **Reset** - Clear saved content and reset to default
+18. **Tutorial** - Reset to markdown tutorial content (with confirmation)
 19. **GitHub Source Code** - Link to open source repository
 
 ### Reusing the Tour Module

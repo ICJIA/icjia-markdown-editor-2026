@@ -24,9 +24,9 @@ function handleStartTour() {
  * Handle reset button click with confirmation
  */
 function handleReset() {
-  if (confirm('Reset to default content? This will delete all your current work.')) {
+  if (confirm('Reset to markdown tutorial?\n\nThis will delete your current work and any auto-saved content in this browser\'s local storage.\n\nOnly proceed if you are okay with removing your saved content.')) {
     resetContent()
-    announce('Content reset to default')
+    announce('Content reset to markdown tutorial')
   }
 }
 
@@ -199,18 +199,18 @@ function setupScrollSync(): void {
           </button>
         </UTooltip>
         <UTooltip
-          text="Reset editor to default sample content"
+          text="Reset editor to default tutorial content"
           :content="{ side: 'top', sideOffset: 8, avoidCollisions: true }"
         >
           <button
             type="button"
             class="reset-button"
             data-tour="reset"
-            aria-label="Reset to default content"
+            aria-label="Reset to default tutorial content"
             @click="handleReset"
           >
             <UIcon name="i-heroicons-arrow-path" class="reset-icon" />
-            <span class="reset-text">Reset</span>
+            <span class="reset-text">Tutorial</span>
           </button>
         </UTooltip>
         <UTooltip
