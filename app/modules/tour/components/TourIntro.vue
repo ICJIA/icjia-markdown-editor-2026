@@ -326,7 +326,7 @@ const slides = [
                   :icon="currentSlide < totalSlides - 1 ? 'i-heroicons-arrow-right' : 'i-heroicons-play'"
                   @click="handleNext"
                 >
-                  {{ currentSlide < totalSlides - 1 ? 'Next' : 'Start Tour' }}
+                  {{ currentSlide < totalSlides - 1 ? 'Next' : 'Start Guided Tour' }}
                 </UButton>
               </div>
             </template>
