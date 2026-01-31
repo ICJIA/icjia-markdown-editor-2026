@@ -31,6 +31,9 @@ const emit = defineEmits<{
 // Reference to the dialog for focus management
 const dialogRef = ref<HTMLElement | null>(null)
 
+// Reference to the body content for scroll management
+const bodyRef = ref<HTMLElement | null>(null)
+
 // Always center the dialog on screen for consistent UX
 const dialogStyle = computed(() => {
   return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }
@@ -75,11 +78,15 @@ onUnmounted(() => {
   }
 })
 
-// Focus the dialog when step changes
+// Focus the dialog and scroll content to top when step changes
 watch(() => props.currentStep?.id, () => {
   if (props.isActive) {
     nextTick(() => {
       dialogRef.value?.focus()
+      // Scroll body content to top
+      if (bodyRef.value) {
+        bodyRef.value.scrollTop = 0
+      }
     })
   }
 })
@@ -145,7 +152,7 @@ const isLastStep = computed(() => props.progress.current === props.progress.tota
               </div>
             </template>
             
-            <div :id="`tour-content-${currentStep.id}`" class="tour-body">
+            <div :id="`tour-content-${currentStep.id}`" ref="bodyRef" class="tour-body">
               <p class="tour-content">
                 {{ currentStep.content }}
               </p>

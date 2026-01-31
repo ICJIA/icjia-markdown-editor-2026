@@ -29,14 +29,30 @@ const totalSlides = 3
 // Reference to the dialog for focus management
 const dialogRef = ref<HTMLElement | null>(null)
 
+// Reference to the content area for scroll management
+const contentRef = ref<HTMLElement | null>(null)
+
 // Focus the dialog when it becomes visible
 watch(() => props.isVisible, (visible) => {
   if (visible) {
     currentSlide.value = 0 // Reset to first slide
     nextTick(() => {
       dialogRef.value?.focus()
+      // Scroll content to top
+      if (contentRef.value) {
+        contentRef.value.scrollTop = 0
+      }
     })
   }
+})
+
+// Scroll content to top when slide changes
+watch(currentSlide, () => {
+  nextTick(() => {
+    if (contentRef.value) {
+      contentRef.value.scrollTop = 0
+    }
+  })
 })
 
 // Handle keyboard events
@@ -219,7 +235,7 @@ const slides = [
               </div>
             </template>
             
-            <div id="intro-description" class="intro-content">
+            <div id="intro-description" ref="contentRef" class="intro-content">
               <div 
                 v-for="(paragraph, idx) in slides[currentSlide]?.content" 
                 :key="idx"
