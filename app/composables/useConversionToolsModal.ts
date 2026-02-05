@@ -42,15 +42,6 @@ const conversionTools: ConversionTool[] = [
     features: ['Image Conversion', 'Audio & Video', 'Document Formats', 'Batch Processing'],
   },
   {
-    id: 'ipsumify',
-    name: 'Ipsumify',
-    description: 'Generate placeholder text and dummy content quickly for testing and mockups.',
-    url: 'https://ipsumify.com',
-    icon: 'i-heroicons-document-text',
-    gradient: 'from-blue-500 via-indigo-500 to-violet-500',
-    features: ['Lorem Ipsum', 'Custom Length', 'Multiple Formats', 'Instant Generation'],
-  },
-  {
     id: 'tablesgenerator',
     name: 'Table Generator',
     description: 'Advanced markdown table generator with spreadsheet-like editing and CSV import.',
@@ -58,6 +49,24 @@ const conversionTools: ConversionTool[] = [
     icon: 'i-heroicons-table-cells',
     gradient: 'from-amber-500 via-orange-500 to-red-500',
     features: ['CSV Import', 'Copy/Paste Data', 'Column Alignment', 'Spreadsheet UI'],
+  },
+  {
+    id: 'ipsumify',
+    name: 'Ipsumify',
+    description: 'Generate placeholder text and dummy content quickly for testing and mockups.',
+    url: 'https://ipsumify.com',
+    icon: 'i-heroicons-document-text',
+    gradient: 'from-blue-500 via-indigo-500 to-violet-500',
+    features: ['Lorem Ipsum', 'Custom Length', 'Multiple Formats', 'Instant Generation', 'Created by developers at ICJIA'],
+  },
+  {
+    id: 'squish',
+    name: 'Squish',
+    description: 'ICJIA utility for compressing and optimizing images.',
+    url: 'https://squish.icjia.app',
+    icon: 'i-heroicons-photo',
+    gradient: 'from-sky-500 via-blue-500 to-indigo-500',
+    features: ['Image Compression', 'Image Optimization', 'Quick Processing', 'Created by developers at ICJIA'],
   },
 ]
 

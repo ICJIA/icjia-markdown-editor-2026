@@ -35,7 +35,7 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
     v-model:open="isOpen"
     :dismissible="true"
     :ui="{
-      content: 'conversion-modal-content bg-slate-800 dark:bg-slate-800 border border-slate-600 shadow-2xl w-[95vw] max-w-[720px] flex flex-col max-h-[90vh] sm:max-h-[85vh]',
+      content: 'conversion-modal-content bg-slate-800 dark:bg-slate-800 border border-slate-600 shadow-2xl w-[95vw] max-w-[960px] flex flex-col max-h-[90vh] sm:max-h-[85vh]',
       header: 'border-b border-slate-600 px-4 sm:px-6 py-4 sm:py-5 flex-shrink-0',
       body: 'px-4 sm:px-6 py-4 sm:py-6 overflow-y-auto flex-1 min-h-0',
       footer: 'border-t border-slate-600 px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0',
@@ -151,7 +151,7 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
 
-/* Tools grid - flexible centered layout for 2-4+ cards */
+/* Tools grid - flexible centered layout for 1–3 cards */
 .tools-grid {
   display: flex;
   flex-direction: column;
@@ -164,12 +164,19 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
   width: 100%;
 }
 
-/* For medium screens, show 2 cards side by side */
+/* Medium screens: 2 cards across */
 @media (min-width: 540px) {
   .tools-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
+  }
+}
+
+/* Large screens: 3 cards across */
+@media (min-width: 900px) {
+  .tools-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -413,6 +420,13 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
   box-shadow: 
     0 20px 40px -12px rgba(245, 158, 11, 0.3),
     0 0 0 1px rgba(245, 158, 11, 0.1);
+}
+
+/* Squish specific hover glow */
+.tool-card--squish:hover {
+  box-shadow: 
+    0 20px 40px -12px rgba(14, 165, 233, 0.3),
+    0 0 0 1px rgba(14, 165, 233, 0.1);
 }
 
 /* Mobile optimizations for tool cards */
@@ -689,6 +703,13 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
   box-shadow: 
     0 20px 40px -12px rgba(245, 158, 11, 0.2),
     0 0 0 1px rgba(245, 158, 11, 0.1);
+}
+
+/* Squish light mode hover */
+.light .tool-card--squish:hover {
+  box-shadow: 
+    0 20px 40px -12px rgba(14, 165, 233, 0.2),
+    0 0 0 1px rgba(14, 165, 233, 0.1);
 }
 
 /* Dialog background override - lighter to stand out from editor */
