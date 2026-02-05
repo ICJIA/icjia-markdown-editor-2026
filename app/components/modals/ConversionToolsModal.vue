@@ -112,7 +112,7 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
       <div class="tools-note">
         <UIcon name="i-heroicons-information-circle" class="tools-note__icon" />
         <p class="tools-note__text">
-          These tools open in a new window. BentoPDF and Vert.sh process files locally in your browser for privacy.
+          These tools open in a new window. BentoPDF, Vert.sh, Squish, and Ipsumify process files locally in your browser for privacy.
         </p>
       </div>
     </template>
