@@ -7,9 +7,15 @@
 [![WCAG 2.1 AA](https://img.shields.io/badge/WCAG-2.1_AA-green)](https://www.w3.org/WAI/WCAG21/quickref/)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/efc7c372-8945-4089-acbd-5201f59a753e/deploy-status)](https://app.netlify.com/projects/nostalgic-shaw-a15a61/deploys)
 
+[![ICJIA Markdown Editor 2.0](https://markdown.icjia.cloud/og-image.png)](https://markdown.icjia.cloud)
+
 A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. This is the **updated version** of the original ICJIA Markdown Editor, rebuilt from the ground up with modern web technologies. Full WCAG 2.1 AA compliance.
 
 **[Live Demo →](https://markdown.icjia.cloud)**
+
+### SEO
+
+The app includes Open Graph and Twitter Card meta tags for rich social previews. The `og-image.png` (1200×630) in `public/` is used when the page is shared. Set `NUXT_PUBLIC_SITE_URL` in your deployment environment (e.g. `https://markdown.icjia.cloud`) so social platforms receive absolute image URLs. See `netlify.toml` for the production configuration.
 
 ## Features
 

@@ -4,7 +4,8 @@
   "compilerOptions": {
     "strict": true,
     "types": [
-      "./.nuxt/nuxt.d.ts"
+      "./.nuxt/nuxt.d.ts",
+      "node"
     ]
   },
   "include": [

@@ -36,6 +36,13 @@ export default defineNuxtConfig({
     ],
   },
   
+  runtimeConfig: {
+    public: {
+      // Set NUXT_PUBLIC_SITE_URL in deployment (e.g. Netlify) for absolute og:image URLs
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://markdown.icjia.cloud',
+    },
+  },
+
   app: {
     head: {
       htmlAttrs: { lang: 'en' },
@@ -43,6 +50,16 @@ export default defineNuxtConfig({
       meta: [
         { name: 'description', content: 'Accessible markdown editor for ICJIA researchers' },
         { name: 'theme-color', content: '#0f172a' },
+        // Open Graph (og:image set via plugins/seo.ts with absolute URL when NUXT_PUBLIC_SITE_URL is set)
+        { property: 'og:type', content: 'website' },
+        { property: 'og:title', content: 'ICJIA Markdown Editor 2.0' },
+        { property: 'og:description', content: 'Accessible markdown editor for ICJIA researchers' },
+        { property: 'og:image:width', content: '1200' },
+        { property: 'og:image:height', content: '630' },
+        // Twitter Card
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: 'ICJIA Markdown Editor 2.0' },
+        { name: 'twitter:description', content: 'Accessible markdown editor for ICJIA researchers' },
       ],
     },
   },
