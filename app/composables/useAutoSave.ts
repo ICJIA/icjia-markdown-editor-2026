@@ -31,6 +31,18 @@ const STORAGE_KEY = 'icjia-markdown-editor-autosave'
 const SAVE_INTERVAL = 30000 // 30 seconds
 
 /**
+ * Threshold in milliseconds for "just now" display (1 minute).
+ * @constant {number}
+ */
+const JUST_NOW_THRESHOLD = 60000
+
+/**
+ * Threshold in milliseconds for showing minutes ago vs absolute time (1 hour).
+ * @constant {number}
+ */
+const MINUTES_AGO_THRESHOLD = 3600000
+
+/**
  * Auto-save composable for persisting editor content to localStorage.
  * Automatically saves content every 30 seconds, on window blur, and before page unload.
  * Restores previously saved content when the editor initializes.
@@ -258,19 +270,18 @@ export function useAutoSave() {
    * @type {ComputedRef<string | null>}
    */
   const lastSaveDisplay = computed(() => {
-    // Include trigger to force reactivity updates
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    timeUpdateTrigger.value
-    
+    // Force reactivity update for time display
+    void timeUpdateTrigger.value
+
     if (!lastSaveTime.value) return null
-    
+
     const now = Date.now()
     const diff = now - lastSaveTime.value
-    
-    if (diff < 60000) {
+
+    if (diff < JUST_NOW_THRESHOLD) {
       return 'Saved just now'
-    } else if (diff < 3600000) {
-      const minutes = Math.floor(diff / 60000)
+    } else if (diff < MINUTES_AGO_THRESHOLD) {
+      const minutes = Math.floor(diff / JUST_NOW_THRESHOLD)
       return `Saved ${minutes}m ago`
     } else {
       const date = new Date(lastSaveTime.value)

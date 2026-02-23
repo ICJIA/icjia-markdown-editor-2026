@@ -134,16 +134,28 @@ function toggleViewMode() {
   viewMode.value = viewMode.value === 'edit' ? 'preview' : 'edit'
 }
 
+// Copy status feedback
+const copySuccess = ref(false)
+let copyTimeout: ReturnType<typeof setTimeout> | null = null
+
 // Copy markdown to clipboard (client-side only)
 async function copyToClipboard() {
   if (import.meta.client && navigator?.clipboard) {
     try {
       await navigator.clipboard.writeText(previewMarkdown.value)
+      copySuccess.value = true
+      if (copyTimeout) clearTimeout(copyTimeout)
+      copyTimeout = setTimeout(() => { copySuccess.value = false }, 2000)
     } catch (err) {
       console.error('Failed to copy to clipboard:', err)
+      copySuccess.value = false
     }
   }
 }
+
+onUnmounted(() => {
+  if (copyTimeout) clearTimeout(copyTimeout)
+})
 </script>
 
 <template>
@@ -205,7 +217,7 @@ async function copyToClipboard() {
         <Transition name="fade">
           <div v-if="viewMode === 'edit'" class="dimension-controls">
             <div class="dimension-group">
-              <label class="dimension-label">
+              <label for="table-rows-input" class="dimension-label">
                 <UIcon name="i-heroicons-arrows-up-down" class="w-4 h-4" />
                 <span>Rows</span>
               </label>
@@ -220,6 +232,7 @@ async function copyToClipboard() {
                   <UIcon name="i-heroicons-minus" class="w-4 h-4" />
                 </button>
                 <input
+                  id="table-rows-input"
                   v-model.number="rowsCount"
                   type="number"
                   :min="MIN_ROWS"
@@ -242,7 +255,7 @@ async function copyToClipboard() {
             <div class="dimension-divider" />
 
             <div class="dimension-group">
-              <label class="dimension-label">
+              <label for="table-cols-input" class="dimension-label">
                 <UIcon name="i-heroicons-arrows-right-left" class="w-4 h-4" />
                 <span>Columns</span>
               </label>
@@ -257,6 +270,7 @@ async function copyToClipboard() {
                   <UIcon name="i-heroicons-minus" class="w-4 h-4" />
                 </button>
                 <input
+                  id="table-cols-input"
                   v-model.number="colsCount"
                   type="number"
                   :min="MIN_COLS"
@@ -384,11 +398,11 @@ async function copyToClipboard() {
             <button
               type="button"
               class="copy-btn"
-              aria-label="Copy markdown to clipboard"
+              :aria-label="copySuccess ? 'Copied to clipboard' : 'Copy markdown to clipboard'"
               @click="copyToClipboard"
             >
-              <UIcon name="i-heroicons-clipboard-document" class="w-4 h-4" />
-              <span>Copy</span>
+              <UIcon :name="copySuccess ? 'i-heroicons-check' : 'i-heroicons-clipboard-document'" class="w-4 h-4" />
+              <span>{{ copySuccess ? 'Copied!' : 'Copy' }}</span>
             </button>
           </div>
         </Transition>

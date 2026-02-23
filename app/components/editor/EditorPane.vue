@@ -101,13 +101,17 @@ defineExpose({
       <span>Loading...</span>
     </div>
     
-    <div 
+    <div
       v-show="isContentReady"
       ref="editorContainer"
       id="main-editor"
       class="editor-container"
       tabindex="-1"
+      aria-describedby="editor-instructions"
     />
+    <div id="editor-instructions" class="sr-only">
+      Use keyboard shortcuts for formatting: Ctrl+B for bold, Ctrl+I for italic, Ctrl+K for link. Press Escape to exit the editor.
+    </div>
   </div>
 </template>
 
@@ -144,5 +148,17 @@ defineExpose({
 
 .editor-container :deep(.cm-scroller) {
   font-family: 'JetBrains Mono', monospace;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 </style>

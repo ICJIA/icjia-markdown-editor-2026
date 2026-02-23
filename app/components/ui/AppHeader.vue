@@ -46,10 +46,11 @@ function scrollToTop() {
           @click.prevent="scrollToTop"
           aria-label="ICJIA Markdown Editor 2.0 - Click to scroll to top"
         >
-          <img 
-            src="https://icjia.illinois.gov/img/icjia-logo.ee010aa8.png" 
-            alt="ICJIA Logo" 
+          <img
+            src="https://icjia.illinois.gov/img/icjia-logo.ee010aa8.png"
+            alt="ICJIA Logo"
             class="title-logo"
+            @error="($event.target as HTMLImageElement).style.display = 'none'"
           />
           <span>ICJIA Markdown Editor 2.0</span>
         </a>

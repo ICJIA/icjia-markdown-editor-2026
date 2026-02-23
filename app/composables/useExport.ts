@@ -42,6 +42,14 @@
 let copyStatusTimeout: ReturnType<typeof setTimeout> | null = null
 
 export function useExport() {
+  // Clean up module-level timeout when the consuming component unmounts
+  onUnmounted(() => {
+    if (copyStatusTimeout) {
+      clearTimeout(copyStatusTimeout)
+      copyStatusTimeout = null
+    }
+  })
+
   const { content, setContent } = useEditor()
   const { renderedHtml } = useMarkdown()
   const { announce } = useAccessibility()
