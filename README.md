@@ -21,18 +21,19 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 
 - **Real-time Preview** - See your formatted document as you type with synchronized scrolling
 - **Dark/Light Mode** - Easy on the eyes with dark mode default and system preference detection
-- **ICJIA Branding** - Header features the ICJIA logo (clickable to scroll to top)
+- **ICJIA Branding** - Header features the ICJIA logo (clickable to scroll to top, with error fallback)
 - **Keyboard Shortcuts** - Speed up your workflow with comprehensive shortcuts
-- **Table Builder** - Visual table creation modal (Cmd/Ctrl+T)
+- **Table Builder** - Visual table creation modal (Cmd/Ctrl+T) with copy feedback
 - **Auto-save** - Never lose your work (saves every 30 seconds with live countdown in header)
 - **Start Editing Button** - New users see a prominent button to clear the tutorial and start fresh
 - **Tutorial Reset** - Restore the markdown tutorial content anytime from the status bar
 - **Export Options** - Copy as Markdown, copy as HTML, or download files with custom filenames
 - **Copy Notifications** - High-contrast purple notifications appear in the header when content is copied
 - **Footnote Support** - Full footnote syntax with automatic numbering and back-references
-- **Guided Tour** - Interactive onboarding with markdown introduction slides and feature tour (runs once, restartable anytime)
+- **Math Support** - KaTeX-powered LaTeX rendering for inline and block math equations
+- **Guided Tour** - Interactive onboarding with markdown introduction slides and 25-step feature tour (runs once, restartable anytime)
 - **Undo/Redo** - Full history support with keyboard shortcuts (Cmd/Ctrl+Z)
-- **Accessibility First** - WCAG 2.1 Level AA compliant with full keyboard navigation and screen reader support
+- **Accessibility First** - WCAG 2.1 Level AA compliant with full keyboard navigation, screen reader support, and proper ARIA attributes
 - **Static Deployment** - Deploy anywhere as a static site (Netlify-ready)
 - **Fully Documented** - Comprehensive JSDoc comments on all composables and utilities
 - **Reusable Tour Module** - Copy the tour module to any Nuxt project for instant onboarding
@@ -94,7 +95,7 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 
 | Status | Feature                                                                 |
 | :----: | :---------------------------------------------------------------------- |
-|   ✅   | Guided tour/onboarding module (WCAG 2.1 AA compliant, 19 steps)         |
+|   ✅   | Guided tour/onboarding module (WCAG 2.1 AA compliant, 25 steps)         |
 |   ✅   | Welcome screen with ICJIA logo (first-time users + manual tour trigger) |
 |   ✅   | Tour progress indicator with modern pill design and WCAG AA contrast    |
 |   ✅   | Reusable tour module architecture for other projects                    |
@@ -102,9 +103,15 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 |   ✅   | WCAG 1.4.12 text spacing compliance for code blocks                     |
 |   ✅   | CodeMirror v6 type compatibility fixes (undo/redo functions)            |
 |   ✅   | Cursor pointer styling for all interactive tour buttons                 |
-|   ✅   | ICJIA logo in header (clickable to scroll to top)                       |
+|   ✅   | ICJIA logo in header (clickable to scroll to top, with error fallback)  |
 |   ✅   | "Start Editing" button to clear tutorial content for new users          |
-|   ✅   | High-contrast purple copy notifications (WCAG AA compliant)             |
+|   ✅   | High-contrast purple copy notifications (WCAG AAA compliant)            |
+|   ✅   | Memory leak fix: cleanup timeouts on component unmount (useExport)       |
+|   ✅   | Table builder copy feedback with visual confirmation                     |
+|   ✅   | Form label associations (for/id) in table builder modal                  |
+|   ✅   | Named constants for time thresholds in auto-save                         |
+|   ✅   | Default content extracted to separate module for maintainability         |
+|   ✅   | Editor aria-describedby with keyboard shortcut instructions              |
 |   ⬜   | Full accessibility audit (axe-core, WAVE)                               |
 |   ⬜   | Screen reader testing (VoiceOver, NVDA)                                 |
 |   ⬜   | Keyboard navigation refinement                                          |
@@ -134,10 +141,12 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 | Nuxt         | 4.x     | Application framework    |
 | Vue          | 3.5+    | Reactive UI              |
 | TypeScript   | 5.x     | Type safety              |
-| Nuxt UI      | 3.x     | Component library        |
+| Nuxt UI      | 4.x     | Component library        |
 | CodeMirror   | 6.x     | Text editor engine       |
 | markdown-it  | 14.x    | Markdown parsing         |
 | highlight.js | 11.x    | Code syntax highlighting |
+| KaTeX        | 0.16.x  | Math/LaTeX rendering     |
+| VueUse       | 14.x    | Vue composable utilities |
 
 ## Getting Started
 
@@ -243,7 +252,7 @@ The application includes an interactive guided tour with a welcome screen that i
 
 ### Tour Steps
 
-The tour follows a logical left-to-right, top-to-bottom order covering 19 features:
+The tour follows a logical left-to-right, top-to-bottom order covering 25 features:
 
 #### Toolbar (left to right)
 
@@ -442,6 +451,7 @@ icjia-markdown-editor-2026/
 │   └── utils/              # Utility functions (fully documented with JSDoc)
 │       ├── editor/         # CodeMirror config, themes, keymaps
 │       ├── markdown/       # markdown-it configuration
+│       ├── default-content.ts # Default tutorial content (extracted for maintainability)
 │       └── table-builder.ts # Table generation utilities
 ├── documentation/          # Project documentation
 ├── public/                 # Static assets
