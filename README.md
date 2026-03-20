@@ -49,6 +49,7 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 | [Browser Support](./documentation/BROWSER_SUPPORT.md)                                     | Supported browsers and screen readers                         |
 | [Troubleshooting](./documentation/TROUBLESHOOTING.md)                                     | Common issues and solutions                                   |
 | [Tour Module](./app/modules/tour/README.md)                                               | Reusable guided tour module documentation                     |
+| [Changelog](./CHANGELOG.md)                                                               | Version history and release notes                             |
 
 ## Development Progress
 
