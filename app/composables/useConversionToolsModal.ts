@@ -68,6 +68,15 @@ const conversionTools: ConversionTool[] = [
     gradient: 'from-sky-500 via-blue-500 to-indigo-500',
     features: ['Image Compression', 'Image Optimization', 'Quick Processing', 'Created by developers at ICJIA'],
   },
+  {
+    id: 'pdfaudit',
+    name: 'PDF Audit',
+    description: 'Free, open source PDF accessibility analyzer. Check PDFs for compliance issues.',
+    url: 'https://audit.icjia.app/',
+    icon: 'i-heroicons-shield-check',
+    gradient: 'from-green-500 via-emerald-500 to-teal-500',
+    features: ['Accessibility Analysis', 'Compliance Checks', 'Free & Open Source', 'Created by developers at ICJIA'],
+  },
 ]
 
 /**

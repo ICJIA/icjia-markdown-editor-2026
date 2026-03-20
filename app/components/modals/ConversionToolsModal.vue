@@ -112,7 +112,7 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
       <div class="tools-note">
         <UIcon name="i-heroicons-information-circle" class="tools-note__icon" />
         <p class="tools-note__text">
-          These tools open in a new window. BentoPDF, Vert.sh, Squish, and Ipsumify process files locally in your browser for privacy.
+          These tools open in a new window. BentoPDF, Vert.sh, Squish, Ipsumify, and PDF Audit process files locally in your browser for privacy.
         </p>
       </div>
     </template>
@@ -424,9 +424,16 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
 
 /* Squish specific hover glow */
 .tool-card--squish:hover {
-  box-shadow: 
+  box-shadow:
     0 20px 40px -12px rgba(14, 165, 233, 0.3),
     0 0 0 1px rgba(14, 165, 233, 0.1);
+}
+
+/* PDF Audit specific hover glow */
+.tool-card--pdfaudit:hover {
+  box-shadow:
+    0 20px 40px -12px rgba(16, 185, 129, 0.3),
+    0 0 0 1px rgba(16, 185, 129, 0.1);
 }
 
 /* Mobile optimizations for tool cards */
@@ -707,9 +714,16 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
 
 /* Squish light mode hover */
 .light .tool-card--squish:hover {
-  box-shadow: 
+  box-shadow:
     0 20px 40px -12px rgba(14, 165, 233, 0.2),
     0 0 0 1px rgba(14, 165, 233, 0.1);
+}
+
+/* PDF Audit light mode hover */
+.light .tool-card--pdfaudit:hover {
+  box-shadow:
+    0 20px 40px -12px rgba(16, 185, 129, 0.2),
+    0 0 0 1px rgba(16, 185, 129, 0.1);
 }
 
 /* Dialog background override - lighter to stand out from editor */
