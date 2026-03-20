@@ -112,6 +112,8 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 |   ✅   | Named constants for time thresholds in auto-save                         |
 |   ✅   | Default content extracted to separate module for maintainability         |
 |   ✅   | Editor aria-describedby with keyboard shortcut instructions              |
+|   ✅   | DOMPurify XSS sanitization on rendered markdown HTML output              |
+|   ✅   | Bounded scroll sync retry with timeout cleanup on unmount                |
 |   ⬜   | Full accessibility audit (axe-core, WAVE)                               |
 |   ⬜   | Screen reader testing (VoiceOver, NVDA)                                 |
 |   ⬜   | Keyboard navigation refinement                                          |
@@ -126,7 +128,7 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 
 | Status | Feature                                                   |
 | :----: | :-------------------------------------------------------- |
-|   ⬜   | Unit tests for utilities                                  |
+|   ✅   | Unit tests for utilities (35 tests: markdown, table builder) |
 |   ⬜   | Component tests                                           |
 |   ⬜   | E2E tests for critical paths                              |
 |   ⬜   | Cross-browser testing                                     |
@@ -145,6 +147,7 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 | CodeMirror   | 6.x     | Text editor engine       |
 | markdown-it  | 14.x    | Markdown parsing         |
 | highlight.js | 11.x    | Code syntax highlighting |
+| DOMPurify    | 3.x     | XSS sanitization         |
 | KaTeX        | 0.16.x  | Math/LaTeX rendering     |
 | VueUse       | 14.x    | Vue composable utilities |
 
@@ -456,6 +459,8 @@ icjia-markdown-editor-2026/
 ├── documentation/          # Project documentation
 ├── public/                 # Static assets
 ├── tests/                  # Test files
+│   ├── unit/              # Unit tests (vitest + jsdom)
+│   └── a11y/              # Accessibility audit (axe-core + Playwright)
 └── nuxt.config.ts          # Nuxt configuration
 ```
 
