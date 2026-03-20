@@ -21,6 +21,7 @@
  */
 
 import MarkdownIt from 'markdown-it'
+import DOMPurify from 'dompurify'
 // @ts-expect-error - no type declarations available
 import footnote from 'markdown-it-footnote'
 import anchor from 'markdown-it-anchor'
@@ -53,24 +54,8 @@ export function createMarkdownIt(): MarkdownIt {
     breaks: true,         // Convert \n to <br>
     linkify: true,        // Auto-convert URLs to links
     typographer: true,    // Enable smartquotes, dashes
-    
-    // Syntax highlighting for code blocks
-    // Includes role="figure" and aria-label for accessibility (WCAG 2.1 preformatted text compliance)
-    highlight: (str: string, lang: string): string => {
-      const langLabel = lang ? `${lang} ` : ''
-      const ariaLabel = `${langLabel}code block`
-      if (lang && hljs.getLanguage(lang)) {
-        try {
-          return `<pre class="hljs language-${lang}" role="figure" aria-label="${ariaLabel}"><code>${
-            hljs.highlight(str, { language: lang, ignoreIllegals: true }).value
-          }</code></pre>`
-        } catch (e) {
-          console.error('Highlight error:', e)
-        }
-      }
-      // Fallback: escape HTML and wrap in pre/code
-      return `<pre class="hljs" role="figure" aria-label="code block"><code>${md.utils.escapeHtml(str)}</code></pre>`
-    },
+    // Note: syntax highlighting is handled by the custom fence renderer below,
+    // which adds data-source-line for scroll sync and ARIA attributes for a11y.
   })
   
   // Add footnote support
@@ -214,12 +199,28 @@ export function getMarkdownIt(): MarkdownIt {
 }
 
 /**
+ * DOMPurify configuration that allows markdown-rendered HTML attributes and elements.
+ * This preserves syntax highlighting classes, scroll sync data attributes,
+ * KaTeX math rendering, and ARIA accessibility attributes.
+ */
+const PURIFY_CONFIG = {
+  ADD_ATTR: [
+    'data-source-line', 'target', 'rel',
+    'role', 'aria-label', 'aria-hidden', 'tabindex', 'aria-multiline',
+    'loading',
+  ],
+  ADD_TAGS: ['math', 'mrow', 'mi', 'mo', 'mn', 'msup', 'msub', 'mfrac', 'mspace', 'mtext', 'annotation', 'semantics'],
+  RETURN_TRUSTED_TYPE: false,
+}
+
+/**
  * Renders markdown content to HTML using the configured parser.
+ * Output is sanitized with DOMPurify to prevent XSS attacks from embedded HTML.
  * This is the main entry point for markdown rendering throughout the application.
- * 
+ *
  * @param {string} content - The markdown content to render
- * @returns {string} The rendered HTML string
- * 
+ * @returns {string} The sanitized rendered HTML string
+ *
  * @example
  * ```typescript
  * const html = renderMarkdown('# Hello World')
@@ -227,5 +228,10 @@ export function getMarkdownIt(): MarkdownIt {
  * ```
  */
 export function renderMarkdown(content: string): string {
-  return getMarkdownIt().render(content)
+  const rawHtml = getMarkdownIt().render(content)
+  if (typeof window !== 'undefined') {
+    return DOMPurify.sanitize(rawHtml, PURIFY_CONFIG)
+  }
+  // SSR/SSG fallback: return raw HTML (no user interaction on server)
+  return rawHtml
 }

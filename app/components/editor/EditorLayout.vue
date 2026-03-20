@@ -63,47 +63,62 @@ const editorPaneRef = ref<any>(null)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const previewPaneRef = ref<any>(null)
 
+/** Maximum number of retries for scroll sync DOM element discovery */
+const SCROLL_SYNC_MAX_RETRIES = 10
+let scrollSyncRetryCount = 0
+let scrollSyncTimerId: ReturnType<typeof setTimeout> | null = null
+
 // Wire up scroll sync when components are mounted
 onMounted(() => {
-  // Use a longer delay to ensure CodeMirror is fully initialized
-  setTimeout(() => {
-    setupScrollSync()
-  }, 300)
+  scrollSyncRetryCount = 0
+  scrollSyncTimerId = setTimeout(setupScrollSync, 300)
+})
+
+// Clean up pending retry on unmount
+onUnmounted(() => {
+  if (scrollSyncTimerId) {
+    clearTimeout(scrollSyncTimerId)
+    scrollSyncTimerId = null
+  }
 })
 
 /**
- * Set up scroll sync by finding the actual scroll containers
+ * Set up scroll sync by finding the actual scroll containers.
+ * Retries up to SCROLL_SYNC_MAX_RETRIES times if DOM elements are not yet available.
  */
 function setupScrollSync(): void {
+  scrollSyncTimerId = null
+
   // Get CodeMirror's scroll container - use DOM query as fallback
   let editorScrollContainer: HTMLElement | null = null
-  
+
   // Try to get from component ref first
   const editorView = editorPaneRef.value?.view
   if (editorView?.value?.scrollDOM) {
     editorScrollContainer = editorView.value.scrollDOM as HTMLElement
   }
-  
+
   // Fallback: query the DOM directly
   if (!editorScrollContainer) {
     editorScrollContainer = document.querySelector('.cm-scroller') as HTMLElement
   }
-  
+
   // Get preview's scroll container - try component ref first
   let previewScrollContainer: HTMLElement | null = previewPaneRef.value?.previewRef ?? null
-  
+
   // Fallback: query the DOM directly
   if (!previewScrollContainer) {
     previewScrollContainer = document.querySelector('.preview-content') as HTMLElement
   }
-  
+
   // Initialize scroll sync if both containers are available (pass getEditorView for line-based sync)
   if (editorScrollContainer && previewScrollContainer) {
     const getEditorView = () => editorPaneRef.value?.view?.value ?? null
     initScrollSync(editorScrollContainer, previewScrollContainer, { getEditorView })
+  } else if (scrollSyncRetryCount++ < SCROLL_SYNC_MAX_RETRIES) {
+    scrollSyncTimerId = setTimeout(setupScrollSync, 200)
   } else {
-    // Retry after a short delay if elements not found
-    setTimeout(setupScrollSync, 200)
+    console.warn('Scroll sync: Could not find editor/preview scroll containers after max retries')
   }
 }
 </script>
