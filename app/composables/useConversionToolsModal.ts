@@ -71,7 +71,7 @@ const conversionTools: ConversionTool[] = [
   {
     id: 'pdfaudit',
     name: 'PDF Audit',
-    description: 'Free, open source PDF accessibility analyzer. PDFs are sent to a server for scanning but are not stored.',
+    description: 'Free, open source PDF accessibility analyzer. Check PDFs for compliance issues.',
     url: 'https://audit.icjia.app/',
     icon: 'i-heroicons-shield-check',
     gradient: 'from-green-500 via-emerald-500 to-teal-500',
