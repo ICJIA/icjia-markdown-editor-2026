@@ -10,12 +10,14 @@ const { announce } = useAccessibility()
 
 const inputRef = ref<HTMLInputElement | null>(null)
 
-// Focus input when modal opens
+// Focus input when modal opens, and fix Reka UI aria-labelledby mismatch
 watch(isOpen, (open) => {
   if (open) {
     nextTick(() => {
       inputRef.value?.focus()
       inputRef.value?.select()
+      const dialog = document.querySelector('[role="dialog"][data-slot="content"]') as HTMLElement
+      if (dialog) dialog.setAttribute('aria-labelledby', 'download-modal-title')
     })
     announce('Download dialog opened. Enter a filename or use the default.')
   }

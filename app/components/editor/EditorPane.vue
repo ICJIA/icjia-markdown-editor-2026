@@ -130,7 +130,7 @@ defineExpose({
   justify-content: center;
   gap: 0.5rem;
   height: 100%;
-  color: var(--color-text-muted, #94a3b8);
+  color: var(--color-text-muted, #cbd5e1);
   font-size: 0.875rem;
 }
 

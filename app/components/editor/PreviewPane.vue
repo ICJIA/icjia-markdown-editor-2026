@@ -105,7 +105,7 @@ defineExpose({
   justify-content: center;
   gap: 0.5rem;
   height: 100%;
-  color: var(--color-text-muted, #94a3b8);
+  color: var(--color-text-muted, #cbd5e1);
   font-size: 0.875rem;
 }
 
@@ -120,7 +120,7 @@ defineExpose({
   background: var(--color-surface, #1e293b);
   border-radius: 0.375rem;
   font-size: 0.875rem;
-  color: var(--color-text-muted, #94a3b8);
+  color: var(--color-text-muted, #cbd5e1);
   z-index: 10;
 }
 
@@ -262,7 +262,7 @@ defineExpose({
   border-left: 4px solid var(--color-primary, #3b82f6);
   background: var(--color-surface, #1e293b);
   font-style: italic;
-  color: var(--color-text-muted, #94a3b8);
+  color: var(--color-text-muted, #cbd5e1);
 }
 
 .preview-content :deep(ul),
@@ -338,7 +338,7 @@ defineExpose({
 .preview-content :deep(h5:hover .header-anchor)::before,
 .preview-content :deep(h6:hover .header-anchor)::before {
   content: '# ';
-  color: var(--color-text-muted, #94a3b8);
+  color: var(--color-text-muted, #cbd5e1);
 }
 
 /* Footnotes */
@@ -357,7 +357,7 @@ defineExpose({
 .preview-content :deep(del),
 .preview-content :deep(s) {
   text-decoration: line-through;
-  color: #94a3b8;
+  color: #cbd5e1;
 }
 
 .light .preview-content :deep(del),
@@ -398,7 +398,7 @@ defineExpose({
 
 .preview-content :deep(.task-list-item-checkbox:checked + span),
 .preview-content :deep(.task-list-item.checked) {
-  color: #94a3b8;
+  color: #cbd5e1;
   text-decoration: line-through;
 }
 

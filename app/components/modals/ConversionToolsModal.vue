@@ -8,10 +8,19 @@
 const { isOpen, tools, closeModal, openTool } = useConversionToolsModal()
 const { announce } = useAccessibility()
 
-// Announce when modal opens
+// Announce when modal opens, and fix Reka UI aria-labelledby mismatch
 watch(isOpen, (open) => {
   if (open) {
     announce('Tools and utilities dialog opened. Select a tool to open in a new window.')
+    // Reka UI generates mismatched aria-labelledby/describedby IDs on the dialog.
+    // Patch them to reference actual elements after the modal renders.
+    nextTick(() => {
+      const dialog = document.querySelector('[role="dialog"][data-slot="content"]') as HTMLElement
+      if (dialog) {
+        dialog.setAttribute('aria-labelledby', 'conversion-modal-title')
+        dialog.removeAttribute('aria-describedby')
+      }
+    })
   }
 })
 

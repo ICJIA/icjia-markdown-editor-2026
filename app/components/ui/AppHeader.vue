@@ -336,7 +336,7 @@ function scrollToTop() {
   gap: 0.25rem;
   font-size: 0.75rem;
   font-weight: 400;
-  color: #94a3b8; /* slate-400 - muted */
+  color: #cbd5e1; /* slate-300 - WCAG AAA 7:1+ on #1e293b */
   white-space: nowrap;
   cursor: default;
 }

@@ -18,7 +18,7 @@
   --color-surface: #1e293b;       /* slate-800 */
   --color-border: #334155;        /* slate-700 */
   --color-text: #f1f5f9;          /* slate-100 */
-  --color-text-muted: #94a3b8;    /* slate-400 */
+  --color-text-muted: #cbd5e1;    /* slate-300 - WCAG AAA 7:1+ on slate-800 */
   --color-primary: #3b82f6;       /* blue-500 */
   --color-focus: #60a5fa;         /* blue-400 */
   --color-success: #22c55e;       /* green-500 */

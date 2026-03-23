@@ -98,15 +98,20 @@ function handleResetTour() {
 // Provide tour functions to child components
 provide('startTour', handleStartTour)
 provide('resetTour', handleResetTour)
+
+// Inert background when any modal is open (prevents focus escaping into hidden content)
+const { isOpen: isToolsModalOpen } = useConversionToolsModal()
+const { isOpen: isDownloadModalOpen } = useDownloadModal()
+const isAnyModalOpen = computed(() => isToolsModalOpen.value || isDownloadModalOpen.value || showWelcome.value || showIntro.value)
 </script>
 
 <template>
   <div class="page-container">
     <!-- Header landmark -->
-    <AppHeader />
-    
+    <AppHeader :inert="isAnyModalOpen || undefined" />
+
     <!-- Main content landmark -->
-    <main class="main-content" role="main">
+    <main class="main-content" role="main" :inert="isAnyModalOpen || undefined">
       <EditorLayout />
     </main>
     

@@ -55,6 +55,11 @@ watch(
       table.value = createEmptyTable(3, 3)
       showMarkdownPreview.value = false
       viewMode.value = 'edit'
+      // Fix Reka UI aria-labelledby mismatch
+      nextTick(() => {
+        const dialog = document.querySelector('[role="dialog"][data-slot="content"]') as HTMLElement
+        if (dialog) dialog.setAttribute('aria-labelledby', 'table-modal-title')
+      })
     }
   },
 )
