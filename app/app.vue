@@ -12,18 +12,32 @@ provide('announce', announce)
 
 // Fix Nuxt UI toast viewport: the <ol data-slot="viewport"> is always in the DOM
 // but empty when no toasts are visible, triggering WCAG 1.3.1 "empty list container".
-// Hide it from the accessibility tree when empty.
+// The element is injected by UApp after this component mounts, so we observe the
+// document body until it appears, then patch it.
 onMounted(() => {
-  const viewport = document.querySelector('ol[data-slot="viewport"]')
-  if (viewport) {
-    const observer = new MutationObserver(() => {
-      const isEmpty = viewport.children.length === 0
-      viewport.setAttribute('role', isEmpty ? 'presentation' : 'list')
-    })
-    observer.observe(viewport, { childList: true })
-    // Set initial state
+  function patchViewport(viewport: Element) {
     viewport.setAttribute('role', 'presentation')
+    const childObserver = new MutationObserver(() => {
+      viewport.setAttribute('role', viewport.children.length === 0 ? 'presentation' : 'list')
+    })
+    childObserver.observe(viewport, { childList: true })
   }
+
+  const existing = document.querySelector('ol[data-slot="viewport"]')
+  if (existing) {
+    patchViewport(existing)
+    return
+  }
+
+  // UApp hasn't injected it yet — watch for it
+  const bodyObserver = new MutationObserver((_mutations, obs) => {
+    const el = document.querySelector('ol[data-slot="viewport"]')
+    if (el) {
+      patchViewport(el)
+      obs.disconnect()
+    }
+  })
+  bodyObserver.observe(document.body, { childList: true, subtree: true })
 })
 </script>
 
