@@ -21,13 +21,6 @@ function handleToolClick(tool: typeof tools[0]) {
   closeModal()
 }
 
-// Handle keyboard navigation
-function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
-  if (event.key === 'Enter' || event.key === ' ') {
-    event.preventDefault()
-    handleToolClick(tool)
-  }
-}
 </script>
 
 <template>
@@ -61,16 +54,16 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
 
     <template #body>
       <div class="tools-grid">
-        <article
+        <a
           v-for="tool in tools"
           :key="tool.id"
+          :href="tool.url"
+          target="_blank"
+          rel="noopener noreferrer"
           class="tool-card"
           :class="`tool-card--${tool.id}`"
-          role="button"
-          tabindex="0"
           :aria-label="`Open ${tool.name} in a new window. ${tool.description}`"
-          @click="handleToolClick(tool)"
-          @keydown="(e) => handleKeydown(e, tool)"
+          @click.prevent="handleToolClick(tool)"
         >
           <!-- Gradient overlay -->
           <div class="tool-card__gradient" :class="`bg-gradient-to-br ${tool.gradient}`" />
@@ -105,7 +98,7 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
               <UIcon name="i-heroicons-arrow-right" class="tool-card__cta-arrow" />
             </div>
           </div>
-        </article>
+        </a>
       </div>
 
       <!-- Info note -->
@@ -193,6 +186,8 @@ function handleKeydown(event: KeyboardEvent, tool: typeof tools[0]) {
   display: flex;
   flex-direction: column;
   height: 100%;
+  text-decoration: none;
+  color: inherit;
 }
 
 .tool-card:hover {

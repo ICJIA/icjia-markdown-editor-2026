@@ -169,11 +169,11 @@ export function createMarkdownIt(): MarkdownIt {
       highlighted = md.utils.escapeHtml(code)
     }
     const lineAttr = token?.map ? ` data-source-line="${token.map[0]}"` : ''
-    // Accessibility: role="figure" indicates preformatted content is intentional visual presentation
-    // aria-label describes the code block for screen readers
-    const langLabel = lang ? `${lang} ` : ''
+    // Sanitize lang to prevent attribute injection (user controls fenced code block language)
+    const safeLang = lang.replace(/[^a-zA-Z0-9_-]/g, '')
+    const langLabel = safeLang ? `${safeLang} ` : ''
     const ariaLabel = `${langLabel}code block`
-    return `<pre class="hljs language-${lang}"${lineAttr} role="figure" aria-label="${ariaLabel}"><code>${highlighted}</code></pre>`
+    return `<pre class="hljs language-${safeLang}"${lineAttr} role="figure" aria-label="${ariaLabel}"><code>${highlighted}</code></pre>`
   }
   
   return md

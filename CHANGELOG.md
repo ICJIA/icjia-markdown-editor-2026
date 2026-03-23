@@ -5,6 +5,24 @@ All notable changes to ICJIA Markdown Editor 2.0 will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-03-23
+
+### Fixed
+
+- **Security:** Sanitize code block language attribute to prevent XSS via crafted fenced code blocks
+- **Security:** Add 10 MB file size limit on markdown file uploads to prevent browser tab crashes
+- **Security:** Sanitize download filenames — strip path traversal, invalid characters, enforce max length
+- **Race condition:** Move `copyStatusTimeout` from module scope to composable scope in `useExport`
+- **Race condition:** Move scroll sync timer state to component-scoped refs in `EditorLayout`
+- **Accessibility:** Change tool cards from `<article role="button">` to semantic `<a>` elements (ARIA compliance)
+- **Accessibility:** Improve WCAG AAA contrast in status bar — bump muted text from `#94a3b8` to `#cbd5e1` (7:1+ ratio)
+- **Resilience:** Disable auto-save and notify user when localStorage quota is exceeded
+
+### Removed
+
+- Dead code: unused `markAsEdited()` function in `useEditor`
+- Redundant keyboard handler in `ConversionToolsModal` (now handled natively by `<a>`)
+
 ## [1.4.0] - 2026-03-20
 
 ### Added
@@ -92,6 +110,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Screen reader announcements via `useAccessibility` composable
 - Static site generation for Netlify deployment
 
+[1.5.0]: https://github.com/ICJIA/icjia-markdown-editor-2026/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/ICJIA/icjia-markdown-editor-2026/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/ICJIA/icjia-markdown-editor-2026/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/ICJIA/icjia-markdown-editor-2026/compare/v1.1.0...v1.2.0

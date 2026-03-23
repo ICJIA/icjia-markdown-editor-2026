@@ -150,7 +150,9 @@ export function useAutoSave() {
     } catch (e) {
       console.error('Auto-save failed:', e)
       if (e instanceof DOMException && e.name === 'QuotaExceededError') {
-        announce('Storage full. Please download your work to avoid data loss.')
+        storageAvailable.value = false
+        stopAutoSave()
+        announce('Storage full. Auto-save disabled. Please download your work to avoid data loss.')
       }
       return false
     } finally {

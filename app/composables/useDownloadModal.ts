@@ -109,13 +109,20 @@ export function useDownloadModal() {
    */
   function confirm() {
     const finalFilename = filename.value.trim() || generateDefaultFilename(downloadType.value)
-    
+
     // Ensure correct extension
     const extension = downloadType.value === 'markdown' ? '.md' : '.html'
-    const correctedFilename = finalFilename.endsWith(extension) 
-      ? finalFilename 
+    const withExtension = finalFilename.endsWith(extension)
+      ? finalFilename
       : finalFilename.replace(/\.(md|html|txt)$/, '') + extension
-    
+
+    // Sanitize: strip path traversal, invalid chars, enforce max length
+    const correctedFilename = withExtension
+      .replace(/\.\./g, '')
+      .replace(/[<>:"/\\|?*]/g, '')
+      .replace(/^\.+/, '')
+      .slice(0, 255)
+
     if (resolvePromise.value) {
       resolvePromise.value(correctedFilename)
       resolvePromise.value = null

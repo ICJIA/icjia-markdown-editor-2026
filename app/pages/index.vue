@@ -10,6 +10,8 @@ import TourWelcome from '~/modules/tour/components/TourWelcome.vue'
 import TourIntro from '~/modules/tour/components/TourIntro.vue'
 import { tourConfig } from '~/config/tour'
 
+const TOUR_SKIP_MESSAGE = 'Tour skipped. You can start it anytime from the Tour button in the header.'
+
 // Page meta for SEO and accessibility
 useHead({
   title: 'ICJIA Markdown Editor 2.0',
@@ -70,7 +72,7 @@ function handleIntroSkip() {
   showIntro.value = false
   // Mark as seen so we don't ask again (uses explicit localStorage write for Safari)
   tour.markAsSeen()
-  announce('Tour skipped. You can start it anytime from the Tour button in the header.')
+  announce(TOUR_SKIP_MESSAGE)
 }
 
 // Handle welcome modal - user wants to skip tour
@@ -78,7 +80,7 @@ function handleWelcomeSkip() {
   showWelcome.value = false
   // Mark as seen so we don't ask again (uses explicit localStorage write for Safari)
   tour.markAsSeen()
-  announce('Tour skipped. You can start it anytime from the Tour button in the header.')
+  announce(TOUR_SKIP_MESSAGE)
 }
 
 // Handle tour start from header button (manual trigger)

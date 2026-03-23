@@ -255,18 +255,6 @@ export function useEditor() {
   }
   
   /**
-   * Marks that the user has started editing (for hiding the Start Editing button).
-   * Called when user makes any edit to the default content.
-   * 
-   * @returns {void}
-   */
-  function markAsEdited(): void {
-    if (!hasStartedEditing.value && content.value !== DEFAULT_CONTENT_VALUE) {
-      hasStartedEditing.value = true
-    }
-  }
-  
-  /**
    * Updates the tracked cursor position in the editor.
    * Used to display line and column numbers in the UI.
    * 
@@ -629,8 +617,6 @@ export function useEditor() {
     getDefaultContent,
     resetContent,
     startEditing,
-    markAsEdited,
-    
     // Editor actions
     insertText,
     wrapSelection,

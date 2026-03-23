@@ -65,20 +65,20 @@ const previewPaneRef = ref<any>(null)
 
 /** Maximum number of retries for scroll sync DOM element discovery */
 const SCROLL_SYNC_MAX_RETRIES = 10
-let scrollSyncRetryCount = 0
-let scrollSyncTimerId: ReturnType<typeof setTimeout> | null = null
+const scrollSyncRetryCount = ref(0)
+const scrollSyncTimerId = ref<ReturnType<typeof setTimeout> | null>(null)
 
 // Wire up scroll sync when components are mounted
 onMounted(() => {
-  scrollSyncRetryCount = 0
-  scrollSyncTimerId = setTimeout(setupScrollSync, 300)
+  scrollSyncRetryCount.value = 0
+  scrollSyncTimerId.value = setTimeout(setupScrollSync, 300)
 })
 
 // Clean up pending retry on unmount
 onUnmounted(() => {
-  if (scrollSyncTimerId) {
-    clearTimeout(scrollSyncTimerId)
-    scrollSyncTimerId = null
+  if (scrollSyncTimerId.value) {
+    clearTimeout(scrollSyncTimerId.value)
+    scrollSyncTimerId.value = null
   }
 })
 
@@ -87,7 +87,7 @@ onUnmounted(() => {
  * Retries up to SCROLL_SYNC_MAX_RETRIES times if DOM elements are not yet available.
  */
 function setupScrollSync(): void {
-  scrollSyncTimerId = null
+  scrollSyncTimerId.value = null
 
   // Get CodeMirror's scroll container - use DOM query as fallback
   let editorScrollContainer: HTMLElement | null = null
@@ -115,8 +115,8 @@ function setupScrollSync(): void {
   if (editorScrollContainer && previewScrollContainer) {
     const getEditorView = () => editorPaneRef.value?.view?.value ?? null
     initScrollSync(editorScrollContainer, previewScrollContainer, { getEditorView })
-  } else if (scrollSyncRetryCount++ < SCROLL_SYNC_MAX_RETRIES) {
-    scrollSyncTimerId = setTimeout(setupScrollSync, 200)
+  } else if (scrollSyncRetryCount.value++ < SCROLL_SYNC_MAX_RETRIES) {
+    scrollSyncTimerId.value = setTimeout(setupScrollSync, 200)
   } else {
     console.warn('Scroll sync: Could not find editor/preview scroll containers after max retries')
   }
@@ -505,7 +505,7 @@ function setupScrollSync(): void {
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
   font-weight: 500;
-  color: #94a3b8;
+  color: #cbd5e1;
   background: transparent;
   border: 1px solid transparent;
   border-radius: 0.25rem;
@@ -554,7 +554,7 @@ function setupScrollSync(): void {
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
   font-weight: 500;
-  color: #94a3b8;
+  color: #cbd5e1;
   text-decoration: none;
   border-radius: 0.25rem;
   transition: all 0.2s ease;
@@ -598,7 +598,7 @@ function setupScrollSync(): void {
 
 .reading-time {
   cursor: help;
-  color: #94a3b8;
+  color: #cbd5e1;
   font-size: 0.75rem;
 }
 

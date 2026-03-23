@@ -36,13 +36,9 @@
  * @returns {Readonly<Ref<boolean>>} returns.copyHtmlSuccess - HTML copy succeeded
  * @returns {Readonly<Ref<boolean>>} returns.isUploading - File upload in progress
  */
-/**
- * Timeout ID for clearing the copy status message.
- */
-let copyStatusTimeout: ReturnType<typeof setTimeout> | null = null
-
 export function useExport() {
-  // Clean up module-level timeout when the consuming component unmounts
+  let copyStatusTimeout: ReturnType<typeof setTimeout> | null = null
+
   onUnmounted(() => {
     if (copyStatusTimeout) {
       clearTimeout(copyStatusTimeout)
@@ -255,7 +251,16 @@ export function useExport() {
           resolve(false)
           return
         }
-        
+
+        const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
+        if (file.size > MAX_FILE_SIZE) {
+          announce('File is too large. Maximum size is 10 MB.')
+          isUploading.value = false
+          if (document.body.contains(input)) document.body.removeChild(input)
+          resolve(false)
+          return
+        }
+
         try {
           const text = await file.text()
           setContent(text)

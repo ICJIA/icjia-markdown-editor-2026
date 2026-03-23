@@ -33,7 +33,8 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 - **Math Support** - KaTeX-powered LaTeX rendering for inline and block math equations
 - **Guided Tour** - Interactive onboarding with markdown introduction slides and 25-step feature tour (runs once, restartable anytime)
 - **Undo/Redo** - Full history support with keyboard shortcuts (Cmd/Ctrl+Z)
-- **Accessibility First** - WCAG 2.1 Level AA compliant with full keyboard navigation, screen reader support, and proper ARIA attributes
+- **Security Hardened** - DOMPurify XSS sanitization, code block language sanitization, file size limits, filename sanitization
+- **Accessibility First** - WCAG 2.1 Level AA compliant (AAA in key areas) with full keyboard navigation, screen reader support, and proper ARIA attributes
 - **Static Deployment** - Deploy anywhere as a static site (Netlify-ready)
 - **Fully Documented** - Comprehensive JSDoc comments on all composables and utilities
 - **Reusable Tour Module** - Copy the tour module to any Nuxt project for instant onboarding
@@ -115,7 +116,14 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 |   ✅   | Editor aria-describedby with keyboard shortcut instructions              |
 |   ✅   | DOMPurify XSS sanitization on rendered markdown HTML output              |
 |   ✅   | Bounded scroll sync retry with timeout cleanup on unmount                |
-|   ⬜   | Full accessibility audit (axe-core, WAVE)                               |
+|   ✅   | Code block language attribute sanitization (prevent XSS injection)        |
+|   ✅   | File upload size limit (10 MB) to prevent browser crashes                |
+|   ✅   | Download filename sanitization (path traversal, invalid chars, length)   |
+|   ✅   | WCAG AAA contrast compliance in status bar (7:1+ ratio)                  |
+|   ✅   | Semantic `<a>` elements for tool cards (replaces `<article role="button">`) |
+|   ✅   | Auto-save graceful degradation on localStorage quota exceeded            |
+|   ✅   | Race condition fixes: composable-scoped timers in useExport and EditorLayout |
+|   ✅   | Full accessibility audit (axe-core)                                     |
 |   ⬜   | Screen reader testing (VoiceOver, NVDA)                                 |
 |   ⬜   | Keyboard navigation refinement                                          |
 |   ⬜   | Help modal with shortcuts reference                                     |
@@ -232,15 +240,17 @@ This documentation enables better IDE intellisense, easier onboarding for new de
 
 ## Accessibility
 
-This project is committed to WCAG 2.1 Level AA compliance. Key accessibility features include:
+This project is committed to WCAG 2.1 Level AA compliance, with AAA compliance in key areas (status bar contrast, copy notifications). Key accessibility features include:
 
 - **Skip Link** - Jump directly to the editor
 - **Keyboard Navigation** - Full functionality without a mouse
 - **Screen Reader Support** - ARIA labels and live region announcements
 - **Focus Indicators** - Clear, visible focus states on all interactive elements
-- **Color Contrast** - 4.5:1 for text, 3:1 for UI components
+- **Color Contrast** - 4.5:1 minimum for text (7:1+ in status bar), 3:1 for UI components
+- **Semantic HTML** - Proper `<a>` elements for links, correct ARIA roles throughout
 - **Reduced Motion** - Respects `prefers-reduced-motion` setting
 - **Guided Tour** - Accessible onboarding with keyboard navigation (Arrow keys, Escape)
+- **axe-core Audited** - Automated accessibility testing with axe-core 4.10
 
 ## Guided Tour / Onboarding
 
