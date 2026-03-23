@@ -165,7 +165,7 @@ function setupScrollSync(): void {
                 type="button"
                 class="start-editing-button"
                 @click="handleStartEditing"
-                aria-label="Clear the tutorial content and start with a blank editor"
+                aria-label="Start Editing — clear the tutorial content and start with a blank editor"
               >
                 <UIcon name="i-heroicons-pencil" class="start-editing-icon" />
                 <span>Start Editing</span>
@@ -210,7 +210,7 @@ function setupScrollSync(): void {
             type="button"
             class="tour-button"
             data-tour="tour-button"
-            aria-label="Start guided tour"
+            aria-label="Take Guided Tour of the editor features"
             @click="handleStartTour"
           >
             <UIcon name="i-heroicons-academic-cap" class="tour-icon" />

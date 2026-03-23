@@ -118,7 +118,7 @@ function scrollToTop() {
           <button
             type="button"
             class="conversion-tools-button"
-            aria-label="Open conversion tools menu"
+            aria-label="Tools — open conversion tools menu"
             aria-haspopup="dialog"
             data-tour="conversion-tools"
             @click="handleOpenConversionTools"
