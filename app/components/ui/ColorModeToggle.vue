@@ -95,17 +95,17 @@ const label = computed(() => isDark.value ? 'Dark mode active. Click to switch t
   text-align: left;
 }
 
-/* Dark mode - slightly lighter gradient for contrast */
+/* Dark mode - white text on slate gradient for WCAG AA 4.5:1+ contrast */
 .dark .color-mode-button {
-  background: linear-gradient(135deg, #94a3b8 0%, #64748b 50%, #94a3b8 100%);
-  color: #1e293b;
-  box-shadow: 
+  background: linear-gradient(135deg, #64748b 0%, #475569 50%, #64748b 100%);
+  color: #ffffff;
+  box-shadow:
     0 1px 3px rgba(148, 163, 184, 0.3),
     0 4px 8px -2px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .dark .color-mode-button:hover {
-  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 50%, #cbd5e1 100%);
+  background: linear-gradient(135deg, #475569 0%, #334155 50%, #475569 100%);
 }
 </style>

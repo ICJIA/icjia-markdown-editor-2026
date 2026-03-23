@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Accessibility:** Fix Reka UI `aria-labelledby` mismatch in all three modals (Tools, Download, Table Builder) — patch dialog to reference actual title element IDs
 - **Accessibility:** Remove broken `aria-describedby` reference from Tools modal dialog
 - **Accessibility:** Add `inert` attribute to header and main content when any modal is open, preventing keyboard focus from escaping into hidden background
+- **Accessibility:** Fix dark mode color toggle contrast — white text on slate gradient (7.1:1 ratio, was 3.1:1)
 - **Resilience:** Disable auto-save and notify user when localStorage quota is exceeded
 
 ### Removed
