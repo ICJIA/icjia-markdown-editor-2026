@@ -15,7 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Race condition:** Move `copyStatusTimeout` from module scope to composable scope in `useExport`
 - **Race condition:** Move scroll sync timer state to component-scoped refs in `EditorLayout`
 - **Accessibility:** Change tool cards from `<article role="button">` to semantic `<a>` elements (ARIA compliance)
-- **Accessibility:** Improve WCAG AAA contrast in status bar — bump muted text from `#94a3b8` to `#cbd5e1` (7:1+ ratio)
+- **Accessibility:** Achieve WCAG AAA contrast globally — bump `--color-text-muted` from `#94a3b8` to `#cbd5e1` (7:1+ ratio) across status bar, blockquotes, autosave, strikethrough, and checked task text
+- **Accessibility:** Fix Reka UI `aria-labelledby` mismatch in all three modals (Tools, Download, Table Builder) — patch dialog to reference actual title element IDs
+- **Accessibility:** Remove broken `aria-describedby` reference from Tools modal dialog
+- **Accessibility:** Add `inert` attribute to header and main content when any modal is open, preventing keyboard focus from escaping into hidden background
 - **Resilience:** Disable auto-save and notify user when localStorage quota is exceeded
 
 ### Removed

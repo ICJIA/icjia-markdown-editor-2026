@@ -119,11 +119,13 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 |   ✅   | Code block language attribute sanitization (prevent XSS injection)        |
 |   ✅   | File upload size limit (10 MB) to prevent browser crashes                |
 |   ✅   | Download filename sanitization (path traversal, invalid chars, length)   |
-|   ✅   | WCAG AAA contrast compliance in status bar (7:1+ ratio)                  |
+|   ✅   | WCAG AAA contrast compliance globally — `--color-text-muted` 7:1+ ratio  |
 |   ✅   | Semantic `<a>` elements for tool cards (replaces `<article role="button">`) |
 |   ✅   | Auto-save graceful degradation on localStorage quota exceeded            |
 |   ✅   | Race condition fixes: composable-scoped timers in useExport and EditorLayout |
-|   ✅   | Full accessibility audit (axe-core)                                     |
+|   ✅   | Full accessibility audit (axe-core) — zero violations                   |
+|   ✅   | Fix Reka UI `aria-labelledby` mismatch in all modals                     |
+|   ✅   | Inert background content when modals are open (focus trap)               |
 |   ⬜   | Screen reader testing (VoiceOver, NVDA)                                 |
 |   ⬜   | Keyboard navigation refinement                                          |
 |   ⬜   | Help modal with shortcuts reference                                     |
