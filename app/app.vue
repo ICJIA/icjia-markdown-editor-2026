@@ -9,6 +9,22 @@ const { announce } = useAccessibility()
 
 // Make announce available for other components if needed
 provide('announce', announce)
+
+// Fix Nuxt UI toast viewport: the <ol data-slot="viewport"> is always in the DOM
+// but empty when no toasts are visible, triggering WCAG 1.3.1 "empty list container".
+// Hide it from the accessibility tree when empty.
+onMounted(() => {
+  const viewport = document.querySelector('ol[data-slot="viewport"]')
+  if (viewport) {
+    const observer = new MutationObserver(() => {
+      const isEmpty = viewport.children.length === 0
+      viewport.setAttribute('role', isEmpty ? 'presentation' : 'list')
+    })
+    observer.observe(viewport, { childList: true })
+    // Set initial state
+    viewport.setAttribute('role', 'presentation')
+  }
+})
 </script>
 
 <template>
