@@ -225,7 +225,7 @@ function setupScrollSync(): void {
             type="button"
             class="reset-button"
             data-tour="reset"
-            aria-label="Display the markdown tutorial in the editor"
+            aria-label="Display Markdown Tutorial in the editor"
             @click="handleReset"
           >
             <UIcon name="i-heroicons-arrow-path" class="reset-icon" />
