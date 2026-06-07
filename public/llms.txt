@@ -1,0 +1,42 @@
+# ICJIA Markdown Editor
+
+> A free, accessible, browser-based markdown editor built for Illinois Criminal Justice Information Authority (ICJIA) researchers. Write in a real-time twin-pane editor with live preview, export to Markdown or styled HTML, and full WCAG 2.1 AA accessibility — all running entirely in your browser with no account, no server, and no document data leaving your device.
+
+The ICJIA Markdown Editor is a statically generated web application (Nuxt 4 + CodeMirror 6) deployed at https://markdown.icjia.cloud. All editing happens client-side; documents are auto-saved to the browser's localStorage and are never uploaded. It is open source under the MIT license, published by the Illinois Criminal Justice Information Authority.
+
+## What it does
+
+- Real-time twin-pane editing: a CodeMirror 6 editor beside a live, scroll-synchronized markdown preview.
+- Rich markdown: footnotes, task lists, strikethrough, inserted (`++ins++`) and highlighted (`==mark==`) text, tables, heading anchors, and KaTeX math (inline and block LaTeX).
+- Formatting toolbar plus keyboard shortcuts for bold, italic, code, headings (H1–H6), block quotes, lists, links, tables, and horizontal rules.
+- Visual table builder (Cmd/Ctrl+T) that generates markdown tables from a grid.
+- Export: copy as Markdown or HTML to the clipboard, or download a Markdown file or a self-contained styled HTML document with a custom filename.
+- Import: upload existing Markdown files (10 MB limit).
+- Auto-save to localStorage every 30 seconds with a live countdown, plus one-click reset to the built-in tutorial content.
+- Dark/light mode with system-preference detection (dark by default).
+- Interactive 25-step guided tour for first-time visitors, restartable at any time.
+
+## Key features
+
+- Accessibility: WCAG 2.1 Level AA compliant (AAA in key areas such as status-bar contrast). Full keyboard navigation, screen-reader announcements via ARIA live regions, visible focus indicators, and `prefers-reduced-motion` support. Audited with axe-core (zero violations).
+- Privacy and security: runs fully client-side with no analytics or telemetry; document content never leaves the browser. Rendered HTML is sanitized with DOMPurify, code-block language attributes and download filenames are sanitized, and uploads are size-limited to prevent crashes.
+- Document statistics: live word count, character count, and estimated reading time in the status bar.
+
+## Tech stack
+
+- Framework: Nuxt 4 (Vue 3.5+, TypeScript 5.x), statically generated and deployed on Netlify.
+- Editor: CodeMirror 6.
+- Markdown: markdown-it 14 with footnote, task-list, strikethrough, ins, mark, anchor, and KaTeX plugins; highlight.js for code highlighting; DOMPurify for sanitization.
+- UI: Nuxt UI 4 and VueUse 14.
+
+## Links
+
+- [Live application](https://markdown.icjia.cloud): the editor itself, ready to use in any modern browser.
+- [Source code on GitHub](https://github.com/ICJIA/icjia-markdown-editor-2026): full source, MIT licensed.
+- [Changelog](https://github.com/ICJIA/icjia-markdown-editor-2026/blob/main/CHANGELOG.md): version history and release notes.
+- [ICJIA](https://icjia.illinois.gov/): the Illinois Criminal Justice Information Authority, publisher of this tool.
+
+## Optional
+
+- [README](https://github.com/ICJIA/icjia-markdown-editor-2026/blob/main/README.md): detailed setup instructions, a full keyboard-shortcut reference, and an architecture overview.
+- [License (MIT)](https://github.com/ICJIA/icjia-markdown-editor-2026/blob/main/LICENSE): usage terms. Copyright (c) 2026 Illinois Criminal Justice Information Authority.

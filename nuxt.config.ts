@@ -49,6 +49,7 @@ export default defineNuxtConfig({
       title: 'ICJIA Markdown Editor',
       meta: [
         { name: 'description', content: 'Accessible markdown editor for ICJIA researchers' },
+        { name: 'author', content: 'Illinois Criminal Justice Information Authority' },
         { name: 'theme-color', content: '#0f172a' },
         // Open Graph (og:image set via plugins/seo.ts with absolute URL when NUXT_PUBLIC_SITE_URL is set)
         { property: 'og:type', content: 'website' },

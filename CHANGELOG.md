@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.5.0] - 2026-03-23
 
+### Added
+
+- **SEO:** Canonical URL (`<link rel="canonical">`) and matching `og:url`, resolving the missing-canonical finding from meta-tag audits
+- **SEO / AI readiness:** WebApplication JSON-LD structured data (Schema.org) — includes authorship (ICJIA as author and publisher), content-freshness dates, license, and software version
+- **SEO / AI readiness:** `author` meta tag (Illinois Criminal Justice Information Authority)
+- **AI readiness:** `llms.txt` describing the editor for LLM consumption (per llmstxt.org)
+
 ### Fixed
 
 - **Security:** Sanitize code block language attribute to prevent XSS via crafted fenced code blocks
