@@ -105,14 +105,6 @@ export function useConversionToolsModal() {
     isOpen.value = false
   }
 
-  /**
-   * Opens an external tool in a new window
-   * @param tool - The conversion tool to open
-   */
-  function openTool(tool: ConversionTool) {
-    window.open(tool.url, '_blank', 'noopener,noreferrer')
-  }
-
   return {
     // State
     isOpen: readonly(isOpen),
@@ -121,6 +113,5 @@ export function useConversionToolsModal() {
     // Actions
     openModal,
     closeModal,
-    openTool,
   }
 }

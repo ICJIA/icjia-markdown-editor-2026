@@ -111,10 +111,15 @@ export function useTour(config: TourConfig): UseTourReturn {
    * Restore focus to the previously focused element.
    */
   function restoreFocus(): void {
-    if (previouslyFocused && typeof previouslyFocused.focus === 'function') {
+    // Capture the target now: if the tour restarts before the timeout fires,
+    // previouslyFocused is reassigned and the pending restore would focus the
+    // wrong element.
+    const target = previouslyFocused
+    previouslyFocused = null
+    if (target && typeof target.focus === 'function') {
       // Small delay to ensure the tour overlay is fully removed
       setTimeout(() => {
-        previouslyFocused?.focus()
+        target.focus()
       }, 50)
     }
   }
@@ -282,9 +287,10 @@ export function useTour(config: TourConfig): UseTourReturn {
   
   // Development mode validation
   if (import.meta.dev) {
+    let validationTimeout: ReturnType<typeof setTimeout> | null = null
     onMounted(() => {
       // Validate that all tour targets exist in the DOM
-      setTimeout(() => {
+      validationTimeout = setTimeout(() => {
         for (const step of steps) {
           const el = document.querySelector(step.target)
           if (!el) {
@@ -292,6 +298,9 @@ export function useTour(config: TourConfig): UseTourReturn {
           }
         }
       }, 1000)
+    })
+    onUnmounted(() => {
+      if (validationTimeout) clearTimeout(validationTimeout)
     })
   }
   

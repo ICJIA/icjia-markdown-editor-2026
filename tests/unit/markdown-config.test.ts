@@ -75,6 +75,53 @@ describe('createMarkdownIt', () => {
   })
 })
 
+describe('syntax highlighting language registry', () => {
+  const md = createMarkdownIt()
+
+  // Languages researchers actually use must produce highlighted output
+  it.each([
+    'javascript',
+    'typescript',
+    'python',
+    'r',
+    'sql',
+    'bash',
+    'json',
+    'yaml',
+    'xml',
+    'css',
+    'markdown',
+    'java',
+    'c',
+    'cpp',
+    'csharp',
+    'diff',
+    'stata',
+    'sas',
+  ])('highlights %s code blocks', (lang) => {
+    const html = md.render(`\`\`\`${lang}\nx\n\`\`\``)
+    expect(html).toContain(`class="hljs language-${lang}"`)
+  })
+
+  it('falls back to escaped plain text for unregistered languages', () => {
+    // fortran is not in the registered subset — must degrade gracefully,
+    // not pull the full 190-language registry into the bundle
+    const html = md.render('```fortran\nPROGRAM hello\nEND PROGRAM\n```')
+    expect(html).toContain('class="hljs language-fortran"')
+    expect(html).toContain('PROGRAM hello')
+    expect(html).not.toContain('<span class="hljs-')
+  })
+
+  it('resolves common language aliases from registered languages', () => {
+    const js = md.render('```js\nconst x = 1\n```')
+    expect(js).toContain('class="hljs language-js"')
+    expect(js).toContain('<span class="hljs-')
+
+    const py = md.render('```py\nx = 1\n```')
+    expect(py).toContain('<span class="hljs-')
+  })
+})
+
 describe('renderMarkdown', () => {
   it('sanitizes dangerous HTML via DOMPurify', () => {
     const html = renderMarkdown('<img src=x onerror="alert(1)">')

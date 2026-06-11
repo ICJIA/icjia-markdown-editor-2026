@@ -5,6 +5,36 @@ All notable changes to ICJIA Markdown Editor 2.0 will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-06-10
+
+### Performance
+
+- **Bundle:** Replace the full highlight.js build (~190 languages, the bulk of a 2.1 MB chunk) with `highlight.js/lib/core` plus 18 registered languages researchers actually use (R, Stata, SAS, SQL, Python, JavaScript/TypeScript, JSON, YAML, HTML/XML, CSS, Markdown, Java, C, C++, C#, Bash, diff); unregistered languages degrade gracefully to escaped plain text
+- **LCP:** Self-host the tutorial sample image and the welcome-modal ICJIA logo (previously fetched from Unsplash and icjia.illinois.gov at runtime); add explicit width/height to the logo
+- **Rendering:** `useMarkdown` is now a shared module singleton — the preview pane, status bar, and exports reuse one render pipeline instead of instantiating three
+- **Word count:** Statistics now compute from the debounced content instead of running ~17 regex passes over the entire document on every keystroke; logic extracted to pure, unit-tested `utils/markdown/text-stats`
+- **Scroll sync:** Scroll handlers are requestAnimationFrame-throttled, the preview line search early-exits once past the viewport top, and listeners are guaranteed to attach once (each `useScrollSync()` caller previously registered duplicate handlers via its own element watcher)
+
+### Fixed
+
+- **Auto-save:** State is now module-level with reference-counted initialization — `AppHeader` and `EditorLayout` each instantiated a full auto-save instance, causing a duplicate restore dispatch into CodeMirror, doubled screen-reader announcements, and duplicate 30 s save intervals and window blur/beforeunload listeners
+- **Auto-save:** Content changes save 2 s after typing pauses (at most every 10 s while typing continuously), closing the window where a crash could lose up to 30 s of work
+- **Export:** Copied/downloaded HTML renders from the live editor content (was up to 150 ms stale); exported documents now include the KaTeX and highlight.js stylesheets so math and code blocks render styled
+- **Security hardening:** `renderMarkdown` returns an empty string during SSR/SSG instead of unsanitized HTML (latent footgun — nothing prerenders markdown today, and the preview waits for client hydration)
+- **Keyboard:** "Open table builder" moved from Ctrl/Cmd+T — which is browser-reserved and cannot be intercepted in Chrome/Safari/Firefox — to Ctrl/Cmd+Alt+T; all shortcut matchers now check the Alt modifier explicitly to avoid collisions. Toolbar button label, in-app tutorial content, README, and docs all updated to match (the tutorial's Download row also corrected from Ctrl+Shift+S to the actual Ctrl+S)
+- **Upload:** The hidden file input is removed from the DOM when the change event fires with no file selected
+- **Tour:** Focus-restoration race when the tour restarts within 50 ms of closing; dev-mode target-validation timer is now cleared on unmount
+- **Tour:** Intro slides support ArrowLeft to navigate back, matching the tour overlay
+- **Tools modal:** Tool links navigate natively instead of `@click.prevent` + `window.open` double-handling — middle-click and Cmd/Ctrl+click now work as expected
+
+### Removed
+
+- Dead code: orphaned `app/types/tour.ts` (superseded by `app/modules/tour/types.ts`), unused `codeBlockIndex` counter in PreviewPane, unused `scrollDebounce` config field, unused `openTool` action
+
+### Testing
+
+- New unit tests covering the syntax-highlight language registry contract, markdown text statistics, and the HTML export template
+
 ## [1.5.0] - 2026-03-23
 
 ### Added

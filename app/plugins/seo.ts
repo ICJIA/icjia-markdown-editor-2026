@@ -31,9 +31,9 @@ export default defineNuxtPlugin(() => {
     applicationCategory: 'Productivity',
     operatingSystem: 'Any',
     browserRequirements: 'Requires JavaScript and a modern web browser',
-    softwareVersion: '1.5.0',
+    softwareVersion: '1.6.0',
     datePublished: '2026-01-28',
-    dateModified: '2026-03-23',
+    dateModified: '2026-06-10',
     inLanguage: 'en',
     isAccessibleForFree: true,
     offers: {

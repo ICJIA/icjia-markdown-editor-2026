@@ -36,6 +36,10 @@
  * @returns {Readonly<Ref<boolean>>} returns.copyHtmlSuccess - HTML copy succeeded
  * @returns {Readonly<Ref<boolean>>} returns.isUploading - File upload in progress
  */
+
+import { renderMarkdown } from '~/utils/markdown/config'
+import { wrapHtmlDocument } from '~/utils/export/html-template'
+
 export function useExport() {
   let copyStatusTimeout: ReturnType<typeof setTimeout> | null = null
 
@@ -47,7 +51,6 @@ export function useExport() {
   })
 
   const { content, setContent } = useEditor()
-  const { renderedHtml } = useMarkdown()
   const { announce } = useAccessibility()
   
   /**
@@ -155,7 +158,9 @@ export function useExport() {
     isCopyingHtml.value = true
     
     try {
-      await navigator.clipboard.writeText(renderedHtml.value)
+      // Render from the live content (not the debounced preview pipeline) so
+      // the copied HTML always reflects the latest keystroke
+      await navigator.clipboard.writeText(renderMarkdown(content.value))
       copyHtmlSuccess.value = true
       announce('HTML copied to clipboard')
       
@@ -221,7 +226,7 @@ export function useExport() {
    * @returns {void}
    */
   function downloadHtml(filename = 'document.html'): void {
-    const fullHtml = wrapHtmlDocument(renderedHtml.value)
+    const fullHtml = wrapHtmlDocument(renderMarkdown(content.value))
     const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' })
     downloadBlob(blob, filename)
     announce(`Downloaded ${filename}`)
@@ -248,6 +253,7 @@ export function useExport() {
         const file = (e.target as HTMLInputElement).files?.[0]
         if (!file) {
           isUploading.value = false
+          if (document.body.contains(input)) document.body.removeChild(input)
           resolve(false)
           return
         }
@@ -300,50 +306,4 @@ export function useExport() {
     isUploading: readonly(isUploading),
     copyStatusMessage,
   }
-}
-
-/**
- * Wraps HTML content in a complete HTML document with styling.
- * Includes GitHub markdown CSS for consistent rendering.
- * Supports dark mode and print styling.
- * 
- * @param {string} content - The HTML content to wrap
- * @returns {string} A complete HTML document as a string
- */
-function wrapHtmlDocument(content: string): string {
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Exported Document</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.0/github-markdown.min.css">
-  <style>
-    body {
-      box-sizing: border-box;
-      min-width: 200px;
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 45px;
-      background: #0d1117;
-      color: #c9d1d9;
-    }
-    .markdown-body {
-      background: transparent;
-    }
-    @media (max-width: 767px) {
-      body { padding: 15px; }
-    }
-    @media print {
-      body {
-        background: white;
-        color: black;
-      }
-    }
-  </style>
-</head>
-<body class="markdown-body">
-${content}
-</body>
-</html>`
 }

@@ -140,7 +140,7 @@ No feature ships unless it passes:
 | Numbered List | Prefix with `1. ` | Ctrl+Shift+7 | aria-label="Numbered list" |
 | Link | Insert `[text](url)` | Ctrl+K | Opens modal |
 | Image | Insert `![alt](url)` | Ctrl+Shift+I | Opens modal |
-| Table | Open table builder | Ctrl+T | Opens modal |
+| Table | Open table builder | Ctrl+Alt+T | Opens modal |
 | Horizontal Rule | Insert `---` | Ctrl+- | aria-label="Horizontal rule" |
 | Footnote | Insert `[^1]` and reference | Ctrl+Shift+F | aria-label="Footnote" |
 
@@ -297,7 +297,7 @@ When "Insert placeholder" is checked:
 | | Ctrl+Shift+7 | Numbered list |
 | | Ctrl+K | Insert link |
 | | Ctrl+Shift+I | Insert image |
-| | Ctrl+T | Table builder |
+| | Ctrl+Alt+T | Table builder |
 | | Ctrl+Shift+F | Footnote |
 | **Edit** | | |
 | | Ctrl+Z | Undo |

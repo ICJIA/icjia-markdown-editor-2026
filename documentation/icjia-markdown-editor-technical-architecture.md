@@ -685,7 +685,7 @@ export const markdownKeymap: KeyBinding[] = [
   { key: 'Mod-q', run: toggleBlockquote, preventDefault: true },
   { key: 'Mod-Shift-8', run: toggleBulletList, preventDefault: true },
   { key: 'Mod-Shift-7', run: toggleOrderedList, preventDefault: true },
-  { key: 'Mod-t', run: openTableBuilder, preventDefault: true },
+  { key: 'Mod-Alt-t', run: openTableBuilder, preventDefault: true },
   { key: 'Mod-Shift-f', run: insertFootnote, preventDefault: true },
   { key: 'Mod-Shift-c', run: copyMarkdown, preventDefault: true },
   { key: 'Mod-Shift-h', run: copyHtml, preventDefault: true },

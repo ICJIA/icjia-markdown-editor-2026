@@ -95,10 +95,12 @@ onUnmounted(() => {
             <template #header>
               <div class="welcome-header">
                 <div class="welcome-logo-wrapper">
-                  <img 
-                    src="https://icjia.illinois.gov/img/icjia-logo.ee010aa8.png"
+                  <img
+                    src="/images/icjia-logo.png"
                     alt="ICJIA Logo"
                     class="welcome-logo"
+                    width="250"
+                    height="175"
                   />
                 </div>
                 <h2 id="welcome-title" class="welcome-title">

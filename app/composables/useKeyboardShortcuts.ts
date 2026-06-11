@@ -6,7 +6,8 @@
  * @module composables/useKeyboardShortcuts
  * 
  * Supported shortcuts:
- * - Ctrl/Cmd + T: Open table builder
+ * - Ctrl/Cmd + Alt + T: Open table builder (plain Ctrl/Cmd+T is browser-reserved
+ *   for "new tab" and cannot be intercepted in Chrome/Safari/Firefox)
  * - Ctrl/Cmd + S: Download markdown file
  * - Ctrl/Cmd + Shift + C: Copy markdown to clipboard
  * - Ctrl/Cmd + Shift + H: Copy HTML to clipboard
@@ -45,9 +46,11 @@ export function useKeyboardShortcuts() {
   function handleKeyDown(event: KeyboardEvent) {
     const isMod = event.metaKey || event.ctrlKey
     const isShift = event.shiftKey
+    const isAlt = event.altKey
 
-    // Ctrl/Cmd + T - Open table builder modal
-    if (isMod && !isShift && event.key.toLowerCase() === 't') {
+    // Ctrl/Cmd + Alt + T - Open table builder modal
+    // (uses event.code because Option/Alt changes event.key on macOS, e.g. Alt+T = '†')
+    if (isMod && isAlt && !isShift && event.code === 'KeyT') {
       event.preventDefault()
       openTableBuilder()
       announce('Table builder opened')
@@ -55,36 +58,36 @@ export function useKeyboardShortcuts() {
     }
 
     // Ctrl/Cmd + S - Download markdown (prevent browser save dialog)
-    if (isMod && !isShift && event.key === 's') {
+    if (isMod && !isShift && !isAlt && event.key === 's') {
       event.preventDefault()
       downloadMarkdown()
       announce('Markdown file downloaded')
       return
     }
-    
+
     // Ctrl/Cmd + Shift + C - Copy markdown
-    if (isMod && isShift && event.key.toLowerCase() === 'c') {
+    if (isMod && isShift && !isAlt && event.key.toLowerCase() === 'c') {
       event.preventDefault()
       copyMarkdown()
       return
     }
-    
+
     // Ctrl/Cmd + Shift + H - Copy HTML
-    if (isMod && isShift && event.key.toLowerCase() === 'h') {
+    if (isMod && isShift && !isAlt && event.key.toLowerCase() === 'h') {
       event.preventDefault()
       copyHtml()
       return
     }
-    
+
     // Ctrl/Cmd + O - Upload/Open markdown file
-    if (isMod && !isShift && event.key === 'o') {
+    if (isMod && !isShift && !isAlt && event.key === 'o') {
       event.preventDefault()
       uploadMarkdown()
       return
     }
 
     // Ctrl/Cmd + \ - Toggle scroll sync
-    if (isMod && !isShift && event.key === '\\') {
+    if (isMod && !isShift && !isAlt && event.key === '\\') {
       event.preventDefault()
       toggleScrollSync()
       announce(scrollSyncEnabled.value ? 'Scroll sync disabled' : 'Scroll sync enabled')

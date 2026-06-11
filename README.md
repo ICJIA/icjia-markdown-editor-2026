@@ -23,8 +23,8 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 - **Dark/Light Mode** - Easy on the eyes with dark mode default and system preference detection
 - **ICJIA Branding** - Header features the ICJIA logo (clickable to scroll to top, with error fallback)
 - **Keyboard Shortcuts** - Speed up your workflow with comprehensive shortcuts
-- **Table Builder** - Visual table creation modal (Cmd/Ctrl+T) with copy feedback
-- **Auto-save** - Never lose your work (saves every 30 seconds with live countdown in header)
+- **Table Builder** - Visual table creation modal (Cmd/Ctrl+Alt+T) with copy feedback
+- **Auto-save** - Never lose your work (saves a couple of seconds after you pause typing, plus a 30-second safety interval with live countdown in header)
 - **Start Editing Button** - New users see a prominent button to clear the tutorial and start fresh
 - **Tutorial Reset** - Restore the markdown tutorial content anytime from the status bar
 - **Export Options** - Copy as Markdown, copy as HTML, or download files with custom filenames
@@ -213,7 +213,7 @@ npx serve dist
 | Block Quote     | ⌘ + Q         | Ctrl + Q         |
 | Bullet List     | ⌘ + Shift + 8 | Ctrl + Shift + 8 |
 | Numbered List   | ⌘ + Shift + 7 | Ctrl + Shift + 7 |
-| Insert Table    | ⌘ + T         | Ctrl + T         |
+| Insert Table    | ⌘ + ⌥ + T     | Ctrl + Alt + T   |
 | Insert Link     | ⌘ + K         | Ctrl + K         |
 | Horizontal Rule | ⌘ + -         | Ctrl + -         |
 | Copy Markdown   | ⌘ + Shift + C | Ctrl + Shift + C |

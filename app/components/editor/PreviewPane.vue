@@ -19,10 +19,8 @@ function makeCodeBlocksAccessible() {
   if (!previewRef.value) return
   
   const preElements = previewRef.value.querySelectorAll('pre')
-  let codeBlockIndex = 0
-  
+
   preElements.forEach(pre => {
-    codeBlockIndex++
     // Check if the element is scrollable
     if (pre.scrollWidth > pre.clientWidth || pre.scrollHeight > pre.clientHeight) {
       // Make focusable for keyboard users to scroll

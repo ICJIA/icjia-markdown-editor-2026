@@ -5,7 +5,7 @@
  * Modern, sleek design with gradient accents and smooth animations
  */
 
-const { isOpen, tools, closeModal, openTool } = useConversionToolsModal()
+const { isOpen, tools, closeModal } = useConversionToolsModal()
 const { announce } = useAccessibility()
 
 // Announce when modal opens, and fix Reka UI aria-labelledby mismatch
@@ -24,9 +24,9 @@ watch(isOpen, (open) => {
   }
 })
 
-// Handle card click
-function handleToolClick(tool: typeof tools[0]) {
-  openTool(tool)
+// Handle card click: navigation happens natively via the link's href/target
+// (keeps middle-click and cmd-click working); we just close the modal.
+function handleToolClick() {
   closeModal()
 }
 
@@ -72,7 +72,7 @@ function handleToolClick(tool: typeof tools[0]) {
           class="tool-card"
           :class="`tool-card--${tool.id}`"
           :aria-label="`Open ${tool.name} in a new window. ${tool.description}`"
-          @click.prevent="handleToolClick(tool)"
+          @click="handleToolClick()"
         >
           <!-- Gradient overlay -->
           <div class="tool-card__gradient" :class="`bg-gradient-to-br ${tool.gradient}`" />

@@ -122,7 +122,7 @@ Use hash symbols for headings: \`# H1\`, \`## H2\`, \`### H3\`, and so on up to 
 
 Here's an example image:
 
-![A serene mountain landscape with a lake](https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop)
+![A serene mountain landscape with a lake](/images/sample-landscape.jpg)
 
 *Image: Mountain landscape from Unsplash[^1]*
 
@@ -247,10 +247,10 @@ Create tables with pipes \`|\` and hyphens \`-\`:
 | Feature | Status | Notes |
 |:--------|:------:|:------|
 | Dark Mode | ✅ | Toggle in header |
-| Auto-save | ✅ | Every 30 seconds |
+| Auto-save | ✅ | Saves as you type |
 | Export | ✅ | Markdown or HTML |
 
-> **Tip:** Use the Table Builder (⌘/Ctrl + T) for an easier way to create tables!
+> **Tip:** Use the Table Builder (⌘ + ⌥ + T on Mac, Ctrl + Alt + T on Windows) for an easier way to create tables!
 
 ### Embedding HTML in Markdown
 
@@ -374,12 +374,12 @@ New to Markdown? Here are the most common issues and how to fix them:
 | Link | ⌘ + K | Ctrl + K |
 | Inline Code | ⌘ + E | Ctrl + E |
 | Headings | ⌘ + 1-6 | Ctrl + 1-6 |
-| Insert Table | ⌘ + T | Ctrl + T |
+| Insert Table | ⌘ + ⌥ + T | Ctrl + Alt + T |
 | Toggle Scroll Sync | ⌘ + \\ | Ctrl + \\ |
 | Upload File | ⌘ + O | Ctrl + O |
 | Copy Markdown | ⌘ + Shift + C | Ctrl + Shift + C |
 | Copy HTML | ⌘ + Shift + H | Ctrl + Shift + H |
-| Download | ⌘ + Shift + S | Ctrl + Shift + S |
+| Download | ⌘ + S | Ctrl + S |
 
 ---
 
@@ -390,7 +390,7 @@ The **ICJIA Markdown Editor 2.0** is designed for researchers, writers, and anyo
 **Key Features:**
 
 - **Real-time Preview** — See your formatted document as you type
-- **Auto-save** — Never lose your work (saves every 30 seconds to browser storage)
+- **Auto-save** — Never lose your work (saves to browser storage moments after you stop typing)
 - **Accessibility** — WCAG 2.1 Level AA compliant
 - **Dark/Light Mode** — Easy on the eyes in any lighting
 - **Export Options** — Download as Markdown or copy as HTML

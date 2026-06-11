@@ -65,6 +65,12 @@ function handleKeydown(event: KeyboardEvent) {
   } else if (event.key === 'ArrowRight' || event.key === 'Enter') {
     event.preventDefault()
     handleNext()
+  } else if (event.key === 'ArrowLeft') {
+    // Symmetric with TourOverlay: arrow keys navigate both directions
+    event.preventDefault()
+    if (currentSlide.value > 0) {
+      currentSlide.value--
+    }
   }
 }
 

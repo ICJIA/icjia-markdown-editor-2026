@@ -32,7 +32,47 @@ import strikethrough from 'markdown-it-strikethrough-alt'
 // @ts-expect-error - no type declarations available
 import mark from 'markdown-it-mark'
 import katex from '@traptitech/markdown-it-katex'
-import hljs from 'highlight.js'
+// Core-only highlight.js: the full build ships ~190 languages (~1.7 MB of the
+// main chunk). Register just the languages ICJIA researchers use; unregistered
+// languages fall back to escaped plain text in the fence renderer below.
+import hljs from 'highlight.js/lib/core'
+import langJavascript from 'highlight.js/lib/languages/javascript'
+import langTypescript from 'highlight.js/lib/languages/typescript'
+import langPython from 'highlight.js/lib/languages/python'
+import langR from 'highlight.js/lib/languages/r'
+import langStata from 'highlight.js/lib/languages/stata'
+import langSas from 'highlight.js/lib/languages/sas'
+import langSql from 'highlight.js/lib/languages/sql'
+import langBash from 'highlight.js/lib/languages/bash'
+import langJson from 'highlight.js/lib/languages/json'
+import langYaml from 'highlight.js/lib/languages/yaml'
+import langXml from 'highlight.js/lib/languages/xml'
+import langCss from 'highlight.js/lib/languages/css'
+import langMarkdown from 'highlight.js/lib/languages/markdown'
+import langJava from 'highlight.js/lib/languages/java'
+import langC from 'highlight.js/lib/languages/c'
+import langCpp from 'highlight.js/lib/languages/cpp'
+import langCsharp from 'highlight.js/lib/languages/csharp'
+import langDiff from 'highlight.js/lib/languages/diff'
+
+hljs.registerLanguage('javascript', langJavascript) // aliases: js, jsx, mjs, cjs
+hljs.registerLanguage('typescript', langTypescript) // aliases: ts, tsx
+hljs.registerLanguage('python', langPython) // aliases: py
+hljs.registerLanguage('r', langR)
+hljs.registerLanguage('stata', langStata)
+hljs.registerLanguage('sas', langSas)
+hljs.registerLanguage('sql', langSql)
+hljs.registerLanguage('bash', langBash) // aliases: sh
+hljs.registerLanguage('json', langJson)
+hljs.registerLanguage('yaml', langYaml) // aliases: yml
+hljs.registerLanguage('xml', langXml) // aliases: html, xhtml, svg
+hljs.registerLanguage('css', langCss)
+hljs.registerLanguage('markdown', langMarkdown) // aliases: md
+hljs.registerLanguage('java', langJava)
+hljs.registerLanguage('c', langC)
+hljs.registerLanguage('cpp', langCpp) // aliases: c++, h++
+hljs.registerLanguage('csharp', langCsharp) // aliases: cs
+hljs.registerLanguage('diff', langDiff)
 
 /**
  * Creates and configures a markdown-it instance with all plugins and custom renderers.
@@ -232,6 +272,9 @@ export function renderMarkdown(content: string): string {
   if (typeof window !== 'undefined') {
     return DOMPurify.sanitize(rawHtml, PURIFY_CONFIG)
   }
-  // SSR/SSG fallback: return raw HTML (no user interaction on server)
-  return rawHtml
+  // SSR/SSG: DOMPurify needs a browser DOM, so output cannot be sanitized
+  // here. Nothing prerenders markdown today (the preview waits for the
+  // client-side isContentReady), so return an empty string to guarantee
+  // unsanitized HTML can never reach prerendered output if that changes.
+  return ''
 }

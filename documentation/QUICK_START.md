@@ -62,7 +62,7 @@ The app will open at: **http://localhost:3000**
 
 | Feature | Keyboard Shortcut | Description |
 |---------|-------------------|-------------|
-| Table Builder | `Ctrl+T` | Visual table creator |
+| Table Builder | `Ctrl+Alt+T` | Visual table creator |
 | Image Insert | `Ctrl+Shift+I` | Insert image with alt text |
 | Copy HTML | `Ctrl+Shift+H` | Copy rendered HTML |
 | Copy Markdown | `Ctrl+Shift+C` | Copy raw markdown |

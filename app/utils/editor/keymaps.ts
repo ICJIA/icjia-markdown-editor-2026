@@ -292,7 +292,7 @@ export interface AppShortcut {
  * @constant {AppShortcut[]}
  */
 export const appShortcuts: AppShortcut[] = [
-  { key: 'Mod-t', description: 'Open table builder', action: 'openTableBuilder' },
+  { key: 'Mod-Alt-t', description: 'Open table builder', action: 'openTableBuilder' },
   { key: 'Mod-s', description: 'Download markdown', action: 'downloadMarkdown' },
   { key: 'Mod-Shift-c', description: 'Copy markdown', action: 'copyMarkdown' },
   { key: 'Mod-Shift-h', description: 'Copy HTML', action: 'copyHtml' },

@@ -417,11 +417,11 @@ const mobileMenuSections = [
     
     <!-- Insert group -->
     <div class="toolbar-group" role="group" aria-label="Insert" data-tour="insert">
-      <ToolbarButton 
-        icon="i-heroicons-table-cells" 
-        label="Insert table" 
-        shortcut="Mod+T"
-        @click="openTableBuilder" 
+      <ToolbarButton
+        icon="i-heroicons-table-cells"
+        label="Insert table"
+        shortcut="Mod+Alt+T"
+        @click="openTableBuilder"
       />
       <ToolbarButton 
         icon="i-heroicons-link" 
