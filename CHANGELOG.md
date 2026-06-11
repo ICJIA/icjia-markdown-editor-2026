@@ -5,6 +5,15 @@ All notable changes to ICJIA Markdown Editor 2.0 will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - 2026-06-10
+
+### Fixed
+
+- **Mobile header buttons (WCAG 2.5.8 target size + visual bug):** The ≤640px rule that hides the button text (`.view-mode-button span`) also matched the `UIcon` spans (`<span class="iconify">`), so on phones the View-mode and Tools buttons rendered as empty 12×12px gradient squares — failing Lighthouse/axe `target-size` and showing no icon at all. Labels now carry an explicit `.button-label` class (the pattern `ColorModeToggle` already used), and the buttons get a 2rem minimum target with a 1rem icon on mobile
+- **Toast viewport (axe `presentation-role-conflict`):** The app.vue patch that swaps the Nuxt UI toast `<ol>` between `role="presentation"` (empty) and `role="list"` (toasts visible) left reka-ui's `tabindex="-1"` in place, making the presentational element focusable. The tabindex is now removed while empty and restored with `role="list"`, and the observer also re-corrects the attributes if reka-ui resets them
+- **Header logo (axe `label-content-name-mismatch`, WCAG 2.5.3):** axe counts a non-empty image `alt` as visible text that must appear in the link's accessible name — `alt="ICJIA Logo"` was not in the title link's aria-label. The logo is decorative next to the visible title text, so it is now `alt=""`
+- **Header logo (Lighthouse `third-party-cookies` + `inspector-issues`):** The header still hotlinked the logo from icjia.illinois.gov (the v1.6.0 self-hosting pass covered only the welcome modal), so browsers with Illinois SSO sessions attached MSIS auth cookies to the request and Best Practices dropped to 77. The header now uses the same self-hosted `/images/icjia-logo.png`, removing the last runtime third-party request
+
 ## [1.6.0] - 2026-06-10
 
 ### Performance

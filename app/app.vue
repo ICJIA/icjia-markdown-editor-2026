@@ -15,12 +15,33 @@ provide('announce', announce)
 // The element is injected by UApp after this component mounts, so we observe the
 // document body until it appears, then patch it.
 onMounted(() => {
+  // role="presentation" must not be paired with reka-ui's tabindex="-1" — a focusable
+  // presentational element fails axe presentation-role-conflict — so the tabindex is
+  // removed while empty and restored alongside role="list" when toasts appear.
+  // Equality guards keep the attribute observer from re-triggering itself.
+  function syncViewport(viewport: Element) {
+    const empty = viewport.children.length === 0
+    const role = empty ? 'presentation' : 'list'
+    if (viewport.getAttribute('role') !== role) {
+      viewport.setAttribute('role', role)
+    }
+    if (empty) {
+      if (viewport.hasAttribute('tabindex')) {
+        viewport.removeAttribute('tabindex')
+      }
+    } else if (viewport.getAttribute('tabindex') !== '-1') {
+      viewport.setAttribute('tabindex', '-1')
+    }
+  }
+
   function patchViewport(viewport: Element) {
-    viewport.setAttribute('role', 'presentation')
-    const childObserver = new MutationObserver(() => {
-      viewport.setAttribute('role', viewport.children.length === 0 ? 'presentation' : 'list')
+    syncViewport(viewport)
+    const viewportObserver = new MutationObserver(() => syncViewport(viewport))
+    viewportObserver.observe(viewport, {
+      childList: true,
+      attributes: true,
+      attributeFilter: ['role', 'tabindex'],
     })
-    childObserver.observe(viewport, { childList: true })
   }
 
   const existing = document.querySelector('ol[data-slot="viewport"]')

@@ -46,9 +46,13 @@ function scrollToTop() {
           @click.prevent="scrollToTop"
           aria-label="ICJIA Markdown Editor 2.0 - Click to scroll to top"
         >
+          <!-- Decorative (alt=""): the link text names the destination, and axe counts
+               a non-empty alt as visible text that must appear in the accessible name -->
           <img
-            src="https://icjia.illinois.gov/img/icjia-logo.ee010aa8.png"
-            alt="ICJIA Logo"
+            src="/images/icjia-logo.png"
+            alt=""
+            width="48"
+            height="48"
             class="title-logo"
             @error="($event.target as HTMLImageElement).style.display = 'none'"
           />
@@ -106,7 +110,7 @@ function scrollToTop() {
             @click="cycleViewMode"
           >
             <UIcon :name="viewModeIcon" class="view-mode-icon" />
-            <span>{{ viewModeLabel }}</span>
+            <span class="button-label">{{ viewModeLabel }}</span>
           </button>
         </UTooltip>
         
@@ -124,7 +128,7 @@ function scrollToTop() {
             @click="handleOpenConversionTools"
           >
             <UIcon name="i-heroicons-wrench-screwdriver" class="conversion-tools-icon" />
-            <span>Tools</span>
+            <span class="button-label">Tools</span>
             <UIcon name="i-heroicons-chevron-down" class="conversion-tools-chevron" />
           </button>
         </UTooltip>
@@ -505,18 +509,30 @@ function scrollToTop() {
     font-size: 0.625rem;
   }
   
-  .view-mode-button span,
-  .conversion-tools-button span {
+  /* Hide only the text labels — UIcon renders as a <span class="iconify"> too,
+     so a bare `span` selector would hide the icons and collapse the buttons
+     to empty 12px targets (WCAG 2.5.8 target-size failure) */
+  .view-mode-button .button-label,
+  .conversion-tools-button .button-label {
     display: none;
   }
-  
+
   .conversion-tools-chevron {
     display: none;
   }
-  
+
   .view-mode-button,
   .conversion-tools-button {
+    justify-content: center;
+    min-width: 2rem;
+    min-height: 2rem;
     padding: 0.375rem;
+  }
+
+  .view-mode-icon,
+  .conversion-tools-icon {
+    width: 1rem;
+    height: 1rem;
   }
 }
 
