@@ -11,7 +11,7 @@
  * Uses inline code instead of code blocks to avoid Siteimprove SIA-R79 accessibility warnings.
  * @constant {string}
  */
-export const DEFAULT_CONTENT = `# Welcome to the ICJIA Markdown Editor 2.0
+export const DEFAULT_CONTENT = `## Welcome to the ICJIA Markdown Editor 2.0
 
 This is the **updated version** of the ICJIA Markdown Editor, rebuilt from the ground up with modern web technologies. If you used our previous editor from several years ago, you'll find this version faster, more accessible, and packed with new features.
 

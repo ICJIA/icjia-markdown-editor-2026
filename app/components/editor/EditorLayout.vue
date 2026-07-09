@@ -192,8 +192,13 @@ function setupScrollSync(): void {
     </div>
     
     <!-- Status Bar -->
-    <div class="status-bar" role="status" aria-label="Editor status">
-      <div class="status-left" data-tour="word-count">
+    <!--
+      role="status" is scoped to .status-left, not the whole bar: it implies
+      aria-live="polite", and the heading-issue count in .status-right changes
+      on every debounce tick while typing.
+    -->
+    <div class="status-bar">
+      <div class="status-left" role="status" aria-label="Editor status" data-tour="word-count">
         <span class="word-count" :title="`${wordCount.lines} lines, ${wordCount.paragraphs} paragraphs`">
           {{ wordCountDisplay }}
         </span>
@@ -202,6 +207,7 @@ function setupScrollSync(): void {
         </span>
       </div>
       <div class="status-right">
+        <HeadingIssuesPanel />
         <UTooltip
           text="Take a guided tour of the editor features"
           :content="{ side: 'top', sideOffset: 8, avoidCollisions: true }"

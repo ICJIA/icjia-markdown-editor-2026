@@ -12,6 +12,7 @@
  * @module composables/useMarkdown
  * @requires ~/utils/markdown/config
  * @requires ~/utils/markdown/text-stats
+ * @requires ~/utils/markdown/heading-lint
  *
  * @example
  * ```typescript
@@ -27,6 +28,7 @@
 
 import { renderMarkdown } from '~/utils/markdown/config'
 import { stripMarkdownSyntax, computeWordCount } from '~/utils/markdown/text-stats'
+import { lintHeadings } from '~/utils/markdown/heading-lint'
 
 /** Document size (chars) above which the rendering flag is raised. */
 const LARGE_DOC_THRESHOLD = 50000
@@ -81,6 +83,16 @@ function createMarkdownState() {
     return `${words.toLocaleString()} words · ${characters.toLocaleString()} chars`
   })
 
+  /**
+   * Heading hierarchy issues for the current document.
+   * Computed from the debounced content, so large documents are not
+   * re-linted on every keystroke.
+   */
+  const headingIssues = computed(() => lintHeadings(debouncedContent.value))
+
+  /** Number of heading issues; 0 when the document is clean. */
+  const issueCount = computed(() => headingIssues.value.length)
+
   return {
     renderedHtml,
     isRendering: readonly(isRendering),
@@ -88,6 +100,8 @@ function createMarkdownState() {
     plainText,
     wordCount,
     wordCountDisplay,
+    headingIssues,
+    issueCount,
   }
 }
 

@@ -5,6 +5,17 @@ All notable changes to ICJIA Markdown Editor 2.0 will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-07-09
+
+### Added
+
+- **Heading hierarchy linter** — the status bar now reports headings that skip a level, sit at `#` (reserved for Strapi's page title), or are empty. Click the count to list issues and jump to the offending line. Parsing reuses the preview's `markdown-it` instance, so the linter never disagrees with the rendered output. Raw HTML headings are not checked.
+
+### Changed
+
+- The bundled markdown tutorial now opens at `##` rather than `#`, so it models the structure Strapi expects and lints clean on first load.
+- `role="status"` is now scoped to the status bar's left group rather than the whole bar, so the heading-issue count is not announced on every keystroke.
+
 ## [1.6.1] - 2026-06-10
 
 ### Fixed
