@@ -196,16 +196,22 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 If the dev server serves stale code, wipe the build outputs and framework caches:
 
 ```bash
-# Remove .nuxt, .output, .nitro, .data, dist, node_modules/.vite,
-# node_modules/.cache — then regenerate types
-yarn nuke-nuxt
+# Remove .nuxt, .output, .nitro, .data, dist, .cache, node_modules/.vite,
+# node_modules/.cache — then regenerate types with `nuxt prepare`
+yarn nuke
 
 # Preview what would be removed, without deleting anything
-yarn nuke-nuxt --dry-run
+yarn nuke --dry-run
 ```
 
 Everything it removes is gitignored and regenerable. `node_modules` is left intact; run
 `yarn install` if you need to rebuild dependencies too.
+
+`nuke.sh` is portable and framework-agnostic — drop the single file into the root of any
+Nuxt or Astro project and it detects which one it's in via `nuxt.config.*` /
+`astro.config.*`, then removes that framework's caches. Build output inside `.netlify/`
+and `.vercel/` is cleared, but `.netlify/state.json` and `.vercel/project.json` are
+preserved: they hold the CLI's site link, which `dev` and `build` cannot regenerate.
 
 ### Production Build
 
