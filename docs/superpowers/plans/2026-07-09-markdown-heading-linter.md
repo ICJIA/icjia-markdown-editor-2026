@@ -701,9 +701,25 @@ function handleIssueClick(line: number) {
   color: #475569;
 }
 
-@media (max-width: 640px) {
+/*
+ * Collapse the label to icon-only on narrow screens, matching the sibling
+ * status-bar buttons. Clipped rather than `display: none`: the latter drops
+ * the text from the accessibility tree, leaving the button with no accessible
+ * name (axe `button-name`, WCAG 4.1.2 Level A) because its only other child is
+ * an aria-hidden icon. Clipping keeps the accessible name identical to the
+ * visible text, so no aria-label is needed to shadow it.
+ */
+@media (max-width: 480px) {
   .issues-text {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 </style>
@@ -764,9 +780,11 @@ Verify, in order:
 
 - [ ] **Step 4: Verify types and lint**
 
-Run: `yarn typecheck && yarn lint`
+Run: `yarn typecheck`
 
 Expected: PASS — no errors.
+
+Do **not** run `yarn lint`. It exits 127 repo-wide: `package.json` declares `"lint": "eslint ."`, but `eslint` is not a dependency and no eslint config exists. This predates the branch.
 
 - [ ] **Step 5: Commit**
 
@@ -858,7 +876,7 @@ Add a new entry at the top of `CHANGELOG.md`, matching the existing format and b
 - [ ] **Step 5: Run the full verification suite and commit**
 
 ```bash
-yarn test:run && yarn typecheck && yarn lint
+yarn test:run && yarn typecheck
 ```
 
 Expected: all PASS.
@@ -876,7 +894,7 @@ Before considering this done, confirm each with actual command output — not as
 
 - [ ] `yarn test:run` — all unit suites pass, including the 13 `heading-lint` tests
 - [ ] `yarn typecheck` — no TypeScript errors
-- [ ] `yarn lint` — no ESLint errors
+- [ ] ~~`yarn lint`~~ — skip; broken repo-wide before this branch (eslint not installed, no config)
 - [ ] `yarn test:a11y` — 0 axe violations
 - [ ] `lintHeadings(DEFAULT_CONTENT)` returns `[]` — the shipped tutorial cannot regress
 - [ ] Manual: issue count updates as you type, click jumps to the line, Escape restores focus
