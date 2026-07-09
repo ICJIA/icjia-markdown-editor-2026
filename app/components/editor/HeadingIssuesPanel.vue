@@ -69,7 +69,7 @@ function handleIssueClick(line: number) {
 
     <div v-show="isOpen" :id="PANEL_ID" class="issues-panel">
       <p v-if="issueCount === 0" class="issues-empty">
-        No heading issues. Headings start at H2 and never skip a level.
+        No heading issues. Headings never skip a level.
       </p>
       <ul v-else class="issues-list">
         <li v-for="issue in headingIssues" :key="`${issue.line}-${issue.rule}`">

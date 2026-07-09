@@ -35,7 +35,7 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 - **Undo/Redo** - Full history support with keyboard shortcuts (Cmd/Ctrl+Z)
 - **Security Hardened** - DOMPurify XSS sanitization, code block language sanitization, file size limits, filename sanitization
 - **Accessibility First** - WCAG 2.1 Level AA compliant (AAA in key areas) with full keyboard navigation, screen reader support, and proper ARIA attributes
-- **Heading Linter** - Flags headings that skip a level, use `#` (reserved for the page title), or are empty, so published documents pass accessibility heading-order checks
+- **Heading Linter** - Flags headings that skip a level or are empty, so published documents pass accessibility heading-order checks
 - **Static Deployment** - Deploy anywhere as a static site (Netlify-ready)
 - **Fully Documented** - Comprehensive JSDoc comments on all composables and utilities
 - **Reusable Tour Module** - Copy the tour module to any Nuxt project for instant onboarding
@@ -216,10 +216,15 @@ preserved: they hold the CLI's site link, which `dev` and `build` cannot regener
 
 #### Heading hierarchy linting
 
-Documents authored here are published through Strapi, which renders the page title
-as the page's `<h1>`. The status bar therefore reports a heading issue when a document
-contains its own `#`, opens at a level below `##`, skips a heading level, or leaves a
-heading empty. Click the count to list the issues and jump to the offending line.
+The status bar reports a heading issue when a document skips a heading level or leaves
+a heading empty. Click the count to list the issues and jump to the offending line.
+
+The linter takes no position on the opening level — exactly like axe-core's
+heading-order rule, the first heading is never flagged. Start at `#` when the document
+owns its title, or at `##` when the publishing page supplies the `<h1>` (documents
+published through ICJIA's Strapi CMS should start at `##`, since Strapi renders the
+page title as the `<h1>`). After the first heading, levels may never descend more than
+one step at a time; ascending any distance is fine.
 
 Because the linter parses with the same `markdown-it` instance that renders the
 preview and the HTML export, it always agrees with the published output.

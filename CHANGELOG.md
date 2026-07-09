@@ -5,6 +5,12 @@ All notable changes to ICJIA Markdown Editor 2.0 will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.1] - 2026-07-09
+
+### Changed
+
+- **The heading linter no longer reserves `#` for the page title.** The editor serves more than CMS-published documents, so it no longer takes a position on the opening level: the first heading is never flagged, at any level — exactly matching axe-core's heading-order rule — and it sets the baseline for everything below. Mid-document h1s are also allowed, which axe does not flag either. Skipped levels and empty headings are still reported, and a bare `#` now reports as an empty h1 rather than a reserved-h1 error. Authors publishing through Strapi should still start at `##`, since Strapi supplies the `<h1>` page title; the README says so, the linter no longer enforces it.
+
 ## [1.7.0] - 2026-07-09
 
 ### Added

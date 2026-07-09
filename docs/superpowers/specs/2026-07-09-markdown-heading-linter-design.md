@@ -3,6 +3,13 @@
 **Date:** 2026-07-09
 **Status:** Approved, ready for implementation planning
 
+> **Amended 2026-07-09, after shipping:** the `no-h1` rule and the virtual-h1 seed were
+> removed the same day they deployed. Real use showed the editor serves documents beyond
+> the Strapi CMS, so the linter no longer takes a position on the opening level: the
+> first heading is never flagged (matching axe-core exactly) and sets the baseline for
+> the skip rule. This is precisely the risk recorded below as "The Strapi assumption is
+> load-bearing." See CHANGELOG 1.7.1. The rule model below is otherwise historical.
+
 ## Problem
 
 ICJIA researchers author markdown in this editor and publish it through a Strapi 5 CMS.
