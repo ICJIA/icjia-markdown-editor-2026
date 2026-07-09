@@ -191,6 +191,22 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+#### Clearing caches
+
+If the dev server serves stale code, wipe the build outputs and framework caches:
+
+```bash
+# Remove .nuxt, .output, .nitro, .data, dist, node_modules/.vite,
+# node_modules/.cache — then regenerate types
+yarn nuke-nuxt
+
+# Preview what would be removed, without deleting anything
+yarn nuke-nuxt --dry-run
+```
+
+Everything it removes is gitignored and regenerable. `node_modules` is left intact; run
+`yarn install` if you need to rebuild dependencies too.
+
 ### Production Build
 
 ```bash
