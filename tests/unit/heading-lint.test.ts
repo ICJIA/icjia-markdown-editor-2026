@@ -37,6 +37,12 @@ describe('lintHeadings', () => {
     expect(issues.map(i => i.line)).toEqual([1, 3])
   })
 
+  it('resets the traversal baseline to h1 after a no-h1 finding, even when a real heading preceded it', () => {
+    const issues = lintHeadings('## A\n\n# Oops\n\n### B\n')
+    expect(issues.map(i => i.rule)).toEqual(['no-h1', 'heading-order'])
+    expect(issues.map(i => i.line)).toEqual([3, 5])
+  })
+
   it('reports only no-h1 for a bare "#", never empty-heading', () => {
     const issues = lintHeadings('#\n')
     expect(issues).toHaveLength(1)
