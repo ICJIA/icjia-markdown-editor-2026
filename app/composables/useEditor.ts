@@ -105,6 +105,7 @@ const DEFAULT_CONTENT_VALUE = DEFAULT_CONTENT
  * @returns {Function} returns.insertBulletList - Insert a bullet list item
  * @returns {Function} returns.insertNumberedList - Insert a numbered list item
  * @returns {Function} returns.insertHorizontalRule - Insert a horizontal rule
+ * @returns {Function} returns.goToLine - Move the cursor to a 1-based line number
  * @returns {Function} returns.focus - Focus the editor
  */
 export function useEditor() {
@@ -552,17 +553,41 @@ export function useEditor() {
   /**
    * Inserts a horizontal rule (thematic break) at the cursor position.
    * Adds newlines before and after the rule for proper markdown formatting.
-   * 
+   *
    * @returns {boolean} True if successful, false if editor view is not available
    */
   function insertHorizontalRule(): boolean {
     return insertText('\n---\n')
   }
-  
+
+  /**
+   * Moves the cursor to the start of the given line and scrolls it into view.
+   * Line numbers are 1-based and clamped to the document, so a stale line
+   * number from a linter cannot throw.
+   *
+   * @param {number} line - The 1-based line number to jump to
+   * @returns {boolean} True if successful, false if editor view is not available
+   */
+  function goToLine(line: number): boolean {
+    if (!editorView.value) return false
+
+    const view = editorView.value
+    const clamped = Math.min(Math.max(line, 1), view.state.doc.lines)
+    const pos = view.state.doc.line(clamped).from
+
+    view.dispatch({
+      selection: { anchor: pos },
+      scrollIntoView: true,
+    })
+
+    view.focus()
+    return true
+  }
+
   /**
    * Undoes the last change in the editor.
    * Uses CodeMirror's built-in history extension.
-   * 
+   *
    * @returns {boolean} True if undo was successful, false otherwise
    */
   function undo(): boolean {
@@ -631,6 +656,7 @@ export function useEditor() {
     insertBulletList,
     insertNumberedList,
     insertHorizontalRule,
+    goToLine,
     undo,
     redo,
     focus,
