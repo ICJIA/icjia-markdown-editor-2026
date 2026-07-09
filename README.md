@@ -35,6 +35,7 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 - **Undo/Redo** - Full history support with keyboard shortcuts (Cmd/Ctrl+Z)
 - **Security Hardened** - DOMPurify XSS sanitization, code block language sanitization, file size limits, filename sanitization
 - **Accessibility First** - WCAG 2.1 Level AA compliant (AAA in key areas) with full keyboard navigation, screen reader support, and proper ARIA attributes
+- **Heading Linter** - Flags headings that skip a level or start above H2, so published documents pass accessibility heading-order checks
 - **Static Deployment** - Deploy anywhere as a static site (Netlify-ready)
 - **Fully Documented** - Comprehensive JSDoc comments on all composables and utilities
 - **Reusable Tour Module** - Copy the tour module to any Nuxt project for instant onboarding
@@ -212,6 +213,20 @@ Nuxt or Astro project and it detects which one it's in via `nuxt.config.*` /
 `astro.config.*`, then removes that framework's caches. Build output inside `.netlify/`
 and `.vercel/` is cleared, but `.netlify/state.json` and `.vercel/project.json` are
 preserved: they hold the CLI's site link, which `dev` and `build` cannot regenerate.
+
+#### Heading hierarchy linting
+
+Documents authored here are published through Strapi, which renders the page title
+as the page's `<h1>`. The status bar therefore reports a heading issue when a document
+contains its own `#`, opens at a level below `##`, skips a heading level, or leaves a
+heading empty. Click the count to list the issues and jump to the offending line.
+
+Because the linter parses with the same `markdown-it` instance that renders the
+preview and the HTML export, it always agrees with the published output.
+
+**Limitation:** raw HTML headings (`<h3>Section</h3>`) are not checked. markdown-it
+runs with `html: true`, so those are opaque HTML blocks rather than heading tokens.
+Use markdown headings if you want them linted.
 
 ### Production Build
 
