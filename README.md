@@ -35,7 +35,7 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 - **Undo/Redo** - Full history support with keyboard shortcuts (Cmd/Ctrl+Z)
 - **Security Hardened** - DOMPurify XSS sanitization, code block language sanitization, file size limits, filename sanitization
 - **Accessibility First** - WCAG 2.1 Level AA compliant (AAA in key areas) with full keyboard navigation, screen reader support, and proper ARIA attributes
-- **Heading Linter** - Flags headings that skip a level or start above H2, so published documents pass accessibility heading-order checks
+- **Heading Linter** - Flags headings that skip a level, use `#` (reserved for the page title), or are empty, so published documents pass accessibility heading-order checks
 - **Static Deployment** - Deploy anywhere as a static site (Netlify-ready)
 - **Fully Documented** - Comprehensive JSDoc comments on all composables and utilities
 - **Reusable Tour Module** - Copy the tour module to any Nuxt project for instant onboarding

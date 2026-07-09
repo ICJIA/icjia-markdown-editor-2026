@@ -190,7 +190,8 @@ export function lintHeadings(markdown: string): HeadingIssue[] {
 
     const level = Number(token.tag.slice(1))
     const line = (token.map?.[0] ?? 0) + 1
-    // The inline token immediately after heading_open carries the heading text.
+    // NOTE: this line is WRONG and was corrected during implementation. See the
+    // note below the code block; the shipped version uses a headingText() helper.
     const text = (tokens[i + 1]?.content ?? '').trim()
 
     if (level === VIRTUAL_H1_LEVEL) {
@@ -232,6 +233,20 @@ export function lintHeadings(markdown: string): HeadingIssue[] {
   return issues
 }
 ```
+
+> **Correction (recorded after implementation).** The `const text = (tokens[i + 1]?.content ?? '').trim()`
+> line above is wrong against this codebase and was replaced in commit `c7c3c0f`.
+> `getMarkdownIt()` installs `markdown-it-anchor` with a `headerLink` permalink, whose core rule
+> replaces each heading's inline token with a fresh one whose `.content` is `""` and whose children
+> are wrapped as `link_open, span_open, …, span_close, link_close`. So `.content` is empty for *every*
+> heading, and this code would have fired `empty-heading` on all 24 tutorial headings.
+>
+> The shipped implementation reconstructs the text with a `headingText()` helper that joins the inline
+> token's children while dropping `html_inline` and any `*_open`/`*_close` type. Dropping by token type
+> (rather than whitelisting `text`/`code_inline`) is deliberate: a whitelist would discard `math_inline`
+> and make `## $E = mc^2$` look like an empty heading, and this app ships KaTeX.
+>
+> Read `app/utils/markdown/heading-lint.ts` for the real version rather than copying the block above.
 
 - [ ] **Step 4: Run the test to verify it passes**
 
