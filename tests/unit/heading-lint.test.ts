@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { lintHeadings } from '~/utils/markdown/heading-lint'
+import { DEFAULT_CONTENT } from '~/utils/default-content'
 
 describe('lintHeadings', () => {
   it('accepts a document that opens at h2 and descends one level at a time', () => {
@@ -96,5 +97,15 @@ describe('lintHeadings', () => {
     const issues = lintHeadings('# Bold **x**\n')
     expect(issues).toHaveLength(1)
     expect(issues[0]!.message).toBe('H1 is reserved for the page title. Use "## Bold x" instead.')
+  })
+})
+
+describe('DEFAULT_CONTENT', () => {
+  it('lints clean, so new users never load the app to a heading issue', () => {
+    expect(lintHeadings(DEFAULT_CONTENT)).toEqual([])
+  })
+
+  it('opens at h2, because Strapi supplies the h1 page title', () => {
+    expect(DEFAULT_CONTENT.startsWith('## ')).toBe(true)
   })
 })
