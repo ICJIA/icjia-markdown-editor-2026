@@ -11,10 +11,25 @@
  * Parsing uses the same markdown-it singleton that renders the preview and the
  * HTML export, so the linter cannot disagree with the output. This also handles
  * two cases a regex over `^#{1,6}\s` gets wrong: hashes inside fenced code
- * blocks (not headings) and setext underlines (headings).
+ * blocks (not headings) and setext underlines (headings). Linting only ever calls
+ * `parse()` with its own env, so it cannot disturb footnote numbering or anchor
+ * slugs on the shared instance.
  *
- * Known limitation: markdown-it runs with `html: true`, so a literal
- * `<h4>Section</h4>` arrives as an `html_block` token and is invisible here.
+ * Two questions are answered from two different sources, on purpose:
+ *   - "Is this heading empty?" comes from token *types*, because only the token
+ *     stream knows a `footnote_ref` renders a visible marker while `<em></em>`
+ *     renders nothing.
+ *   - "What should we suggest the author type?" comes from the *source line*,
+ *     because only the source preserves the footnote references, code spans, and
+ *     emphasis that a token-rebuilt string would silently drop.
+ *
+ * Known limitations, both stemming from `html: true`:
+ *   - A literal `<h4>Section</h4>` arrives as an `html_block` token and is invisible
+ *     here, so raw HTML headings are not linted at all.
+ *   - Raw inline HTML inside a heading is treated as carrying no text, so
+ *     `## <img src="x.png" alt="Chart">` reads as an empty heading even though the
+ *     rendered image has an accessible name. Use markdown (`## ![Chart](x.png)`) to
+ *     have it counted.
  *
  * @module utils/markdown/heading-lint
  * @requires ~/utils/markdown/config
@@ -42,28 +57,106 @@ export interface HeadingIssue {
 const VIRTUAL_H1_LEVEL = 1
 
 /**
- * Reconstructs a heading's visible text from its inline children.
- *
- * markdown-it-anchor's permalink rewrites each heading's inline token: `.content`
- * is emptied and the children are wrapped in link/span decoration tokens. Raw
- * inline HTML (`html: true` is enabled) also shows up as `html_inline` children
- * whose content is the tag markup, not visible text.
- *
- * Dropping decoration and markup tokens leaves the text the reader actually sees,
- * so `## <em></em>` correctly reads as empty while `## $E = mc^2$` does not.
- *
- * This depends on the decoration tokens contributed by config.ts's anchor
- * permalink style carrying no visible text. If that permalink changes, re-verify.
+ * Tokens that wrap or annotate content without rendering any text of their own:
+ * markdown-it-anchor's permalink `link_open`/`span_open`/… decoration, the
+ * `strong_open`/`em_open`/… emphasis pairs, and raw inline HTML tags (`html: true`
+ * is enabled, so `<em>` arrives as `html_inline` whose content is the tag markup).
  */
-function headingText(inline: Token | undefined): string {
-  if (!inline?.children) return ''
-  return inline.children
-    .filter(child => child.type !== 'html_inline'
-      && !child.type.endsWith('_open')
-      && !child.type.endsWith('_close'))
+function isDecoration(type: string): boolean {
+  return type === 'html_inline' || type.endsWith('_open') || type.endsWith('_close')
+}
+
+/** An image's alt text, parsed. `token.content` holds the raw, unparsed alt instead. */
+function altText(image: Token): string {
+  return (image.children ?? [])
+    .filter(child => !isDecoration(child.type))
     .map(child => child.content)
     .join('')
     .trim()
+}
+
+/**
+ * Whether a heading renders anything a reader or screen reader would perceive.
+ *
+ * This is deliberately NOT "is the joined `.content` non-empty". `token.content` is
+ * not a proxy for rendered text: a `footnote_ref` renders a visible `[1]` marker but
+ * carries `content: ''`, so joining content would call `## [^1]` an empty heading —
+ * and footnote references are a headline feature of this editor. Conversely
+ * `html_inline` carries `'<em>'` yet `## <em></em>` renders nothing at all.
+ *
+ * So emptiness is decided by token *type*, which is the only thing that knows what a
+ * token will render.
+ */
+function hasVisibleContent(inline: Token | undefined): boolean {
+  for (const child of inline?.children ?? []) {
+    if (isDecoration(child.type)) continue
+    // Line breaks separate content; they are not content.
+    if (child.type === 'softbreak' || child.type === 'hardbreak') continue
+    // Renders its marker from `token.meta`, never from `token.content`.
+    if (child.type === 'footnote_ref') return true
+    // An image contributes its alt text; without alt it has no accessible name.
+    if (child.type === 'image') {
+      if (altText(child)) return true
+      continue
+    }
+    if (child.content.trim()) return true
+  }
+  return false
+}
+
+/**
+ * The heading's text exactly as the author wrote it, taken from the source lines.
+ * Returns `''` when the source cannot be quoted back safely.
+ *
+ * The `no-h1` message quotes this as markdown the author should type, so it has to
+ * round-trip their source. Rebuilding it from the token stream cannot: joining
+ * children silently drops footnote references, code spans, emphasis markers, and
+ * images, and an author who copied that suggestion would delete content from their
+ * document.
+ *
+ * The parser still decides *what is a heading* and *where it starts* — this only
+ * slices the source range the parser already identified, so fenced code blocks and
+ * setext underlines remain correctly handled. Where the slice cannot be trusted, we
+ * return `''` and the caller falls back to a message that quotes nothing: saying
+ * nothing beats saying something wrong.
+ *
+ * The untrustworthy case is a heading nested in a container block. `# Title` inside a
+ * blockquote or list item occupies the source line `> # Title`, which still carries
+ * the container's prefix. Quoting it would tell the author to type `## > # Title`.
+ * We detect that by requiring the line to actually begin with the hash run the parser
+ * recorded in `token.markup`, and by requiring a setext underline to be a bare run of
+ * `=` or `-`.
+ */
+function headingSourceText(token: Token, lines: string[]): string {
+  const [start, end] = token.map ?? [0, 0]
+
+  // ATX (`## Foo`): `token.markup` is the exact opening hash run.
+  if (token.markup.startsWith('#')) {
+    const raw = lines[start] ?? ''
+    // Up to 3 leading spaces are allowed; a container prefix is not.
+    const opening = raw.match(/^ {0,3}(#{1,6})(?:[ \t]+|$)/)
+    if (!opening || opening[1] !== token.markup) return ''
+
+    return raw
+      .slice(opening[0].length)
+      // Optional ATX closing sequence (`## Foo ##`). It must be preceded by
+      // whitespace, so a heading that legitimately ends in a hash (`# C#`) survives.
+      .replace(/[ \t]+#+[ \t]*$/, '')
+      .trim()
+  }
+
+  // Setext (`Foo` over `===`): the underline is the last line of the token's range.
+  // If it is not a bare run of `=` or `-`, the heading sits inside a container.
+  const underline = (lines[end - 1] ?? '').trim()
+  if (!/^(?:=+|-+)$/.test(underline)) return ''
+
+  // The text is every line above the underline. The renderer joins them with a space
+  // rather than fusing the words together.
+  return lines
+    .slice(start, end - 1)
+    .map(line => line.trim())
+    .filter(Boolean)
+    .join(' ')
 }
 
 /**
@@ -81,6 +174,7 @@ function headingText(inline: Token | undefined): string {
  */
 export function lintHeadings(markdown: string): HeadingIssue[] {
   const tokens = getMarkdownIt().parse(markdown, {})
+  const lines = markdown.split('\n')
   const issues: HeadingIssue[] = []
 
   // Seeded to the page-title h1 that Strapi supplies, not to the first heading
@@ -93,17 +187,19 @@ export function lintHeadings(markdown: string): HeadingIssue[] {
 
     const level = Number(token.tag.slice(1))
     const line = (token.map?.[0] ?? 0) + 1
-    // The inline token immediately after heading_open carries the heading text.
+    // The inline token immediately after heading_open holds the heading's children.
     const inlineToken = tokens[i + 1]
-    const text = headingText(inlineToken)
 
     if (level === VIRTUAL_H1_LEVEL) {
+      // Quote the author's own source, so the suggestion never drops a footnote
+      // reference, code span, or emphasis they wrote.
+      const source = headingSourceText(token, lines)
       issues.push({
         line,
         rule: 'no-h1',
         severity: 'error',
-        message: text
-          ? `H1 is reserved for the page title. Use "## ${text}" instead.`
+        message: source
+          ? `H1 is reserved for the page title. Use "## ${source}" instead.`
           : 'H1 is reserved for the page title. Use ## instead.',
       })
       // Keep the baseline at h1 so the next heading is judged against the page
@@ -112,7 +208,7 @@ export function lintHeadings(markdown: string): HeadingIssue[] {
       continue
     }
 
-    if (text === '') {
+    if (!hasVisibleContent(inlineToken)) {
       issues.push({
         line,
         rule: 'empty-heading',

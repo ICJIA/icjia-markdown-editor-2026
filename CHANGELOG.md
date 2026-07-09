@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The bundled markdown tutorial now opens at `##` rather than `#`, so it models the structure Strapi expects and lints clean on first load.
 - `role="status"` is now scoped to the status bar's left group rather than the whole bar, so the heading-issue count is not announced on every keystroke.
 
+### Fixed
+
+- The linter no longer reports a heading as empty when its only content is a footnote reference (`## [^1]`). `markdown-it` gives a `footnote_ref` token an empty `content` even though it renders a visible `[1]` marker, so emptiness is now decided from token types rather than from joined text. The same fix covers headings whose only content is an image with alt text; an image with no alt text is still reported, since it gives the heading no accessible name.
+- The `no-h1` suggestion now quotes the author's own source line, so it preserves footnote references, code spans, emphasis, and images. It previously rebuilt the text from tokens and silently dropped them — copying `Use "## Title"` for a `# Title[^1]` heading would have deleted the footnote reference. Multi-line setext headings are joined with a space rather than fused into one word. A heading nested inside a blockquote or list item is still reported, but without a quoted suggestion, since its source line carries the container's own prefix.
+
 ## [1.6.1] - 2026-06-10
 
 ### Fixed
