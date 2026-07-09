@@ -136,13 +136,21 @@ new watchers, and the lint result is always in step with the rendered preview.
 `useMarkdown` is the module for derived views of the document. Heading issues are a
 derived view of the document. This is the right home.
 
+### `app/composables/useEditor.ts` (edit)
+
+Add `goToLine(line: number): boolean`, beside the existing `insertHeading` and
+`insertText` actions. It clamps the line to the document, dispatches a CodeMirror
+selection to that line's start, scrolls it into view, and focuses the editor.
+
+This belongs in `useEditor` because that module owns the raw `editorView` ref. The
+ref it exports is wrapped in `readonly()`, so a component that dispatched against it
+directly would need an unsafe cast.
+
 ### `app/components/editor/HeadingIssuesPanel.vue` (new)
 
-The status-bar trigger and its expandable list. Reads `headingIssues` from
-`useMarkdown()`, and `editorView` from `useEditor()` in order to move the cursor.
-
-Activating an issue dispatches a CodeMirror selection to the start of that line, scrolls
-it into view, and focuses the editor.
+The status-bar trigger and its expandable list. Reads `headingIssues` and `issueCount`
+from `useMarkdown()`, and calls `goToLine()` from `useEditor()` when an issue is
+activated.
 
 ## Accessibility
 
@@ -215,6 +223,7 @@ defect this feature uncovered.
 | `tests/unit/heading-lint.test.ts` | new — 8 cases plus tutorial regression guard |
 | `app/components/editor/HeadingIssuesPanel.vue` | new — trigger button and issue list |
 | `app/composables/useMarkdown.ts` | add `headingIssues`, `issueCount` |
+| `app/composables/useEditor.ts` | add `goToLine(line)` |
 | `app/components/editor/EditorLayout.vue` | mount panel outside the `role="status"` live region |
 | `app/utils/default-content.ts` | line 14: `# ` to `## ` |
 | `README.md`, `CHANGELOG.md` | document the feature and the raw-HTML limitation |
