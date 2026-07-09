@@ -20,18 +20,11 @@
  * @requires ~/utils/markdown/config
  */
 
+import type Token from 'markdown-it/lib/token.mjs'
 import { getMarkdownIt } from '~/utils/markdown/config'
 
 /** The rules this linter enforces. */
 export type HeadingRule = 'no-h1' | 'heading-order' | 'empty-heading'
-
-/** Token from markdown-it, minimal interface. */
-interface Token {
-  type: string
-  tag: string
-  content: string
-  children: Token[] | null
-}
 
 /** A single heading problem, anchored to a 1-based editor line. */
 export interface HeadingIssue {
@@ -65,10 +58,10 @@ const VIRTUAL_H1_LEVEL = 1
 function headingText(inline: Token | undefined): string {
   if (!inline?.children) return ''
   return inline.children
-    .filter((child: Token) => child.type !== 'html_inline'
+    .filter(child => child.type !== 'html_inline'
       && !child.type.endsWith('_open')
       && !child.type.endsWith('_close'))
-    .map((child: Token) => child.content)
+    .map(child => child.content)
     .join('')
     .trim()
 }
