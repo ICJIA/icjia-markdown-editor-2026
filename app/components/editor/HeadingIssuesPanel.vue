@@ -253,9 +253,24 @@ function handleIssueClick(line: number) {
   color: #475569;
 }
 
-@media (max-width: 640px) {
+/*
+ * Collapse the label to icon-only on narrow screens, matching the sibling
+ * status-bar buttons. Clipped rather than `display: none`: the latter drops
+ * the text from the accessibility tree, leaving the button with no accessible
+ * name (axe `button-name`, WCAG 4.1.2). Clipping keeps the accessible name
+ * identical to the visible text, so no aria-label is needed to shadow it.
+ */
+@media (max-width: 480px) {
   .issues-text {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 </style>
