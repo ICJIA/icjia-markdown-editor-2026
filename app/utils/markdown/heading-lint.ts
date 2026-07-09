@@ -25,6 +25,14 @@ import { getMarkdownIt } from '~/utils/markdown/config'
 /** The rules this linter enforces. */
 export type HeadingRule = 'no-h1' | 'heading-order' | 'empty-heading'
 
+/** Token from markdown-it, minimal interface. */
+interface Token {
+  type: string
+  tag: string
+  content: string
+  children: Token[] | null
+}
+
 /** A single heading problem, anchored to a 1-based editor line. */
 export interface HeadingIssue {
   /** 1-based line number in the markdown source. */
@@ -39,6 +47,31 @@ export interface HeadingIssue {
 
 /** Strapi renders the page title as an <h1> above this document. */
 const VIRTUAL_H1_LEVEL = 1
+
+/**
+ * Reconstructs a heading's visible text from its inline children.
+ *
+ * markdown-it-anchor's permalink rewrites each heading's inline token: `.content`
+ * is emptied and the children are wrapped in link/span decoration tokens. Raw
+ * inline HTML (`html: true` is enabled) also shows up as `html_inline` children
+ * whose content is the tag markup, not visible text.
+ *
+ * Dropping decoration and markup tokens leaves the text the reader actually sees,
+ * so `## <em></em>` correctly reads as empty while `## $E = mc^2$` does not.
+ *
+ * This depends on the decoration tokens contributed by config.ts's anchor
+ * permalink style carrying no visible text. If that permalink changes, re-verify.
+ */
+function headingText(inline: Token | undefined): string {
+  if (!inline?.children) return ''
+  return inline.children
+    .filter((child: Token) => child.type !== 'html_inline'
+      && !child.type.endsWith('_open')
+      && !child.type.endsWith('_close'))
+    .map((child: Token) => child.content)
+    .join('')
+    .trim()
+}
 
 /**
  * Lints a markdown document's heading hierarchy.
@@ -68,14 +101,8 @@ export function lintHeadings(markdown: string): HeadingIssue[] {
     const level = Number(token.tag.slice(1))
     const line = (token.map?.[0] ?? 0) + 1
     // The inline token immediately after heading_open carries the heading text.
-    // Extract text from either the content property or by reconstructing from children.
     const inlineToken = tokens[i + 1]
-    let text = ''
-    if (inlineToken?.children) {
-      text = inlineToken.children.map(child => child.content || '').join('').trim()
-    } else if (inlineToken?.content) {
-      text = inlineToken.content.trim()
-    }
+    const text = headingText(inlineToken)
 
     if (level === VIRTUAL_H1_LEVEL) {
       issues.push({

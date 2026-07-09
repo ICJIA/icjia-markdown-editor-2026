@@ -28,7 +28,7 @@ describe('lintHeadings', () => {
     const issues = lintHeadings('# Title\n\n## Sub\n')
     expect(issues).toHaveLength(1)
     expect(issues[0]).toMatchObject({ line: 1, rule: 'no-h1', severity: 'error' })
-    expect(issues[0]!.message).toContain('## Title')
+    expect(issues[0]!.message).toBe('H1 is reserved for the page title. Use "## Title" instead.')
   })
 
   it('reports both the h1 and the skip beneath it', () => {
@@ -41,6 +41,7 @@ describe('lintHeadings', () => {
     const issues = lintHeadings('#\n')
     expect(issues).toHaveLength(1)
     expect(issues[0]!.rule).toBe('no-h1')
+    expect(issues[0]!.message).toBe('H1 is reserved for the page title. Use ## instead.')
   })
 
   it('flags an empty heading as a warning', () => {
@@ -61,5 +62,33 @@ describe('lintHeadings', () => {
 
   it('returns an empty array for a document with no headings', () => {
     expect(lintHeadings('Just a paragraph.\n')).toEqual([])
+  })
+
+  it('detects empty heading made of only decoration tags', () => {
+    const issues = lintHeadings('## <em></em>\n')
+    expect(issues).toHaveLength(1)
+    expect(issues[0]).toMatchObject({ line: 1, rule: 'empty-heading', severity: 'warning' })
+  })
+
+  it('does not treat math-only headings as empty', () => {
+    expect(lintHeadings('## $E = mc^2$\n')).toEqual([])
+  })
+
+  it('excludes markup tags from h1 no-h1 message with emphasis', () => {
+    const issues = lintHeadings('# <em>Title</em>\n')
+    expect(issues).toHaveLength(1)
+    expect(issues[0]!.message).toBe('H1 is reserved for the page title. Use "## Title" instead.')
+  })
+
+  it('excludes markup tags from h1 no-h1 message with code', () => {
+    const issues = lintHeadings('# `code` heading\n')
+    expect(issues).toHaveLength(1)
+    expect(issues[0]!.message).toBe('H1 is reserved for the page title. Use "## code heading" instead.')
+  })
+
+  it('excludes markup tags from h1 no-h1 message with bold', () => {
+    const issues = lintHeadings('# Bold **x**\n')
+    expect(issues).toHaveLength(1)
+    expect(issues[0]!.message).toBe('H1 is reserved for the page title. Use "## Bold x" instead.')
   })
 })
