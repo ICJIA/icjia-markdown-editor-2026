@@ -2979,9 +2979,9 @@
     "@tanstack/virtual-core" "3.17.3"
 
 "@tiptap/core@^3.26.1", "@tiptap/core@^3.27.3":
-  version "3.27.3"
-  resolved "https://registry.yarnpkg.com/@tiptap/core/-/core-3.27.3.tgz#001d05642579b8c4727fe9acd71ce5f4900a508c"
-  integrity sha512-TJj5929M96C1KlH796wS8MywfHDh49RhmakOyzyMMc9pFmRj9UXi1gj0TCXgsZtjEOG7B+m/DRvNOvnuvR9kmg==
+  version "3.31.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/core/-/core-3.31.0.tgz#baebeb56894a8a02864bfc95143b3bb8f84c2c5d"
+  integrity sha512-SY3yE2ACharFvk0BKgotV6SbwV8R4tN5fGtWOM6deY4JNF3v6CXOD78RFwjs2HSohGWBRyJVPDvrX9nfi8Nsxg==
 
 "@tiptap/extension-blockquote@^3.27.3":
   version "3.27.3"
