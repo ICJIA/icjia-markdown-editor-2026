@@ -31,6 +31,8 @@ import taskLists from 'markdown-it-task-lists'
 import strikethrough from 'markdown-it-strikethrough-alt'
 // @ts-expect-error - no type declarations available
 import mark from 'markdown-it-mark'
+// @ts-expect-error - no type declarations available
+import ins from 'markdown-it-ins'
 import katex from '@traptitech/markdown-it-katex'
 // Core-only highlight.js: the full build ships ~190 languages (~1.7 MB of the
 // main chunk). Register just the languages ICJIA researchers use; unregistered
@@ -106,6 +108,9 @@ export function createMarkdownIt(): MarkdownIt {
   
   // Add highlight/mark support (==text==)
   md.use(mark)
+
+  // Add inserted-text support (++text++)
+  md.use(ins)
   
   // Add KaTeX math support ($inline$ and $$block$$)
   md.use(katex, {
@@ -193,8 +198,9 @@ export function createMarkdownIt(): MarkdownIt {
 
   // Fence (code blocks): highlight returns full HTML, so we wrap with data-source-line
   // Also add role="figure" and aria-label for accessibility (WCAG 2.1 preformatted text compliance)
-  const defaultFence = md.renderer.rules.fence!
-  md.renderer.rules.fence = function(tokens, idx, options, env, self) {
+  // The default fence renderer is replaced outright rather than delegated to,
+  // so its arguments beyond the token list are unused.
+  md.renderer.rules.fence = function(tokens, idx, _options, _env, _self) {
     const token = tokens[idx]
     const lang = token?.info?.trim() ?? ''
     const code = token?.content ?? ''
@@ -242,6 +248,25 @@ export function getMarkdownIt(): MarkdownIt {
  * DOMPurify configuration that allows markdown-rendered HTML attributes and elements.
  * This preserves syntax highlighting classes, scroll sync data attributes,
  * KaTeX math rendering, and ARIA accessibility attributes.
+ *
+ * `FORBID_TAGS` narrows DOMPurify's default allowlist, which is broader than a
+ * markdown preview needs. Each entry closes a way for a *document* — which may
+ * have been pasted or opened from an untrusted source — to act on the
+ * surrounding application rather than merely describe itself:
+ *   - `style`   a document-supplied stylesheet is not scoped to the preview, so
+ *               it restyles the whole editor UI (verified: it can repaint
+ *               `<body>`). Note this does NOT reproduce under jsdom, which has
+ *               no CSSOM for DOMPurify to sanitize, so only a browser catches it.
+ *   - `form`    a form with an external `action` renders a working, on-brand
+ *               submission target inside the editor.
+ *   - `button` / `select` / `textarea` / `option` / `fieldset` / `legend`
+ *               never produced by markdown; allowing them only supplies parts
+ *               for a convincing fake UI.
+ *
+ * `input` is deliberately NOT forbidden: markdown-it-task-lists renders real
+ * `<input type="checkbox">` elements. The `uponSanitizeElement` hook below drops
+ * every other input type instead, so task lists keep working while text fields
+ * cannot be rendered.
  */
 const PURIFY_CONFIG = {
   ADD_ATTR: [
@@ -250,7 +275,57 @@ const PURIFY_CONFIG = {
     'loading',
   ],
   ADD_TAGS: ['math', 'mrow', 'mi', 'mo', 'mn', 'msup', 'msub', 'mfrac', 'mspace', 'mtext', 'annotation', 'semantics'],
+  FORBID_TAGS: ['style', 'form', 'button', 'select', 'textarea', 'option', 'fieldset', 'legend'],
   RETURN_TRUSTED_TYPE: false,
+}
+
+/**
+ * CSS declarations that let an element escape the preview pane and cover the
+ * application. Stripped from `style` attributes on the way through.
+ *
+ * The whole `style` attribute cannot simply be forbidden: KaTeX positions every
+ * glyph with inline `height` / `top` / `vertical-align` / `position:relative`,
+ * and markdown tables carry `text-align` for column alignment. So this removes
+ * the two declarations that matter — `position:fixed` (or `sticky`), which
+ * escapes any containing block, and `z-index`, which lifts the result above the
+ * UI — and leaves every other declaration untouched.
+ */
+const ESCAPING_CSS = /(?:^|;)\s*(?:position\s*:\s*(?:fixed|sticky)|z-index\s*:[^;]*)\s*(?=;|$)/gi
+
+/** Hooks are global to the DOMPurify instance, so register them exactly once. */
+let hooksRegistered = false
+
+function registerHooks(): void {
+  if (hooksRegistered) return
+  hooksRegistered = true
+
+  // Task-list checkboxes are legitimate; every other input type is not.
+  DOMPurify.addHook('uponSanitizeElement', (node, data) => {
+    if (data.tagName !== 'input') return
+    const type = (node as Element).getAttribute?.('type')?.toLowerCase()
+    if (type !== 'checkbox') {
+      (node as Element).remove?.()
+    }
+  })
+
+  // Drop only the declarations that would let content overlay the application.
+  DOMPurify.addHook('uponSanitizeAttribute', (_node, data) => {
+    if (data.attrName !== 'style' || !data.attrValue) return
+    const cleaned = data.attrValue.replace(ESCAPING_CSS, '').replace(/^\s*;+/, '').trim()
+    if (cleaned) {
+      data.attrValue = cleaned
+    } else {
+      data.keepAttr = false
+    }
+  })
+
+  // markdown-authored links get rel from the link_open renderer, but a raw-HTML
+  // `<a target="_blank">` arrives without one. Guarantee it after sanitization.
+  DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+    if (node.tagName === 'A' && node.getAttribute('target') === '_blank') {
+      node.setAttribute('rel', 'noopener noreferrer')
+    }
+  })
 }
 
 /**
@@ -270,6 +345,7 @@ const PURIFY_CONFIG = {
 export function renderMarkdown(content: string): string {
   const rawHtml = getMarkdownIt().render(content)
   if (typeof window !== 'undefined') {
+    registerHooks()
     return DOMPurify.sanitize(rawHtml, PURIFY_CONFIG)
   }
   // SSR/SSG: DOMPurify needs a browser DOM, so output cannot be sanitized

@@ -149,3 +149,56 @@ describe('renderMarkdown', () => {
     expect(html.trim()).toBe('')
   })
 })
+
+describe('renderMarkdown hardening', () => {
+  it('strips <style> blocks so a document cannot restyle the application', () => {
+    const html = renderMarkdown('<style>body{background:red}</style>')
+    expect(html).not.toContain('<style')
+    expect(html).not.toContain('background:red')
+  })
+
+  it('strips <form> so a document cannot post to an external endpoint', () => {
+    const html = renderMarkdown('<form action="https://evil.example"><input name="q"></form>')
+    expect(html).not.toContain('<form')
+    expect(html).not.toContain('evil.example')
+  })
+
+  it('strips text inputs while keeping task-list checkboxes', () => {
+    expect(renderMarkdown('<input type="text" name="q">')).not.toContain('<input')
+    expect(renderMarkdown('- [x] done')).toContain('type="checkbox"')
+  })
+
+  it('strips buttons, selects and textareas', () => {
+    expect(renderMarkdown('<button>Go</button>')).not.toContain('<button')
+    expect(renderMarkdown('<select><option>a</option></select>')).not.toContain('<select')
+    expect(renderMarkdown('<textarea>x</textarea>')).not.toContain('<textarea')
+  })
+
+  it('strips position:fixed and z-index so a document cannot overlay the app', () => {
+    const html = renderMarkdown(
+      '<div style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99999">overlay</div>',
+    )
+    expect(html).not.toMatch(/position\s*:\s*fixed/i)
+    expect(html).not.toMatch(/z-index/i)
+  })
+
+  it('keeps the inline styles KaTeX and tables depend on', () => {
+    // \sum places its limits with position:relative, so this proves the hook
+    // strips only fixed/sticky rather than the position property outright.
+    const math = renderMarkdown('$\\sum_{i=1}^{n} i$')
+    expect(math).toMatch(/position\s*:\s*relative/i)
+    expect(math).toMatch(/height:/)
+
+    const table = renderMarkdown('| a |\n| ---: |\n| 1 |')
+    expect(table).toContain('text-align:right')
+  })
+
+  it('adds rel="noopener noreferrer" to raw-HTML target="_blank" links', () => {
+    const html = renderMarkdown('<a href="https://example.com" target="_blank">x</a>')
+    expect(html).toContain('rel="noopener noreferrer"')
+  })
+
+  it('renders ++inserted++ as <ins>', () => {
+    expect(renderMarkdown('++inserted++')).toContain('<ins>inserted</ins>')
+  })
+})

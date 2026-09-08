@@ -133,7 +133,7 @@ async function handleDownloadMarkdown() {
 async function handleDownloadHtml() {
   const filename = await openDownloadModal('html')
   if (filename) {
-    downloadHtml(filename)
+    await downloadHtml(filename)
   }
 }
 
@@ -228,7 +228,8 @@ const mobileMenuSections = [
     title: 'File',
     items: [
       { icon: 'i-heroicons-arrow-up-tray', label: 'Upload', action: handleUploadMarkdown },
-      { icon: 'i-heroicons-arrow-down-tray', label: 'Download', action: handleDownloadMarkdown },
+      { icon: 'i-heroicons-arrow-down-tray', label: 'Download Markdown', action: handleDownloadMarkdown },
+      { icon: 'i-heroicons-document-arrow-down', label: 'Download HTML', action: handleDownloadHtml },
       { icon: 'i-heroicons-clipboard-document', label: 'Copy Markdown', action: handleCopyMarkdown },
       { icon: 'i-heroicons-code-bracket', label: 'Copy HTML', action: handleCopyHtml },
     ]
@@ -484,6 +485,11 @@ const mobileMenuSections = [
           shortcut="Mod+Shift+H"
           :active="copyHtmlSuccess"
           @click="handleCopyHtml" 
+        />
+        <ToolbarButton 
+          icon="i-heroicons-document-arrow-down"
+          label="Download HTML"
+          @click="handleDownloadHtml" 
         />
       </div>
     </div>

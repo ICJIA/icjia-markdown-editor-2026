@@ -31,9 +31,9 @@ export default defineNuxtPlugin(() => {
     applicationCategory: 'Productivity',
     operatingSystem: 'Any',
     browserRequirements: 'Requires JavaScript and a modern web browser',
-    softwareVersion: '1.6.1',
+    softwareVersion: '1.8.0',
     datePublished: '2026-01-28',
-    dateModified: '2026-06-10',
+    dateModified: '2026-09-08',
     inLanguage: 'en',
     isAccessibleForFree: true,
     offers: {
@@ -62,7 +62,9 @@ export default defineNuxtPlugin(() => {
       ...(canonicalUrl ? [{ property: 'og:url', content: canonicalUrl }] : []),
     ],
     link: [
-      ...(canonicalUrl ? [{ rel: 'canonical', href: canonicalUrl }] : []),
+      // `as const` keeps `rel` a literal: unhead types it as a union of known
+      // link relations, and a widened `string` is not assignable to that.
+      ...(canonicalUrl ? [{ rel: 'canonical' as const, href: canonicalUrl }] : []),
     ],
     script: [
       {

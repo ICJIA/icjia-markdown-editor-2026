@@ -6,6 +6,9 @@
  * @module modules/tour/types
  */
 
+// Used by the composable's return type at the bottom of this file.
+import type { Ref, ComputedRef } from 'vue'
+
 /**
  * Position of the tour popover relative to the target element.
  */
@@ -203,6 +206,3 @@ export interface UseTourReturn {
   /** Reset tour completion status so tour will auto-start again */
   resetCompletion: () => void
 }
-
-// Re-export Ref types for external use
-import type { Ref, ComputedRef } from 'vue'

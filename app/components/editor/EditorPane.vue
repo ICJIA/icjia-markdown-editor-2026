@@ -12,7 +12,7 @@ const colorMode = useColorMode()
 const { setEditorView, updateContent, content, isContentReady } = useEditor()
 const { announce } = useAccessibility()
 
-const emit = defineEmits<{ (e: 'cursor-line', line: number): void; (e: 'cursor-line-immediate', line: number): void }>()
+const emit = defineEmits<{ (e: 'cursor-line' | 'cursor-line-immediate', line: number): void }>()
 
 // Cursor-line for scroll sync: immediate when user types, debounced (150ms) when only selection changes
 let cursorLineTimeout: ReturnType<typeof setTimeout> | null = null
@@ -103,8 +103,8 @@ defineExpose({
     
     <div
       v-show="isContentReady"
-      ref="editorContainer"
       id="main-editor"
+      ref="editorContainer"
       class="editor-container"
       tabindex="-1"
       aria-describedby="editor-instructions"

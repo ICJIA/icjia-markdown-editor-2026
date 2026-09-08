@@ -74,6 +74,10 @@ defineExpose({
         Rendering...
       </div>
       
+      <!-- eslint-disable vue/no-v-html -- renderedHtml is the return value of
+           renderMarkdown(), which sanitizes with DOMPurify before returning it
+           (see utils/markdown/config.ts). This is the intended sink: a preview
+           cannot show formatted output any other way. -->
       <div 
         ref="previewRef"
         class="preview-content markdown-body"
@@ -83,6 +87,7 @@ defineExpose({
         tabindex="0"
         v-html="renderedHtml"
       />
+      <!-- eslint-enable vue/no-v-html -->
     </template>
   </div>
 </template>
@@ -130,6 +135,11 @@ defineExpose({
   font-size: 1rem;
   line-height: 1.75;
   color: var(--color-text, #f1f5f9);
+  /* Paint containment makes this element the containing block for any
+     positioned descendant, so document-supplied CSS cannot escape the preview
+     and cover the editor UI. The sanitizer already strips position:fixed and
+     z-index; this is the layer that holds if that is ever bypassed. */
+  contain: paint;
 }
 
 /* Markdown styling */
@@ -219,7 +229,7 @@ defineExpose({
 /* Light mode: use darker green for WCAG AA compliance */
 :root.light .preview-content :deep(code),
 .light .preview-content :deep(code) {
-  color: #166534; /* green-800 - 5.14:1 contrast on light backgrounds */
+  color: #14532d; /* green-900 - 8.5:1 on slate-100, clears AAA */
   background: #f1f5f9; /* slate-100 */
 }
 
@@ -360,7 +370,7 @@ defineExpose({
 
 .light .preview-content :deep(del),
 .light .preview-content :deep(s) {
-  color: #64748b;
+  color: #475569;
 }
 
 /* Highlight/Mark styling */
@@ -402,7 +412,7 @@ defineExpose({
 
 .light .preview-content :deep(.task-list-item-checkbox:checked + span),
 .light .preview-content :deep(.task-list-item.checked) {
-  color: #64748b;
+  color: #475569;
 }
 
 /* Scrollbar styling */

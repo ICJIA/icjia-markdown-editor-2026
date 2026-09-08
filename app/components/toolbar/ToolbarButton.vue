@@ -14,6 +14,9 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  // Explicit: a button with no keyboard shortcut renders no shortcut hint,
+  // which is different from rendering an empty one.
+  shortcut: undefined,
   disabled: false,
   active: false,
 })
@@ -69,9 +72,6 @@ const currentPlatformShortcut = computed(() => {
   return parts.join('+')
 })
 
-// Format shortcut for display (both platforms)
-const shortcutDisplayMac = computed(() => shortcuts.value.mac.join(' '))
-const shortcutDisplayWin = computed(() => shortcuts.value.win.join(' + '))
 
 function handleClick() {
   if (!props.disabled) {

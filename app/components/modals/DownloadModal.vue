@@ -89,7 +89,7 @@ const fileTypeIcon = computed(() => {
             autocomplete="off"
             spellcheck="false"
             @keydown="handleKeydown"
-          />
+          >
           <p class="mt-2 text-xs text-neutral-500">
             The correct extension will be added automatically if missing.
           </p>

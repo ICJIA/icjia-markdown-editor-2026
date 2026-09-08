@@ -99,20 +99,20 @@ export const icjiaDarkTheme = EditorView.theme({
  */
 export const icjiaDarkHighlightStyle = HighlightStyle.define([
   // Headings - blue tones for visibility
-  { tag: tags.heading1, fontWeight: 'bold', fontSize: '1.5em', color: '#93c5fd' }, // blue-300
-  { tag: tags.heading2, fontWeight: 'bold', fontSize: '1.3em', color: '#93c5fd' },
-  { tag: tags.heading3, fontWeight: 'bold', fontSize: '1.1em', color: '#93c5fd' },
-  { tag: tags.heading4, fontWeight: 'bold', color: '#93c5fd' },
-  { tag: tags.heading5, fontWeight: 'bold', color: '#93c5fd' },
-  { tag: tags.heading6, fontWeight: 'bold', color: '#93c5fd' },
+  { tag: tags.heading1, fontWeight: 'bold', fontSize: '1.5em', color: '#bfdbfe' }, // blue-200 - 8.8:1 even on the active-line highlight
+  { tag: tags.heading2, fontWeight: 'bold', fontSize: '1.3em', color: '#bfdbfe' },
+  { tag: tags.heading3, fontWeight: 'bold', fontSize: '1.1em', color: '#bfdbfe' },
+  { tag: tags.heading4, fontWeight: 'bold', color: '#bfdbfe' },
+  { tag: tags.heading5, fontWeight: 'bold', color: '#bfdbfe' },
+  { tag: tags.heading6, fontWeight: 'bold', color: '#bfdbfe' },
   
   // Text formatting
   { tag: tags.strong, fontWeight: 'bold', color: '#f1f5f9' }, // slate-100
   { tag: tags.emphasis, fontStyle: 'italic', color: '#e2e8f0' }, // slate-200
   
   // Links - blue with underline for accessibility (AAA compliant)
-  { tag: tags.link, color: '#93c5fd', textDecoration: 'underline' }, // blue-300 - 9.5:1 ratio
-  { tag: tags.url, color: '#93c5fd' },
+  { tag: tags.link, color: '#bfdbfe', textDecoration: 'underline' }, // blue-200 - 8.8:1 on the active line, 12:1 elsewhere
+  { tag: tags.url, color: '#bfdbfe' },
   
   // Code - green for distinction
   { tag: tags.monospace, fontFamily: "'JetBrains Mono', monospace", color: '#4ade80' }, // green-400

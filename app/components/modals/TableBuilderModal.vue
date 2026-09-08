@@ -135,9 +135,6 @@ const previewHtml = computed(() => {
   return renderMarkdown(markdown)
 })
 
-function toggleViewMode() {
-  viewMode.value = viewMode.value === 'edit' ? 'preview' : 'edit'
-}
 
 // Copy status feedback
 const copySuccess = ref(false)
@@ -244,7 +241,7 @@ onUnmounted(() => {
                   :max="MAX_ROWS"
                   class="dimension-input"
                   aria-label="Number of table rows"
-                />
+                >
                 <button
                   type="button"
                   class="dimension-btn"
@@ -282,7 +279,7 @@ onUnmounted(() => {
                   :max="MAX_COLS"
                   class="dimension-input"
                   aria-label="Number of table columns"
-                />
+                >
                 <button
                   type="button"
                   class="dimension-btn"
@@ -319,7 +316,7 @@ onUnmounted(() => {
                 class="table-input table-input--header"
                 :aria-label="`Column ${i + 1} header`"
                 :placeholder="`Header ${i + 1}`"
-              />
+              >
             </div>
           </div>
 
@@ -363,7 +360,7 @@ onUnmounted(() => {
                 class="table-input"
                 :aria-label="`Row ${rowIndex + 1}, Column ${colIndex + 1}`"
                 placeholder="..."
-              />
+              >
             </div>
           </div>
         </div>
@@ -378,7 +375,10 @@ onUnmounted(() => {
           </div>
           <p class="html-preview-note">This is how your table will appear when rendered</p>
         </div>
+        <!-- eslint-disable vue/no-v-html -- previewHtml is the return value of
+             renderMarkdown(), sanitized with DOMPurify before it is returned. -->
         <div class="html-preview-content prose prose-invert max-w-none" v-html="previewHtml" />
+        <!-- eslint-enable vue/no-v-html -->
       </div>
 
       <!-- Markdown Code Preview Toggle (only in edit mode) -->

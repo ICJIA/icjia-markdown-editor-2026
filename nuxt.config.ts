@@ -9,7 +9,29 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@vueuse/nuxt',
     '@nuxt/fonts',
+    '@nuxt/eslint',
   ],
+
+  // Nuxt Icon defaults to a *server* bundle, which a static deployment has no
+  // server to serve: any icon it does not inline fails to load in production
+  // (the "Start Editing" button's pencil was doing exactly that). Scanning the
+  // source and bundling the icons it finds into the client makes every icon
+  // available offline, with no runtime request to the Iconify API — which the
+  // Content-Security-Policy's `connect-src 'self'` would block anyway.
+  icon: {
+    clientBundle: {
+      scan: true,
+    },
+  },
+
+  // @nuxt/eslint generates eslint.config.mjs from the project's real shape —
+  // auto-imported composables, generated .nuxt types, Vue SFC parsing — so the
+  // linter agrees with what Nuxt actually compiles.
+  eslint: {
+    config: {
+      stylistic: false,
+    },
+  },
 
   // Component auto-import configuration - disable path prefixes
   components: [

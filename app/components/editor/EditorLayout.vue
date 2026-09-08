@@ -164,8 +164,8 @@ function setupScrollSync(): void {
               <button 
                 type="button"
                 class="start-editing-button"
-                @click="handleStartEditing"
                 aria-label="Start Editing — clear the tutorial content and start with a blank editor"
+                @click="handleStartEditing"
               >
                 <UIcon name="i-heroicons-pencil" class="start-editing-icon" />
                 <span>Start Editing</span>
@@ -543,7 +543,7 @@ function setupScrollSync(): void {
 /* Light mode reset button */
 :root:not(.dark) .reset-button,
 .light .reset-button {
-  color: #64748b;
+  color: #475569;
 }
 
 :root:not(.dark) .reset-button:hover,
@@ -589,7 +589,7 @@ function setupScrollSync(): void {
 /* Light mode GitHub link */
 :root:not(.dark) .github-link,
 .light .github-link {
-  color: #64748b;
+  color: #475569;
 }
 
 :root:not(.dark) .github-link:hover,
@@ -611,7 +611,7 @@ function setupScrollSync(): void {
 /* Light mode reading time */
 :root:not(.dark) .reading-time,
 .light .reading-time {
-  color: #64748b;
+  color: #475569;
 }
 
 /* View mode states */
