@@ -45,8 +45,35 @@ export interface TableConfig {
 }
 
 /**
+ * Escapes a single cell so its content cannot alter the table's structure.
+ *
+ * A markdown table row is delimited by `|`, and a row is terminated by a
+ * newline, so a cell containing either character silently rewrites the table:
+ * `has | pipe` splits one cell into two, shifting every later cell left and
+ * dropping the last one off the end of the row. Escaping the pipe and folding
+ * newlines to spaces keeps the cell as one cell, whatever the author typed.
+ *
+ * @param {string} value - Raw cell or header text
+ * @returns {string} Text safe to place between two `|` delimiters
+ *
+ * @example
+ * ```typescript
+ * escapeCell('has | pipe')  // 'has \\| pipe'
+ * escapeCell('line1\nline2') // 'line1 line2'
+ * ```
+ */
+function escapeCell(value: string): string {
+  return value
+    .replace(/\|/g, '\\|')
+    .replace(/\r\n?|\n/g, ' ')
+}
+
+/**
  * Generates a markdown table string from a TableConfig object.
  * Produces valid GitHub Flavored Markdown table syntax.
+ *
+ * Cell and header text is escaped, so content containing `|` or a newline
+ * stays inside its own cell instead of restructuring the table.
  * 
  * @param {TableConfig} config - The table configuration
  * @returns {string} Markdown table syntax as a string
@@ -72,7 +99,7 @@ export function generateTableMarkdown(config: TableConfig): string {
   const lines: string[] = []
 
   // Header row
-  lines.push(`| ${headers.join(' | ')} |`)
+  lines.push(`| ${headers.map(escapeCell).join(' | ')} |`)
 
   // Alignment row
   const alignmentRow = alignments.map((align) => {
@@ -89,7 +116,7 @@ export function generateTableMarkdown(config: TableConfig): string {
 
   // Data rows
   for (const row of cells) {
-    lines.push(`| ${row.join(' | ')} |`)
+    lines.push(`| ${row.map(escapeCell).join(' | ')} |`)
   }
 
   return lines.join('\n')

@@ -325,11 +325,11 @@ Sometimes you want to display characters that normally trigger formatting. Use a
 
 | Character | Escaped | Result |
 |:----------|:--------|:-------|
-| Asterisk | \`\\*text\\*\` | \*text\* |
-| Underscore | \`\\_text\\_\` | \_text\_ |
-| Backtick | \`\\\\\\\`code\\\\\\\`\` | \\\`code\\\` |
-| Hash | \`\\# Not a heading\` | \# Not a heading |
-| Bracket | \`\\[not a link\\]\` | \[not a link\] |
+| Asterisk | \`\\*text\\*\` | \\*text\\* |
+| Underscore | \`\\_text\\_\` | \\_text\\_ |
+| Backtick | \`\` \\\`code\\\` \`\` | \\\`code\\\` |
+| Hash | \`\\# Not a heading\` | \\# Not a heading |
+| Bracket | \`\\[not a link\\]\` | \\[not a link\\] |
 
 ---
 

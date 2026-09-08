@@ -17,6 +17,8 @@
  * ```
  */
 
+import { sanitizeFilename } from '~/utils/filename'
+
 /**
  * Type of content to download.
  * @typedef {'markdown' | 'html'} DownloadType
@@ -102,26 +104,20 @@ export function useDownloadModal() {
   
   /**
    * Confirms the download with the current filename.
-   * Ensures the filename has the correct extension for the download type.
+   * Sanitizes the name and guarantees the extension for the download type
+   * (see `sanitizeFilename` — the stem is cleaned before the extension is
+   * appended, so cleaning can never strip the extension off).
    * Resolves the pending promise with the corrected filename.
-   * 
+   *
    * @returns {void}
    */
   function confirm() {
-    const finalFilename = filename.value.trim() || generateDefaultFilename(downloadType.value)
-
-    // Ensure correct extension
     const extension = downloadType.value === 'markdown' ? '.md' : '.html'
-    const withExtension = finalFilename.endsWith(extension)
-      ? finalFilename
-      : finalFilename.replace(/\.(md|html|txt)$/, '') + extension
-
-    // Sanitize: strip path traversal, invalid chars, enforce max length
-    const correctedFilename = withExtension
-      .replace(/\.\./g, '')
-      .replace(/[<>:"/\\|?*]/g, '')
-      .replace(/^\.+/, '')
-      .slice(0, 255)
+    const correctedFilename = sanitizeFilename(
+      filename.value,
+      extension,
+      generateDefaultFilename(downloadType.value),
+    )
 
     if (resolvePromise.value) {
       resolvePromise.value(correctedFilename)

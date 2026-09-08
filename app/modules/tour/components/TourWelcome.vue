@@ -101,7 +101,7 @@ onUnmounted(() => {
                     class="welcome-logo"
                     width="250"
                     height="175"
-                  />
+                  >
                 </div>
                 <h2 id="welcome-title" class="welcome-title">
                   Welcome to ICJIA Markdown Editor!

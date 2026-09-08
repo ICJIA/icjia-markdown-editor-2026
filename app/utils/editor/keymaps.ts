@@ -7,8 +7,7 @@
  * @requires @codemirror/view
  */
 
-import type { KeyBinding } from '@codemirror/view'
-import type { EditorView } from '@codemirror/view'
+import type { KeyBinding, EditorView } from '@codemirror/view'
 
 /**
  * Wraps the selected text with before/after delimiter strings.

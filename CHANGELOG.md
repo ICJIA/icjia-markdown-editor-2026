@@ -5,6 +5,37 @@ All notable changes to ICJIA Markdown Editor 2.0 will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2026-09-08
+
+### Security
+
+- **The preview no longer lets a document act on the application.** DOMPurify's default allowlist is wider than a markdown preview needs, and three tags were being carried through into the rendered output. `<style>` was the significant one: a document-supplied stylesheet is not scoped to the preview, so opening or pasting one containing `<style>body{background:red}</style>` repainted the entire editor UI. `<form>` with an external `action` rendered a working, on-brand submission target inside the app, and a `style` attribute carrying `position:fixed` with a large `z-index` could cover the whole viewport. Sanitization now forbids `style`, `form`, `button`, `select`, `textarea`, `option`, `fieldset` and `legend`; strips `position:fixed`, `position:sticky` and `z-index` from `style` attributes; and drops any `<input>` that is not a task-list checkbox. Everything the preview legitimately needs is untouched — KaTeX positions glyphs with inline `position:relative` and `height`, tables carry `text-align`, and task lists keep their real checkboxes. Note the `<style>` leak does not reproduce under jsdom, which has no CSSOM for DOMPurify to sanitize, so the regression test for it is meaningful only in a browser.
+- **The preview pane is now a containing block.** `contain: paint` on `.preview-content` means a positioned descendant cannot escape the pane even if the sanitizer above is ever bypassed.
+- **Raw-HTML links opening a new tab now carry `rel`.** Markdown-authored links already got `rel="noopener noreferrer"` from the renderer; a literal `<a target="_blank">` in a document did not. A sanitizer hook now guarantees it on both.
+- **Added a Content-Security-Policy and HSTS to the deployed headers.** The policy is written against this app's actual threat — untrusted markdown rendered with raw HTML enabled — rather than copied from a list: `form-action 'none'` makes an injected form unsubmittable, `object-src`/`frame-src`/`base-uri 'none'` close the plugin, framing and relative-URL-repointing vectors, and `connect-src 'self'` keeps an editor that makes no network calls that way. `script-src`/`style-src` need `'unsafe-inline'` for Nuxt's hydration payload and KaTeX's per-glyph inline styles; the reasoning for each directive is recorded in `netlify.toml`.
+- **Refreshed the dependency tree.** Advisories went from 29 to 1 (a low-severity esbuild dev-server issue that only affects Windows). DOMPurify — the only flagged package that ships to the browser — moved past its IN_PLACE XSS fix, Nuxt moved past the server-island RCE and payload-cache disclosure, and the critical unauthenticated Nuxt DevTools RPC advisory is cleared. Removed `@types/dompurify`, a deprecated stub that DOMPurify v3 supersedes with its own types.
+
+### Fixed
+
+- **Download HTML was unreachable.** `handleDownloadHtml` existed and worked but was never wired to a control, so the export the README advertises could not be triggered from the interface. It is now in the Export group beside Copy HTML, and in the mobile menu.
+- **Table builder cells containing `|` silently corrupted the table.** A cell holding `has | pipe` split into two cells, shifting every later cell left and dropping the last one off the end of the row — the content was lost, not just misrendered. Cell and header text is now escaped, and newlines are folded to spaces so a cell cannot break out of its row.
+- **The tutorial's escaping table demonstrated the opposite of what it taught.** The Result column for the Asterisk and Underscore rows rendered as *italic text* instead of the literal `*text*` and `_text_`, because the escapes were consumed by the TypeScript template literal before markdown ever saw them. The Backtick row's Escaped cell rendered as a broken code span. All three now show what they claim.
+- **Download filenames could lose their extension.** Sanitization ran after the extension was appended, so `a..md` became `amd` — a file no operating system associates with an application. The rules now run on the stem before the extension is added, and truncation leaves room for it. Extracted to `utils/filename.ts` so the behaviour is testable on its own.
+- **Icons were missing in production.** Nuxt Icon defaults to a server bundle, which a static deployment has no server to serve; the pencil on the "Start Editing" button — the primary call to action for a first-time user — failed to load. The client bundle now scans the source and inlines the 98 icons the app uses.
+- **`yarn lint` did not run.** The script invoked an ESLint that was never installed, against a config that did not exist, and exited 127. `@nuxt/eslint` is now configured, and the codebase is clean against it: the 20 errors it found on first run are fixed, including several unused declarations that turned out to mark dead code.
+
+### Changed
+
+- **`++inserted++` now renders as `<ins>`.** `markdown-it-ins` had been a declared dependency for some time without ever being registered, so the syntax rendered as literal text. It now sits alongside `==mark==` and `~~strike~~`.
+- **HTML exports are self-contained.** They previously linked three stylesheets from cdnjs with no `integrity`, so an exported document rendered unstyled without a network connection and depended on a third party for its appearance — neither of which suits a file that gets emailed, attached to a record, or opened years later. Everything is now embedded. The cost is paid only where it buys something: a plain report carries the base stylesheet alone (~23 KB), the highlight.js theme is added only for documents with code, and the KaTeX stylesheet with its twenty webfonts only for documents with math. `downloadHtml` is async as a result, since those stylesheets load on demand rather than sitting in the editor's main bundle.
+- **Raised light-mode text contrast to WCAG AAA.** Several muted colours measured 4.54:1 against AA's 4.5:1 — a margin of 0.04, where any future colour adjustment would have dropped them below AA without anyone noticing. `--color-text-muted` and the autosave, reading-time, tutorial-reset and GitHub labels moved from slate-500 to slate-600 (7.2:1); light-mode inline code moved from green-800 to green-900 (8.5:1); and the dark editor's heading and link colour moved to blue-200 so it clears 7:1 on the active-line highlight as well as the base background. `yarn test:a11y` now reports zero violations at AAA, where it had been reporting five and exiting non-zero.
+- **Compressed `og-image.png` from 972 KB to 249 KB**, unchanged in dimensions and visually identical.
+
+### Notes
+
+- The checked-in `tests/a11y/a11y-results.json` had been stale since January and reported zero violations against code that had five. It now reflects a fresh run.
+- `yarn upgrade` bumped Playwright, so `yarn playwright install chromium` is needed once before `yarn test:a11y` will run.
+
 ## [1.7.1] - 2026-07-09
 
 ### Changed

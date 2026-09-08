@@ -52,7 +52,7 @@
   --color-surface: #f8fafc;       /* slate-50 */
   --color-border: #e2e8f0;        /* slate-200 */
   --color-text: #0f172a;          /* slate-900 */
-  --color-text-muted: #64748b;    /* slate-500 */
+  --color-text-muted: #475569;    /* slate-600 - 7.2:1 on slate-50, clears AA with margin and AAA */
   --color-primary: #2563eb;       /* blue-600 */
   --color-focus: #3b82f6;         /* blue-500 */
 }
@@ -571,7 +571,7 @@ button.toolbar-button-active {
 .light .hljs-variable,
 .light .hljs-template-tag,
 .light .hljs-template-variable {
-  color: #166534; /* green-800 - WCAG AA compliant */
+  color: #14532d; /* green-900 - 8.5:1 on slate-100, clears AAA */
 }
 
 .light .hljs-comment,

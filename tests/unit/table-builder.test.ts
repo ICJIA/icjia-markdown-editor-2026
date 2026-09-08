@@ -165,3 +165,53 @@ describe('removeColumn', () => {
     expect(table.columns).toBe(2)
   })
 })
+
+describe('generateTableMarkdown cell escaping', () => {
+  it('escapes pipes so a cell cannot split into extra columns', () => {
+    const md = generateTableMarkdown({
+      rows: 1,
+      columns: 2,
+      headers: ['A', 'B'],
+      cells: [['has | pipe', 'ok']],
+      alignments: ['left', 'left'],
+    })
+    expect(md).toContain('has \\| pipe')
+    // Exactly two cells per row: three delimiters, none of them from content.
+    const dataRow = md.split('\n')[2]!
+    expect(dataRow.split(/(?<!\\)\|/).filter(s => s.trim()).length).toBe(2)
+  })
+
+  it('escapes pipes in headers too', () => {
+    const md = generateTableMarkdown({
+      rows: 1,
+      columns: 1,
+      headers: ['a | b'],
+      cells: [['x']],
+      alignments: ['left'],
+    })
+    expect(md).toContain('a \\| b')
+  })
+
+  it('collapses newlines so a cell cannot break out of the table', () => {
+    const md = generateTableMarkdown({
+      rows: 1,
+      columns: 2,
+      headers: ['A', 'B'],
+      cells: [['line1\nline2', 'ok']],
+      alignments: ['left', 'left'],
+    })
+    expect(md.split('\n')).toHaveLength(3)
+    expect(md).toContain('line1 line2')
+  })
+
+  it('leaves ordinary content untouched', () => {
+    const md = generateTableMarkdown({
+      rows: 1,
+      columns: 2,
+      headers: ['Name', 'Value'],
+      cells: [['A', '1']],
+      alignments: ['left', 'right'],
+    })
+    expect(md).toBe('| Name | Value |\n| :--- | ---: |\n| A | 1 |')
+  })
+})

@@ -43,8 +43,8 @@ function scrollToTop() {
         <a 
           href="#" 
           class="title-link"
-          @click.prevent="scrollToTop"
           aria-label="ICJIA Markdown Editor 2.0 - Click to scroll to top"
+          @click.prevent="scrollToTop"
         >
           <!-- Decorative (alt=""): the link text names the destination, and axe counts
                a non-empty alt as visible text that must appear in the accessible name -->
@@ -55,7 +55,7 @@ function scrollToTop() {
             height="48"
             class="title-logo"
             @error="($event.target as HTMLImageElement).style.display = 'none'"
-          />
+          >
           <span>ICJIA Markdown Editor 2.0</span>
         </a>
       </h1>
@@ -369,7 +369,7 @@ function scrollToTop() {
 /* Light mode */
 :root:not(.dark) .autosave-label,
 .light .autosave-label {
-  color: #64748b; /* slate-500 */
+  color: #475569; /* slate-600 - 7.2:1 on slate-50 */
 }
 
 :root:not(.dark) .autosave-saved,

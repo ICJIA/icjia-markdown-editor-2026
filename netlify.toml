@@ -9,6 +9,31 @@ NODE_VERSION = "24"
 NUXT_PUBLIC_SITE_URL = "https://markdown.icjia.cloud"
 
 # Security headers
+#
+# Content-Security-Policy is the layer behind DOMPurify. The editor renders
+# markdown with raw HTML enabled, so a document is untrusted input; sanitization
+# is the first defence and this is what still holds if a sanitizer bypass is
+# found. Each directive is chosen against that threat, not copied from a list:
+#
+#   default-src 'self'   nothing loads from anywhere else by default.
+#   script-src           'unsafe-inline' is required by Nuxt's hydration payload,
+#                        which is written inline into the prerendered HTML.
+#                        'wasm-unsafe-eval' is not granted; no eval is allowed.
+#   style-src            'unsafe-inline' is required twice over: Nuxt inlines the
+#                        critical CSS, and KaTeX positions every glyph with an
+#                        inline style attribute.
+#   img-src              data: covers the base64 images in the tutorial content;
+#                        https: lets an author reference an image by URL.
+#   font-src 'self'      @nuxt/fonts self-hosts Inter and JetBrains Mono at build
+#                        time, so no font host needs to be allowed.
+#   connect-src 'self'   the editor makes no network calls; this keeps it that way.
+#   form-action 'none'   nothing in this app submits a form, so any form that
+#                        appears in a preview came from the document. Sanitization
+#                        already strips <form>; this makes a bypass unexploitable.
+#   frame-src / object-src / base-uri 'none'
+#                        no framed content, no plugins, and no way for injected
+#                        markup to repoint relative URLs via <base>.
+#   frame-ancestors      clickjacking protection; the modern X-Frame-Options.
 [[headers]]
 for = "/*"
 [headers.values]
@@ -16,6 +41,8 @@ X-Frame-Options = "DENY"
 X-Content-Type-Options = "nosniff"
 Referrer-Policy = "strict-origin-when-cross-origin"
 Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; form-action 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"
 
 # Cache static assets
 [[headers]]

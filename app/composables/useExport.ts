@@ -13,7 +13,7 @@
  * await copyMarkdown()
  * 
  * // Download as HTML file
- * downloadHtml('my-document.html')
+ * await downloadHtml('my-document.html')
  * 
  * // Upload a markdown file
  * const success = await uploadMarkdown()
@@ -28,7 +28,7 @@
  * @returns {Function} returns.copyMarkdown - Copy markdown to clipboard
  * @returns {Function} returns.copyHtml - Copy rendered HTML to clipboard
  * @returns {Function} returns.downloadMarkdown - Download markdown file
- * @returns {Function} returns.downloadHtml - Download styled HTML file
+ * @returns {Function} returns.downloadHtml - Download a self-contained HTML file
  * @returns {Function} returns.uploadMarkdown - Upload and load a markdown file
  * @returns {Readonly<Ref<boolean>>} returns.isCopyingMarkdown - Markdown copy in progress
  * @returns {Readonly<Ref<boolean>>} returns.isCopyingHtml - HTML copy in progress
@@ -218,18 +218,26 @@ export function useExport() {
   }
   
   /**
-   * Downloads the rendered content as a styled HTML file.
-   * Includes GitHub markdown CSS for proper styling.
-   * Announces the download to screen readers.
-   * 
+   * Downloads the rendered content as a styled, self-contained HTML file.
+   *
+   * Async because the export's stylesheets — and, for a document containing
+   * math, KaTeX's embedded webfonts — are dynamically imported so they stay out
+   * of the editor's main bundle. Announces the download to screen readers, and
+   * announces a failure rather than leaving the author with nothing.
+   *
    * @param {string} [filename='document.html'] - The filename for the download
-   * @returns {void}
+   * @returns {Promise<void>} Resolves once the download has been triggered
    */
-  function downloadHtml(filename = 'document.html'): void {
-    const fullHtml = wrapHtmlDocument(renderMarkdown(content.value))
-    const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' })
-    downloadBlob(blob, filename)
-    announce(`Downloaded ${filename}`)
+  async function downloadHtml(filename = 'document.html'): Promise<void> {
+    try {
+      const fullHtml = await wrapHtmlDocument(renderMarkdown(content.value))
+      const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' })
+      downloadBlob(blob, filename)
+      announce(`Downloaded ${filename}`)
+    } catch (e) {
+      console.error('Failed to build HTML export:', e)
+      announce('Failed to build the HTML export')
+    }
   }
   
   /**

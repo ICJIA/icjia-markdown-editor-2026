@@ -88,7 +88,7 @@ onMounted(() => {
           role="status"
           aria-live="polite"
           aria-atomic="true"
-        ></div>
+        />
       </aside>
 
       <!-- Page content -->

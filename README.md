@@ -27,14 +27,15 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 - **Auto-save** - Never lose your work (saves a couple of seconds after you pause typing, plus a 30-second safety interval with live countdown in header)
 - **Start Editing Button** - New users see a prominent button to clear the tutorial and start fresh
 - **Tutorial Reset** - Restore the markdown tutorial content anytime from the status bar
-- **Export Options** - Copy as Markdown, copy as HTML, or download files with custom filenames
+- **Export Options** - Copy as Markdown, copy as HTML, or download either with a custom filename. HTML exports are fully self-contained: every stylesheet, and KaTeX's webfonts when the document contains math, is embedded, so an exported file renders correctly offline and fetches nothing from a CDN
 - **Copy Notifications** - High-contrast purple notifications appear in the header when content is copied
 - **Footnote Support** - Full footnote syntax with automatic numbering and back-references
+- **Inline Formatting** - `~~strikethrough~~`, `==highlight==` and `++inserted++` alongside the usual bold and italic
 - **Math Support** - KaTeX-powered LaTeX rendering for inline and block math equations
 - **Guided Tour** - Interactive onboarding with markdown introduction slides and 25-step feature tour (runs once, restartable anytime)
 - **Undo/Redo** - Full history support with keyboard shortcuts (Cmd/Ctrl+Z)
-- **Security Hardened** - DOMPurify XSS sanitization, code block language sanitization, file size limits, filename sanitization
-- **Accessibility First** - WCAG 2.1 Level AA compliant (AAA in key areas) with full keyboard navigation, screen reader support, and proper ARIA attributes
+- **Security Hardened** - DOMPurify XSS sanitization narrowed to what a preview actually needs (no `<style>`, `<form>` or off-pane positioning from a document), a Content-Security-Policy behind it, code block language sanitization, file size limits, filename sanitization
+- **Accessibility First** - WCAG 2.1 Level AA compliant, and currently passing `yarn test:a11y` at Level AAA with zero violations, with full keyboard navigation, screen reader support, and proper ARIA attributes
 - **Heading Linter** - Flags headings that skip a level or are empty, so published documents pass accessibility heading-order checks
 - **Static Deployment** - Deploy anywhere as a static site (Netlify-ready)
 - **Fully Documented** - Comprehensive JSDoc comments on all composables and utilities
@@ -191,6 +192,21 @@ yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+#### Checks
+
+```bash
+yarn test:run     # unit tests (vitest, jsdom)
+yarn typecheck    # vue-tsc
+yarn lint         # eslint, via @nuxt/eslint
+yarn test:a11y    # axe-core against a running dev server, at WCAG AAA
+```
+
+`yarn test:a11y` drives a real browser, so run `yarn playwright install chromium` once
+after installing or upgrading dependencies, and start `yarn dev` before running it. It
+audits dark and light mode across three viewports, dismissing the first-run welcome
+modal first — without that the modal makes the rest of the page `inert` and axe skips
+it, which is how an audit can report a clean sheet it never actually looked at.
 
 #### Clearing caches
 

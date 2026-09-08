@@ -9,7 +9,7 @@
  *   yarn test:a11y --review  # Review cached results only
  */
 
-import { chromium, type Browser, type Page } from 'playwright'
+import { chromium, type Page } from 'playwright'
 import AxeBuilder from '@axe-core/playwright'
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs'
 import { dirname, join } from 'path'
