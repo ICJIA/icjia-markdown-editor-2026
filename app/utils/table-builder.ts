@@ -53,17 +53,25 @@ export interface TableConfig {
  * dropping the last one off the end of the row. Escaping the pipe and folding
  * newlines to spaces keeps the cell as one cell, whatever the author typed.
  *
+ * The backslash has to be escaped *before* the pipe, and for the same reason.
+ * Escaping only the pipe turns an author's `a\|b` into `a\\|b`, which markdown
+ * reads as an escaped backslash followed by a bare pipe: the row survives, but
+ * the backslash the author typed is silently deleted from the output. Doubling
+ * backslashes first makes the cell round-trip exactly.
+ *
  * @param {string} value - Raw cell or header text
  * @returns {string} Text safe to place between two `|` delimiters
  *
  * @example
  * ```typescript
  * escapeCell('has | pipe')  // 'has \\| pipe'
+ * escapeCell('a\\|b')       // 'a\\\\\\|b' — renders back as a\|b
  * escapeCell('line1\nline2') // 'line1 line2'
  * ```
  */
 function escapeCell(value: string): string {
   return value
+    .replace(/\\/g, '\\\\')
     .replace(/\|/g, '\\|')
     .replace(/\r\n?|\n/g, ' ')
 }

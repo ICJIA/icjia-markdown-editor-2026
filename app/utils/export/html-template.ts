@@ -107,6 +107,49 @@ async function loadKatexCss(): Promise<string> {
   return embedKatexFonts(css, Object.fromEntries(fonts))
 }
 
+/** Used when a document has no heading to take a name from. */
+const DEFAULT_TITLE = 'Exported Document'
+
+/** Removes every tag, leaving the character data between them. */
+function stripTags(html: string): string {
+  return html.replace(/<[^>]*>/g, '')
+}
+
+/**
+ * Names the exported document after its first heading.
+ *
+ * `<title>` is the browser tab, the bookmark, and — the reason this matters —
+ * the header a browser stamps on every page when the reader prints or saves to
+ * PDF. A constant there put "Exported Document" on every report anyone sent.
+ *
+ * Two heading shapes have to be handled. `markdown-it-anchor`'s `headerLink`
+ * permalink wraps the heading's text *inside* the anchor, so the anchor cannot
+ * simply be deleted. A raw-HTML heading may instead carry a permalink *beside*
+ * its text, where deleting it is exactly right. Dropping header anchors and
+ * keeping the result only when text survives covers both without a special
+ * case, and without truncating a heading that genuinely ends in `#`.
+ *
+ * @param {string} content - The rendered, already-sanitized HTML
+ * @returns {string} Title text, safe to place in `<title>`
+ */
+function documentTitle(content: string): string {
+  const heading = content.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1]
+  if (!heading) return DEFAULT_TITLE
+
+  const withoutAnchors = heading.replace(
+    /<a\b[^>]*class="[^"]*\bheader-anchor\b[^"]*"[^>]*>[\s\S]*?<\/a>/gi,
+    '',
+  )
+  const source = stripTags(withoutAnchors).trim() ? withoutAnchors : heading
+  const text = stripTags(source).replace(/\s+/g, ' ').trim()
+  if (!text) return DEFAULT_TITLE
+
+  // `content` is already-escaped HTML, so entities such as `&amp;` are correct
+  // as they stand and must not be escaped a second time. Only a stray angle
+  // bracket — which well-formed sanitizer output will not contain — is closed off.
+  return text.replace(/[<>]/g, ch => (ch === '<' ? '&lt;' : '&gt;'))
+}
+
 /**
  * Wraps rendered HTML in a complete, standalone HTML document.
  *
@@ -123,8 +166,12 @@ async function loadKatexCss(): Promise<string> {
  * ```
  */
 export async function wrapHtmlDocument(content: string): Promise<string> {
-  const needsHighlighting = content.includes('hljs')
-  const needsMath = content.includes('katex')
+  // Match the class attributes the renderers actually emit, not the bare words.
+  // A substring test for `hljs`/`katex` fires on any document that merely
+  // mentions them in prose — and for `katex` that means posting twenty webfonts
+  // (~350 KB) to a reader who has no math.
+  const needsHighlighting = content.includes('class="hljs')
+  const needsMath = content.includes('class="katex')
 
   const [baseCss, hljsCss, katexCss] = await Promise.all([
     import('github-markdown-css/github-markdown-dark.css?raw').then(m => m.default),
@@ -139,7 +186,7 @@ export async function wrapHtmlDocument(content: string): Promise<string> {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Exported Document</title>
+  <title>${documentTitle(content)}</title>
   <style>
 ${baseCss}
 ${hljsCss}
@@ -166,10 +213,70 @@ ${katexCss}
     @media (max-width: 767px) {
       body { padding: 15px; }
     }
+    /* Print / Save-as-PDF.
+       The embedded base stylesheet is the dark GitHub theme, and it colours
+       .markdown-body — the same element as body — at class specificity. A print
+       rule selecting body alone (0-0-1) therefore loses to it, and the page
+       prints #f0f6fc text on white paper: 1.09:1, invisible. Every rule here is
+       written at class specificity or higher for that reason, and the palette is
+       GitHub's light theme so the colours stay familiar. Ratios against white
+       are noted; all clear WCAG AA. */
     @media print {
-      body {
-        background: white;
-        color: black;
+      body,
+      .markdown-body {
+        background: #ffffff;   /* paper */
+        color: #1f2328;        /* 15.8:1 */
+      }
+      .markdown-body a {
+        color: #0969da;        /* 5.2:1 */
+      }
+      .markdown-body h1,
+      .markdown-body h2,
+      .markdown-body h3,
+      .markdown-body h4,
+      .markdown-body h5,
+      .markdown-body h6,
+      .markdown-body strong {
+        color: #1f2328;
+      }
+      .markdown-body h1,
+      .markdown-body h2 {
+        border-bottom-color: #d1d9e0;
+      }
+      .markdown-body blockquote {
+        color: #59636e;        /* 6.1:1 */
+        border-left-color: #d1d9e0;
+      }
+      .markdown-body hr {
+        background-color: #d1d9e0;
+      }
+      .markdown-body table tr {
+        background-color: #ffffff;
+        border-top-color: #d1d9e0;
+      }
+      .markdown-body table tr:nth-child(2n) {
+        background-color: #f6f8fa;
+      }
+      .markdown-body table td,
+      .markdown-body table th {
+        border-color: #d1d9e0;
+      }
+      .markdown-body code,
+      .markdown-body tt {
+        background-color: #eff1f3;
+        color: #1f2328;
+      }
+      /* Highlighted code keeps its own theme, so it is reset wholesale rather
+         than per-token: a light block with plain dark text prints legibly,
+         where github-dark's palette on white does not. */
+      .markdown-body pre,
+      .markdown-body pre.hljs {
+        background: #f6f8fa;
+        color: #1f2328;
+        border: 1px solid #d1d9e0;
+      }
+      .markdown-body pre.hljs span {
+        color: inherit;
       }
     }
   </style>

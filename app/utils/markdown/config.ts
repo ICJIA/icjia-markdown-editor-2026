@@ -289,8 +289,34 @@ const PURIFY_CONFIG = {
  * the two declarations that matter — `position:fixed` (or `sticky`), which
  * escapes any containing block, and `z-index`, which lifts the result above the
  * UI — and leaves every other declaration untouched.
+ *
+ * Each alternative runs to the next `;` rather than ending at the value. An
+ * earlier version anchored the `position` branch immediately after
+ * `fixed`/`sticky`, so `position:fixed !important` — ordinary CSS a browser
+ * honours — did not match and passed through intact. (`z-index` was unaffected
+ * only because its `[^;]*` already swallowed the `!important`.) Matching the
+ * whole declaration removes that whole class of near-miss.
  */
-const ESCAPING_CSS = /(?:^|;)\s*(?:position\s*:\s*(?:fixed|sticky)|z-index\s*:[^;]*)\s*(?=;|$)/gi
+const ESCAPING_CSS = /(?:^|;)\s*(?:position\s*:\s*(?:fixed|sticky)\b[^;]*|z-index\s*:[^;]*)/gi
+
+/**
+ * Removes the escaping declarations from one `style` attribute value.
+ *
+ * Comments are stripped first. CSS permits a comment between any two tokens, so
+ * `position:/**\/fixed` is a fixed element to a browser while being invisible to
+ * a pattern that expects the value to follow the colon. Removing comments before
+ * matching closes every place one could hide rather than guessing at positions.
+ *
+ * @param {string} style - Raw `style` attribute value
+ * @returns {string} The value with escaping declarations removed
+ */
+function stripEscapingCss(style: string): string {
+  return style
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(ESCAPING_CSS, '')
+    .replace(/^\s*;+/, '')
+    .trim()
+}
 
 /** Hooks are global to the DOMPurify instance, so register them exactly once. */
 let hooksRegistered = false
@@ -311,7 +337,7 @@ function registerHooks(): void {
   // Drop only the declarations that would let content overlay the application.
   DOMPurify.addHook('uponSanitizeAttribute', (_node, data) => {
     if (data.attrName !== 'style' || !data.attrValue) return
-    const cleaned = data.attrValue.replace(ESCAPING_CSS, '').replace(/^\s*;+/, '').trim()
+    const cleaned = stripEscapingCss(data.attrValue)
     if (cleaned) {
       data.attrValue = cleaned
     } else {

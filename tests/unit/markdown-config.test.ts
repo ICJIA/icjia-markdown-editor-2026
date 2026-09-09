@@ -202,3 +202,36 @@ describe('renderMarkdown hardening', () => {
     expect(renderMarkdown('++inserted++')).toContain('<ins>inserted</ins>')
   })
 })
+
+describe('escaping-CSS stripping resists ordinary CSS syntax', () => {
+  // Each of these is valid CSS that a browser honours, so each has to be
+  // stripped. `!important` was the gap: the original pattern required the
+  // declaration to end immediately after `fixed`, so any trailing token
+  // carried it straight through.
+  const escapes = [
+    ['!important', 'position: fixed !important; top:0'],
+    ['uppercase value', 'position: FIXED; top:0'],
+    ['a CSS comment', 'position:/**/fixed; top:0'],
+    ['sticky with !important', 'position: sticky !important'],
+    ['extra whitespace', 'position :  fixed  ; top:0'],
+    ['trailing semicolons', 'position:fixed;;'],
+  ] as const
+
+  for (const [label, style] of escapes) {
+    it(`strips position:fixed written with ${label}`, () => {
+      const html = renderMarkdown(`<div style="${style}">overlay</div>`)
+      expect(html).not.toMatch(/position\s*:\s*(?:\/\*[^*]*\*\/\s*)?(?:fixed|sticky)/i)
+    })
+  }
+
+  it('strips z-index written with !important', () => {
+    const html = renderMarkdown('<div style="z-index: 99999 !important">lifted</div>')
+    expect(html).not.toMatch(/z-index/i)
+  })
+
+  it('keeps the declarations a preview legitimately needs', () => {
+    const html = renderMarkdown('<div style="position:fixed !important;text-align:center;height:2em">x</div>')
+    expect(html).toMatch(/text-align\s*:\s*center/i)
+    expect(html).toMatch(/height\s*:\s*2em/i)
+  })
+})
