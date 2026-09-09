@@ -29,6 +29,7 @@
 import { renderMarkdown } from '~/utils/markdown/config'
 import { stripMarkdownSyntax, computeWordCount } from '~/utils/markdown/text-stats'
 import { lintHeadings } from '~/utils/markdown/heading-lint'
+import { buildOutline } from '~/utils/markdown/outline'
 
 /** Document size (chars) above which the rendering flag is raised. */
 const LARGE_DOC_THRESHOLD = 50000
@@ -93,7 +94,15 @@ function createMarkdownState() {
   /** Number of heading issues; 0 when the document is clean. */
   const issueCount = computed(() => headingIssues.value.length)
 
+  /**
+   * The document's heading outline. Built from the same parse as the linter,
+   * and from the debounced content for the same reason: a long report should
+   * not be re-walked on every keystroke.
+   */
+  const outline = computed(() => buildOutline(debouncedContent.value))
+
   return {
+    outline,
     renderedHtml,
     isRendering: readonly(isRendering),
     showRenderingIndicator,

@@ -31,11 +31,10 @@
  *     (`## ![Chart](x.png)`) to have it counted.
  *
  * @module utils/markdown/heading-lint
- * @requires ~/utils/markdown/config
+ * @requires ~/utils/markdown/heading-tokens
  */
 
-import type Token from 'markdown-it/lib/token.mjs'
-import { getMarkdownIt } from '~/utils/markdown/config'
+import { parseHeadings } from '~/utils/markdown/heading-tokens'
 
 /** The rules this linter enforces. */
 export type HeadingRule = 'heading-order' | 'empty-heading'
@@ -53,54 +52,6 @@ export interface HeadingIssue {
 }
 
 /**
- * Tokens that wrap or annotate content without rendering any text of their own:
- * markdown-it-anchor's permalink `link_open`/`span_open`/… decoration, the
- * `strong_open`/`em_open`/… emphasis pairs, and raw inline HTML tags (`html: true`
- * is enabled, so `<em>` arrives as `html_inline` whose content is the tag markup).
- */
-function isDecoration(type: string): boolean {
-  return type === 'html_inline' || type.endsWith('_open') || type.endsWith('_close')
-}
-
-/** An image's alt text, parsed. `token.content` holds the raw, unparsed alt instead. */
-function altText(image: Token): string {
-  return (image.children ?? [])
-    .filter(child => !isDecoration(child.type))
-    .map(child => child.content)
-    .join('')
-    .trim()
-}
-
-/**
- * Whether a heading renders anything a reader or screen reader would perceive.
- *
- * This is deliberately NOT "is the joined `.content` non-empty". `token.content` is
- * not a proxy for rendered text: a `footnote_ref` renders a visible `[1]` marker but
- * carries `content: ''`, so joining content would call `## [^1]` an empty heading —
- * and footnote references are a headline feature of this editor. Conversely
- * `html_inline` carries `'<em>'` yet `## <em></em>` renders nothing at all.
- *
- * So emptiness is decided by token *type*, which is the only thing that knows what a
- * token will render.
- */
-function hasVisibleContent(inline: Token | undefined): boolean {
-  for (const child of inline?.children ?? []) {
-    if (isDecoration(child.type)) continue
-    // Line breaks separate content; they are not content.
-    if (child.type === 'softbreak' || child.type === 'hardbreak') continue
-    // Renders its marker from `token.meta`, never from `token.content`.
-    if (child.type === 'footnote_ref') return true
-    // An image contributes its alt text; without alt it has no accessible name.
-    if (child.type === 'image') {
-      if (altText(child)) return true
-      continue
-    }
-    if (child.content.trim()) return true
-  }
-  return false
-}
-
-/**
  * Lints a markdown document's heading hierarchy.
  * Issues are returned in source order.
  *
@@ -114,7 +65,6 @@ function hasVisibleContent(inline: Token | undefined): boolean {
  * ```
  */
 export function lintHeadings(markdown: string): HeadingIssue[] {
-  const tokens = getMarkdownIt().parse(markdown, {})
   const issues: HeadingIssue[] = []
 
   // The first heading sets the baseline, whatever its level. axe-core's
@@ -123,16 +73,8 @@ export function lintHeadings(markdown: string): HeadingIssue[] {
   // does not presume to know it either.
   let prevLevel: number | null = null
 
-  for (let i = 0; i < tokens.length; i++) {
-    const token = tokens[i]
-    if (token?.type !== 'heading_open') continue
-
-    const level = Number(token.tag.slice(1))
-    const line = (token.map?.[0] ?? 0) + 1
-    // The inline token immediately after heading_open holds the heading's children.
-    const inlineToken = tokens[i + 1]
-
-    if (!hasVisibleContent(inlineToken)) {
+  for (const { line, level, hasVisibleContent } of parseHeadings(markdown)) {
+    if (!hasVisibleContent) {
       issues.push({
         line,
         rule: 'empty-heading',
