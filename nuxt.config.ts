@@ -102,13 +102,22 @@ export default defineNuxtConfig({
     typeCheck: 'build',  // Only run vue-tsc during build, not dev (avoids auto-import issues)
   },
 
-  // Vite configuration - suppress Tailwind sourcemap warnings
+  // Client source maps ship with the build. The source is already public —
+  // this is an MIT-licensed project that links its own repository from the
+  // status bar — so there is nothing here to disclose, and without maps a stack
+  // trace from a researcher's browser points at minified names and is useless
+  // for support. Lighthouse reports their absence under `valid-source-maps`.
+  //
+  // Server maps are off: `netlify-static` prerenders and deploys no server, so
+  // they would be build output nobody can fetch.
+  sourcemap: {
+    client: true,
+    server: false,
+  },
+
   vite: {
     css: {
       devSourcemap: true,
-    },
-    build: {
-      sourcemap: false,
     },
   },
 

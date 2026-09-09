@@ -5,6 +5,14 @@ All notable changes to ICJIA Markdown Editor 2.0 will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.3] - 2026-09-09
+
+### Changed
+
+- **Client source maps ship with the build.** Lighthouse reported their absence under `valid-source-maps`, and without them a stack trace from a researcher's browser points at minified names and is no use for support. The source is already public — this is an MIT-licensed project that links its own repository from the status bar — so there is nothing here to disclose. Two settings had to agree: Nuxt's `sourcemap.client`, and an explicit `vite.build.sourcemap: false` that would otherwise have overridden it. Server maps stay off, since `netlify-static` prerenders and deploys no server for them to describe.
+
+  The cost is deploy size: `dist` goes from 6.8 MB to 16.3 MB, of which 9.5 MB is maps. There is no cost to a visitor — a browser fetches a `.map` only when devtools is open, which is why the performance score is unchanged at 100. If the deploy size matters more than the stack traces, `sourcemap.client: 'hidden'` emits the maps without the `sourceMappingURL` comment, and reverting the block restores the previous behaviour.
+
 ## [1.9.2] - 2026-09-09
 
 ### Added
