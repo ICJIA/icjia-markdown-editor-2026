@@ -58,7 +58,7 @@ export function useKeyboardShortcuts() {
     }
 
     // Ctrl/Cmd + S - Download markdown (prevent browser save dialog)
-    if (isMod && !isShift && !isAlt && event.key === 's') {
+    if (isMod && !isShift && !isAlt && event.key.toLowerCase() === 's') {
       event.preventDefault()
       downloadMarkdown()
       announce('Markdown file downloaded')
@@ -80,7 +80,7 @@ export function useKeyboardShortcuts() {
     }
 
     // Ctrl/Cmd + O - Upload/Open markdown file
-    if (isMod && !isShift && !isAlt && event.key === 'o') {
+    if (isMod && !isShift && !isAlt && event.key.toLowerCase() === 'o') {
       event.preventDefault()
       uploadMarkdown()
       return
@@ -90,7 +90,11 @@ export function useKeyboardShortcuts() {
     if (isMod && !isShift && !isAlt && event.key === '\\') {
       event.preventDefault()
       toggleScrollSync()
-      announce(scrollSyncEnabled.value ? 'Scroll sync disabled' : 'Scroll sync enabled')
+      // Read after toggling: `enabled` is a computed over the shared sync state,
+      // which `toggle()` mutates synchronously, so this is the new state. The
+      // ternary used to be the other way round and announced the opposite of
+      // what had just happened.
+      announce(scrollSyncEnabled.value ? 'Scroll sync enabled' : 'Scroll sync disabled')
       return
     }
   }

@@ -203,7 +203,7 @@ function handleIssueClick(line: number) {
 
 .issue-line {
   font-variant-numeric: tabular-nums;
-  color: #94a3b8;
+  color: #b8c4d2;
   white-space: nowrap;
 }
 

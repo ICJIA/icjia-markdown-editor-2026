@@ -9,14 +9,19 @@ import { EditorView } from '@codemirror/view'
 import { createEditorState, updateTheme } from '~/utils/editor/config'
 
 const colorMode = useColorMode()
-const { setEditorView, updateContent, content, isContentReady } = useEditor()
+const { setEditorView, updateContent, content, isContentReady, updateCursorPosition } = useEditor()
 const { announce } = useAccessibility()
 
 const emit = defineEmits<{ (e: 'cursor-line' | 'cursor-line-immediate', line: number): void }>()
 
 // Cursor-line for scroll sync: immediate when user types, debounced (150ms) when only selection changes
 let cursorLineTimeout: ReturnType<typeof setTimeout> | null = null
-function onCursorLineChange(line: number, immediate = false) {
+function onCursorLineChange(line: number, immediate = false, column = 1) {
+  // Keep the shared cursor position current on every move. It is debounced only
+  // for scroll sync, which is a scroll animation; readers of the shared state —
+  // the outline's current-section highlight — need it as it happens.
+  updateCursorPosition(line, column)
+
   if (immediate) {
     if (cursorLineTimeout) clearTimeout(cursorLineTimeout)
     cursorLineTimeout = null

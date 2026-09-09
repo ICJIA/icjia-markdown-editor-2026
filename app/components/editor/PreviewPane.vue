@@ -78,12 +78,20 @@ defineExpose({
            renderMarkdown(), which sanitizes with DOMPurify before returning it
            (see utils/markdown/config.ts). This is the intended sink: a preview
            cannot show formatted output any other way. -->
-      <div 
+      <!--
+        Deliberately NOT a live region. `v-html` replaces this whole subtree on
+        every debounce tick, so with aria-live="polite" a screen reader queued
+        the entire rendered document for announcement 150ms after each pause in
+        typing — the preview read itself back over and over while the author
+        wrote. A preview is a region the reader visits deliberately, which is
+        what role="region" plus a label already provides; the landmark and the
+        tabindex are what make it reachable.
+      -->
+      <div
         ref="previewRef"
         class="preview-content markdown-body"
         role="region"
         aria-label="Markdown preview"
-        aria-live="polite"
         tabindex="0"
         v-html="renderedHtml"
       />

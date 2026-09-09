@@ -3,12 +3,24 @@
  * @description Manages automatic saving of editor content to localStorage.
  * Saves on a debounced content change (2s after typing pauses, at most every
  * 10s while typing continuously), on a 30-second safety interval, on window
- * blur, and before page unload. Restores previously saved content on page load.
+ * blur, when the tab is hidden, and before page unload. Restores previously
+ * saved content on page load.
  *
  * State and timers are module-level and initialization is reference-counted,
  * so multiple components may call useAutoSave() (e.g. AppHeader for the save
  * indicator, EditorLayout for the behavior) without duplicating intervals,
  * event listeners, restores, or screen reader announcements.
+ *
+ * Two rules protect the author's work, both in `utils/autosave` so they can be
+ * tested without a Nuxt runtime:
+ *
+ *   - A save never replaces stored content with an empty document. The blur and
+ *     unload handlers save unconditionally, so without this a select-all-delete
+ *     followed by switching tabs left nothing to restore and the author got the
+ *     tutorial back instead of their work.
+ *   - A save made in another tab is adopted here only when this tab has nothing
+ *     unsaved. Both tabs write one key, so the alternative is that whichever
+ *     saves last silently erases the other.
  *
  * @module composables/useAutoSave
  *
@@ -23,6 +35,14 @@
  * console.log(lastSaveDisplay.value) // "Saved just now" or "Saved 5m ago"
  * ```
  */
+
+import {
+  AUTOSAVE_VERSION,
+  parseSavedRecord,
+  isDestructiveSave,
+  shouldAdoptExternalSave,
+  secondsUntilNextSave,
+} from '~/utils/autosave'
 
 /**
  * LocalStorage key for persisting editor content.
@@ -82,8 +102,22 @@ const justSaved = ref(false)
 /** Flag controlling visibility of the save indicator (green dot). */
 const showSaveIndicator = ref(false)
 
-/** Countdown timer to next auto-save in seconds. */
-const countdownToSave = ref(SAVE_INTERVAL / 1000)
+/**
+ * True when a save was refused because it would have destroyed stored work.
+ * Surfaced so the status indicator can say the document is not being saved
+ * rather than showing a countdown to a save that will not happen.
+ */
+const lastSaveRefused = ref(false)
+
+/**
+ * What this tab last wrote to storage. Compared against the live content to
+ * tell "this tab has unsaved edits" from "this tab is idle", which is what
+ * decides whether another tab's save may be adopted.
+ */
+const lastSavedContent = ref<string | null>(null)
+
+/** Ticks once a second; drives both the countdown and the safety-net save. */
+const nowTick = ref(Date.now())
 
 /** Trigger for forcing reactivity updates on the relative time display. */
 const timeUpdateTrigger = ref(0)
@@ -92,13 +126,15 @@ const timeUpdateTrigger = ref(0)
 let timeUpdateInterval: ReturnType<typeof setInterval> | null = null
 let countdownInterval: ReturnType<typeof setInterval> | null = null
 let hideIndicatorTimeout: ReturnType<typeof setTimeout> | null = null
-let saveInterval: ReturnType<typeof setInterval> | null = null
 
 /** Detached scope owning the debounced content-change watcher. */
 let changeWatchScope: ReturnType<typeof effectScope> | null = null
 
 /** The exact handler registered on window blur/beforeunload, for symmetric removal. */
 let registeredSaveHandler: (() => void) | null = null
+
+/** The exact handler registered on `storage`, for symmetric removal. */
+let registeredStorageHandler: ((event: StorageEvent) => void) | null = null
 
 /** Number of mounted components currently using this composable. */
 let mountedInstances = 0
@@ -142,20 +178,31 @@ export function useAutoSave() {
 
     try {
       isSaving.value = true
+
+      // Refuse a write that would replace stored work with an empty document.
+      // The blur and beforeunload handlers save unconditionally, so without this
+      // a select-all-delete followed by switching tabs empties the record, and
+      // the next load has nothing to restore.
+      if (isDestructiveSave(content.value, parseSavedRecord(localStorage.getItem(STORAGE_KEY)))) {
+        lastSaveRefused.value = true
+        return false
+      }
+      lastSaveRefused.value = false
+
       const data = {
         content: content.value,
         savedAt: Date.now(),
-        version: 1,
+        version: AUTOSAVE_VERSION,
       }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+      lastSavedContent.value = content.value
       lastSaveTime.value = Date.now()
 
       // Visual feedback - show green dot briefly
       justSaved.value = true
       showSaveIndicator.value = true
 
-      // Reset countdown to next save
-      countdownToSave.value = SAVE_INTERVAL / 1000
+      // The countdown is derived from lastSaveTime, so it has already moved.
 
       // Clear any existing timeout
       if (hideIndicatorTimeout) {
@@ -193,18 +240,15 @@ export function useAutoSave() {
     if (!storageAvailable.value) return false
 
     try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      if (!stored) return false
+      const record = parseSavedRecord(localStorage.getItem(STORAGE_KEY))
+      if (!record || !record.content) return false
 
-      const data = JSON.parse(stored)
-      if (data.content && typeof data.content === 'string') {
-        setContent(data.content, true)
-        hasRestoredFromStorage.value = true
-        lastSaveTime.value = data.savedAt || Date.now()
-        markContentReady()
-        return true
-      }
-      return false
+      setContent(record.content, true)
+      lastSavedContent.value = record.content
+      hasRestoredFromStorage.value = true
+      lastSaveTime.value = record.savedAt
+      markContentReady()
+      return true
     } catch (e) {
       console.error('Restore from storage failed:', e)
       return false
@@ -221,11 +265,8 @@ export function useAutoSave() {
     if (!storageAvailable.value) return false
 
     try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      if (!stored) return false
-
-      const data = JSON.parse(stored)
-      return Boolean(data.content && data.content.trim().length > 0)
+      const record = parseSavedRecord(localStorage.getItem(STORAGE_KEY))
+      return record !== null && record.content.trim().length > 0
     } catch {
       return false
     }
@@ -241,16 +282,12 @@ export function useAutoSave() {
     if (!storageAvailable.value) return null
 
     try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      if (!stored) return null
+      const record = parseSavedRecord(localStorage.getItem(STORAGE_KEY))
+      if (!record || !record.content) return null
 
-      const data = JSON.parse(stored)
-      if (!data.content) return null
-
-      const wordCount = data.content.trim().split(/\s+/).filter(Boolean).length
       return {
-        savedAt: new Date(data.savedAt),
-        wordCount,
+        savedAt: new Date(record.savedAt),
+        wordCount: record.content.trim().split(/\s+/).filter(Boolean).length,
       }
     } catch {
       return null
@@ -280,6 +317,16 @@ export function useAutoSave() {
    *
    * @type {ComputedRef<string | null>}
    */
+  /**
+   * Seconds until the next safety-net save, derived from the last save rather
+   * than counted down separately so it always matches the timer that fires.
+   *
+   * @type {ComputedRef<number>}
+   */
+  const countdownToSave = computed(() =>
+    secondsUntilNextSave(lastSaveTime.value, nowTick.value, SAVE_INTERVAL),
+  )
+
   const lastSaveDisplay = computed(() => {
     // Force reactivity update for time display
     void timeUpdateTrigger.value
@@ -307,25 +354,20 @@ export function useAutoSave() {
    * @returns {void}
    */
   function startAutoSave() {
-    if (saveInterval) return
+    if (countdownInterval) return
 
-    // Start countdown timer (updates every second)
+    // One second-tick drives both the displayed countdown and the safety-net
+    // save. They were separate timers, and because a content-change save reset
+    // the countdown without touching the 30-second interval, the number in the
+    // status bar stopped corresponding to when a save would actually happen.
+    // Deriving both from `lastSaveTime` makes the display true by construction.
     countdownInterval = setInterval(() => {
-      if (countdownToSave.value > 0) {
-        countdownToSave.value--
+      nowTick.value = Date.now()
+      const due = secondsUntilNextSave(lastSaveTime.value, nowTick.value, SAVE_INTERVAL) === 0
+      if (due && content.value.trim().length > 0) {
+        save()
       }
     }, 1000)
-
-    // Safety-net save every 30 seconds regardless of change events
-    saveInterval = setInterval(() => {
-      // Only save if there's actual content (not empty)
-      if (content.value.trim().length > 0) {
-        save()
-      } else {
-        // Reset countdown even if not saving (no content)
-        countdownToSave.value = SAVE_INTERVAL / 1000
-      }
-    }, SAVE_INTERVAL)
   }
 
   /**
@@ -335,10 +377,6 @@ export function useAutoSave() {
    * @returns {void}
    */
   function stopAutoSave() {
-    if (saveInterval) {
-      clearInterval(saveInterval)
-      saveInterval = null
-    }
     if (countdownInterval) {
       clearInterval(countdownInterval)
       countdownInterval = null
@@ -392,11 +430,35 @@ export function useAutoSave() {
 
     // Save on window blur (user switches tabs/apps) and before page unload.
     // Keep the registered reference so teardown removes the same handler.
+    //
+    // `visibilitychange` is listed alongside them because mobile browsers
+    // frequently never fire `beforeunload` — a swipe away from Safari on iOS
+    // ends the page without it — and hiding the tab is the last reliable moment
+    // to write.
     registeredSaveHandler = () => {
       save()
     }
     window.addEventListener('blur', registeredSaveHandler)
     window.addEventListener('beforeunload', registeredSaveHandler)
+    document.addEventListener('visibilitychange', registeredSaveHandler)
+
+    // Follow another tab's save when this tab has nothing unsaved of its own.
+    // Both tabs write the same key, so without this the last writer silently
+    // wins and the other tab's document is gone on its next save.
+    registeredStorageHandler = (event: StorageEvent) => {
+      if (event.key !== STORAGE_KEY) return
+      const incoming = parseSavedRecord(event.newValue)
+      if (!shouldAdoptExternalSave(incoming, {
+        content: content.value,
+        lastSavedContent: lastSavedContent.value,
+      })) return
+
+      setContent(incoming!.content, true)
+      lastSavedContent.value = incoming!.content
+      lastSaveTime.value = incoming!.savedAt
+      announce('Updated with changes saved in another tab')
+    }
+    window.addEventListener('storage', registeredStorageHandler)
   }
 
   /**
@@ -420,7 +482,12 @@ export function useAutoSave() {
     if (registeredSaveHandler) {
       window.removeEventListener('blur', registeredSaveHandler)
       window.removeEventListener('beforeunload', registeredSaveHandler)
+      document.removeEventListener('visibilitychange', registeredSaveHandler)
       registeredSaveHandler = null
+    }
+    if (registeredStorageHandler) {
+      window.removeEventListener('storage', registeredStorageHandler)
+      registeredStorageHandler = null
     }
   }
 
@@ -449,9 +516,10 @@ export function useAutoSave() {
     isSaving: readonly(isSaving),
     justSaved: readonly(justSaved),
     showSaveIndicator: readonly(showSaveIndicator),
-    countdownToSave: readonly(countdownToSave),
+    countdownToSave,
     hasRestoredFromStorage: readonly(hasRestoredFromStorage),
     storageAvailable: readonly(storageAvailable),
+    lastSaveRefused: readonly(lastSaveRefused),
     isContentReady,
   }
 }

@@ -69,7 +69,7 @@ export function createEditorState(
   onChange: (value: string) => void,
   isDark: boolean = true,
   /** Called when cursor line changes. Second arg true = from typing (sync immediately). */
-  onCursorLineChange?: (line: number, immediate?: boolean) => void
+  onCursorLineChange?: (line: number, immediate?: boolean, column?: number) => void
 ): EditorState {
   return EditorState.create({
     doc,
@@ -123,9 +123,10 @@ export function createEditorState(
           onChange(update.state.doc.toString())
         }
         if (onCursorLineChange) {
-          const line = update.state.doc.lineAt(update.state.selection.main.from).number
+          const head = update.state.selection.main.from
+          const lineInfo = update.state.doc.lineAt(head)
           const fromTyping = update.docChanged
-          onCursorLineChange(line, fromTyping)
+          onCursorLineChange(lineInfo.number, fromTyping, head - lineInfo.from + 1)
         }
       }),
       

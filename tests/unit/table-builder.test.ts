@@ -8,6 +8,7 @@ import {
   removeColumn,
 } from '~/utils/table-builder'
 import type { TableConfig } from '~/utils/table-builder'
+import { createMarkdownIt } from '~/utils/markdown/config'
 
 describe('createEmptyTable', () => {
   it('creates a table with correct dimensions', () => {
@@ -213,5 +214,41 @@ describe('generateTableMarkdown cell escaping', () => {
       alignments: ['left', 'right'],
     })
     expect(md).toBe('| Name | Value |\n| :--- | ---: |\n| A | 1 |')
+  })
+})
+
+describe('generateTableMarkdown cell fidelity', () => {
+  const md = createMarkdownIt()
+
+  /** Renders a one-row table and returns the text of each body cell. */
+  function renderCells(values: string[]): string[] {
+    const table: TableConfig = {
+      rows: 1,
+      columns: values.length,
+      headers: values.map((_, i) => `H${i + 1}`),
+      cells: [values],
+      alignments: values.map(() => 'left' as const),
+    }
+    const html = md.render(generateTableMarkdown(table))
+    return [...html.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)].map(m => m[1]!.trim())
+  }
+
+  it('round-trips a cell containing a pipe', () => {
+    expect(renderCells(['has | pipe', 'second'])).toEqual(['has | pipe', 'second'])
+  })
+
+  it('round-trips a cell containing a backslash before a pipe', () => {
+    // Escaping the pipe but not the backslash turns the author's `a\|b` into
+    // `a\\|b`, which markdown reads as an escaped backslash followed by a bare
+    // pipe — the backslash the author typed is silently dropped.
+    expect(renderCells(['a\\|b', 'second'])).toEqual(['a\\|b', 'second'])
+  })
+
+  it('round-trips a cell containing a lone backslash', () => {
+    expect(renderCells(['C:\\path', 'second'])).toEqual(['C:\\path', 'second'])
+  })
+
+  it('keeps every cell in its own column whatever the content', () => {
+    expect(renderCells(['a\\|b', 'x|y', 'plain'])).toHaveLength(3)
   })
 })

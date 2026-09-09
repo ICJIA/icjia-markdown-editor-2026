@@ -5,7 +5,7 @@
  * Responsive: stacks vertically on mobile (< 768px)
  */
 
-const { wordCountDisplay, wordCount } = useMarkdown()
+const { wordCount } = useMarkdown()
 const { isTableBuilderOpen, closeTableBuilder } = useTableBuilderModal()
 const { insertText, resetContent, isShowingDefaultContent, startEditing } = useEditor()
 const { announce } = useAccessibility()
@@ -193,20 +193,29 @@ function setupScrollSync(): void {
     
     <!-- Status Bar -->
     <!--
-      role="status" is scoped to .status-left, not the whole bar: it implies
-      aria-live="polite", and the heading-issue count in .status-right changes
-      on every debounce tick while typing.
+      Nothing in this bar is a live region, and that is deliberate.
+
+      role="status" implies aria-live="polite" *and* aria-atomic="true", so the
+      element carrying it is re-announced in full on every change. It was scoped
+      to .status-left to spare the heading-issue count in .status-right — but
+      .status-left holds the word count and reading time, which change on every
+      debounce tick. The effect was that a screen reader read "247 words, 2 min
+      read" continuously while the author typed.
+
+      These are reference values, not events: role="group" with a name keeps them
+      findable on demand without announcing them. Things that genuinely warrant
+      an announcement — a save, a copy, a file load — go through the announcer
+      in app.vue instead, at the moment they happen.
     -->
     <div class="status-bar">
-      <div class="status-left" role="status" aria-label="Editor status" data-tour="word-count">
-        <span class="word-count" :title="`${wordCount.lines} lines, ${wordCount.paragraphs} paragraphs`">
-          {{ wordCountDisplay }}
-        </span>
+      <div class="status-left" role="group" aria-label="Document statistics">
+        <WordGoal />
         <span class="reading-time" :title="`Estimated reading time at 200 words per minute`">
           {{ wordCount.readingTime }} min read
         </span>
       </div>
       <div class="status-right">
+        <OutlinePanel />
         <HeadingIssuesPanel />
         <UTooltip
           text="Take a guided tour of the editor features"
@@ -596,10 +605,6 @@ function setupScrollSync(): void {
 .light .github-link:hover {
   color: #1e293b;
   background: rgba(0, 0, 0, 0.05);
-}
-
-.word-count {
-  cursor: help;
 }
 
 .reading-time {
