@@ -203,6 +203,50 @@ function displayCachedResults(report: FullAuditReport): void {
 }
 
 /**
+ * Dismisses the first-visit welcome dialog and proves it is gone.
+ *
+ * This must assert rather than try. While the dialog is open the header is
+ * `inert`, so axe walks straight past it — a run that failed to dismiss reports
+ * zero violations for a page it never fully examined, and a green result then
+ * means "clean" or "did not scan" with no way to tell which. Waiting on the
+ * dialog rather than sleeping a fixed 1.5s also removes the race on a cold
+ * start, where the dialog appeared after the check had already given up.
+ *
+ * @param page - The Playwright page, already navigated and settled
+ * @throws When the dialog is present but cannot be dismissed
+ */
+async function dismissWelcomeDialog(page: Page): Promise<void> {
+  const welcomeDialog = page.locator('.welcome-dialog')
+
+  // The dialog is shown on a 1s delay; first-visit state is per browser context,
+  // so a reused profile legitimately never shows it.
+  try {
+    await welcomeDialog.waitFor({ state: 'visible', timeout: 3000 })
+  } catch {
+    return
+  }
+
+  const skipButton = page.locator('.welcome-dialog button:has-text("No thanks")')
+  if (await skipButton.count() === 0) {
+    throw new Error(
+      'Welcome dialog is open but its "No thanks" button was not found. '
+      + 'Audit aborted: the header is inert while it is open, so axe would '
+      + 'silently skip it and report a clean run for a partial scan.',
+    )
+  }
+
+  await skipButton.click()
+  await welcomeDialog.waitFor({ state: 'hidden', timeout: 5000 })
+
+  // The header carries `inert` while the dialog is up; confirm it is reachable
+  // again before letting axe run.
+  const inertHeader = await page.locator('header[inert]').count()
+  if (inertHeader > 0) {
+    throw new Error('Header is still inert after dismissing the welcome dialog; axe would skip it.')
+  }
+}
+
+/**
  * Run axe-core accessibility audit
  */
 async function runAudit(page: Page, mode: 'dark' | 'light', viewport: { width: number; height: number; name: string }): Promise<AuditResult> {
@@ -215,19 +259,7 @@ async function runAudit(page: Page, mode: 'dark' | 'light', viewport: { width: n
   // Wait for editor to be ready
   await page.waitForSelector('.cm-editor', { timeout: 10000 })
   
-  // Wait for welcome dialog to potentially appear (1s delay in config + buffer)
-  await page.waitForTimeout(1500)
-  
-  // Dismiss welcome dialog if present (shown to first-time visitors)
-  const welcomeDialog = page.locator('.welcome-dialog')
-  if (await welcomeDialog.count() > 0) {
-    // Click the skip button to dismiss
-    const skipButton = page.locator('.welcome-dialog button:has-text("No thanks")')
-    if (await skipButton.count() > 0) {
-      await skipButton.click()
-      await page.waitForTimeout(500)
-    }
-  }
+  await dismissWelcomeDialog(page)
   
   // Set color mode
   if (mode === 'light') {
@@ -278,18 +310,7 @@ async function testKeyboardNavigation(page: Page): Promise<TestResult> {
   await page.goto(DEV_SERVER_URL, { waitUntil: 'networkidle' })
   await page.waitForSelector('.cm-editor', { timeout: 10000 })
   
-  // Wait for welcome dialog to potentially appear (1s delay in config + buffer)
-  await page.waitForTimeout(1500)
-  
-  // Dismiss welcome dialog if present (shown to first-time visitors)
-  const welcomeDialog = page.locator('.welcome-dialog')
-  if (await welcomeDialog.count() > 0) {
-    const skipButton = page.locator('.welcome-dialog button:has-text("No thanks")')
-    if (await skipButton.count() > 0) {
-      await skipButton.click()
-      await page.waitForTimeout(500)
-    }
-  }
+  await dismissWelcomeDialog(page)
 
   // Test 1: Skip link is first focusable element
   await page.keyboard.press('Tab')
@@ -346,18 +367,7 @@ async function testLandmarks(page: Page): Promise<TestResult> {
   await page.goto(DEV_SERVER_URL, { waitUntil: 'networkidle' })
   await page.waitForSelector('.cm-editor', { timeout: 10000 })
   
-  // Wait for welcome dialog to potentially appear (1s delay in config + buffer)
-  await page.waitForTimeout(1500)
-  
-  // Dismiss welcome dialog if present (shown to first-time visitors)
-  const welcomeDialog = page.locator('.welcome-dialog')
-  if (await welcomeDialog.count() > 0) {
-    const skipButton = page.locator('.welcome-dialog button:has-text("No thanks")')
-    if (await skipButton.count() > 0) {
-      await skipButton.click()
-      await page.waitForTimeout(500)
-    }
-  }
+  await dismissWelcomeDialog(page)
 
   const landmarks = await page.evaluate(() => {
     const results: Record<string, boolean> = {}

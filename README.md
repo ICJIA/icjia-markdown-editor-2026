@@ -24,6 +24,8 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 - **ICJIA Branding** - Header features the ICJIA logo (clickable to scroll to top, with error fallback)
 - **Keyboard Shortcuts** - Speed up your workflow with comprehensive shortcuts
 - **Table Builder** - Visual table creation modal (Cmd/Ctrl+Alt+T) with copy feedback
+- **Document Outline** - Status-bar panel listing every heading, indented by level; click one to jump to its line, with the section you are in marked
+- **Word-Count Goals** - Click the word count to set a target; progress shows inline as you write
 - **Auto-save** - Never lose your work (saves a couple of seconds after you pause typing, plus a 30-second safety interval with live countdown in header)
 - **Start Editing Button** - New users see a prominent button to clear the tutorial and start fresh
 - **Tutorial Reset** - Restore the markdown tutorial content anytime from the status bar
@@ -278,6 +280,8 @@ npx serve dist
 | Copy HTML       | ⌘ + Shift + H | Ctrl + Shift + H |
 | Download        | ⌘ + S         | Ctrl + S         |
 | Open File       | ⌘ + O         | Ctrl + O         |
+| Find / Replace  | ⌘ + F         | Ctrl + F         |
+| Scroll Sync     | ⌘ + \           | Ctrl + \           |
 
 ### Tour Navigation
 
