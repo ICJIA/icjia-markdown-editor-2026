@@ -32,8 +32,9 @@ export const tourConfig: TourConfig = {
    * v5: Added Undo/Redo step, reordered to toolbar → header → panes → status bar
    * v6: Moved Tour button to status bar, added Tour button step
    * v7: Added GitHub link step highlighting open source project
+   * v8: Added Outline and Heading Check steps; Word Count now covers goals
    */
-  version: 7,
+  version: 8,
 
   /**
    * Auto-start the tour for first-time visitors.
@@ -249,10 +250,28 @@ export const tourConfig: TourConfig = {
     {
       id: 'word-count',
       target: '[data-tour="word-count"]',
-      title: 'Document Statistics',
-      content: 'Track your document\'s word count, character count, and estimated reading time. Hover for additional details like line and paragraph counts.',
+      title: 'Word Count & Goals',
+      content: 'Your word count, character count, and estimated reading time. Click it to set a word goal — a target for a report or a grant narrative — and it shows your progress as you write. Hover for line and paragraph counts.',
       position: 'top',
       icon: 'i-heroicons-chart-bar'
+    },
+
+    {
+      id: 'outline',
+      target: '[data-tour="outline"]',
+      title: 'Document Outline',
+      content: 'Every heading in your document, indented by level. Click one to jump straight to it, and the section you are working in stays marked. Useful once a report is longer than a screen.',
+      position: 'top',
+      icon: 'i-heroicons-list-bullet'
+    },
+
+    {
+      id: 'heading-issues',
+      target: '[data-tour="heading-issues"]',
+      title: 'Heading Check',
+      content: 'Flags headings that skip a level or have no text — the things that make a published page fail an accessibility check. Click the count to list them and jump to the line.',
+      position: 'top',
+      icon: 'i-heroicons-check-circle'
     },
 
     {

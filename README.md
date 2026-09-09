@@ -34,7 +34,7 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 - **Footnote Support** - Full footnote syntax with automatic numbering and back-references
 - **Inline Formatting** - `~~strikethrough~~`, `==highlight==` and `++inserted++` alongside the usual bold and italic
 - **Math Support** - KaTeX-powered LaTeX rendering for inline and block math equations
-- **Guided Tour** - Interactive onboarding with markdown introduction slides and 19-step feature tour (runs once, restartable anytime)
+- **Guided Tour** - Interactive onboarding with markdown introduction slides and 21-step feature tour (runs once, restartable anytime)
 - **Undo/Redo** - Full history support with keyboard shortcuts (Cmd/Ctrl+Z)
 - **Security Hardened** - DOMPurify XSS sanitization narrowed to what a preview actually needs (no `<style>`, `<form>` or off-pane positioning from a document), a Content-Security-Policy behind it, code block language sanitization, file size limits, filename sanitization
 - **Accessibility First** - WCAG 2.1 Level AA compliant, and currently passing `yarn test:a11y` at Level AAA with zero violations, with full keyboard navigation, screen reader support, and proper ARIA attributes
@@ -101,7 +101,7 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 
 | Status | Feature                                                                 |
 | :----: | :---------------------------------------------------------------------- |
-|   ✅   | Guided tour/onboarding module (WCAG 2.1 AA compliant, 19 steps)         |
+|   ✅   | Guided tour/onboarding module (WCAG 2.1 AA compliant, 21 steps)         |
 |   ✅   | Welcome screen with ICJIA logo (first-time users + manual tour trigger) |
 |   ✅   | Tour progress indicator with modern pill design and WCAG AA contrast    |
 |   ✅   | Reusable tour module architecture for other projects                    |
@@ -357,12 +357,12 @@ The application includes an interactive guided tour with a welcome screen that i
 - **Runs Once by Default** - Automatically starts for first-time visitors
 - **Cancellable Anytime** - Users can skip with a button or press Escape
 - **Manually Restartable** - Click the Tour button in the status bar to see the full experience again
-- **Modern Design** - Pill-shaped progress indicator (e.g., "1 / 19") with proper spacing and contrast
+- **Modern Design** - Pill-shaped progress indicator (e.g., "1 / 21") with proper spacing and contrast
 - **Responsive** - Works on desktop and mobile devices
 
 ### Tour Steps
 
-The tour follows a logical left-to-right, top-to-bottom order covering 19 features:
+The tour follows a logical left-to-right, top-to-bottom order covering 21 features:
 
 #### Toolbar (left to right)
 
@@ -390,10 +390,12 @@ The tour follows a logical left-to-right, top-to-bottom order covering 19 featur
 
 #### Status Bar (bottom toolbar, left to right)
 
-16. **Document Statistics** - Word count, character count, reading time
-17. **Tour Button** - Restart the guided tour anytime
-18. **Tutorial** - Reset to markdown tutorial content (with confirmation)
-19. **GitHub Source Code** - Link to open source repository
+16. **Word Count & Goals** - Word count, character count, reading time; click to set a word goal and track progress
+17. **Document Outline** - Every heading, indented by level; click one to jump to it
+18. **Heading Check** - Headings that skip a level or have no text, with jump-to-line
+19. **Tour Button** - Restart the guided tour anytime
+20. **Tutorial** - Reset to markdown tutorial content (with confirmation)
+21. **GitHub Source Code** - Link to open source repository
 
 ### Reusing the Tour Module
 

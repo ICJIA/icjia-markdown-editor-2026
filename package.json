@@ -1,6 +1,6 @@
 {
   "name": "icjia-markdown-editor",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "Accessible markdown editor for ICJIA researchers",
   "type": "module",
   "private": true,

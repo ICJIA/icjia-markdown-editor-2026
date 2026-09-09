@@ -5,6 +5,12 @@ All notable changes to ICJIA Markdown Editor 2.0 will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.2] - 2026-09-09
+
+### Added
+
+- **The guided tour covers the status bar's three panels.** A step for the document outline and one for the heading check, and the word-count step rewritten: it described a hover target for line and paragraph counts, which is no longer what that control is — it is a button that sets a word goal. The tour ran left to right along the status bar and stepped straight from the word count to the tour button, past two controls a first-time author would otherwise have to find on their own. Tour version bumped to 8, so anyone who completed the old tour is offered the new one.
+
 ## [1.9.1] - 2026-09-09
 
 ### Changed
