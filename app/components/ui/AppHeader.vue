@@ -6,7 +6,7 @@
  */
 
 const { cycleViewMode, viewModeIcon, viewModeLabel } = useViewMode()
-const { showSaveIndicator, countdownToSave } = useAutoSave()
+const { showSaveIndicator, countdownToSave, storageAvailable } = useAutoSave()
 const { openModal: openConversionTools } = useConversionToolsModal()
 const { copyStatusMessage } = useExport()
 
@@ -78,14 +78,29 @@ function scrollToTop() {
           text="Your work is automatically saved to browser local storage"
           :content="{ side: 'bottom', sideOffset: 8, avoidCollisions: true }"
         >
-          <div 
-            class="autosave-status" 
-            role="status" 
-            aria-label="Auto Save is always enabled. Your work is saved to browser storage automatically."
+          <!--
+            Not a live region, and pointedly so. role="status" implies
+            aria-live="polite" with aria-atomic="true", and this element's text
+            is a countdown that changes once a second — it announced "Next save:
+            29s", "28s", "27s" for as long as the editor was open. Saves are
+            announced once, at the moment they happen, through the announcer in
+            app.vue; this is the glanceable version of the same fact.
+
+            The storage-unavailable branch is the exception worth showing
+            prominently: without it, auto-save failing looked exactly like
+            auto-save working.
+          -->
+          <div
+            class="autosave-status"
+            :class="{ 'autosave-status--failed': !storageAvailable }"
             data-tour="auto-save"
           >
             <Transition name="fade" mode="out-in">
-              <span v-if="showSaveIndicator" key="saved" class="autosave-saved" aria-live="polite">
+              <span v-if="!storageAvailable" key="unavailable" class="autosave-failed">
+                <UIcon name="i-heroicons-exclamation-triangle" class="autosave-icon" />
+                <span class="autosave-text">Not saving — download your work</span>
+              </span>
+              <span v-else-if="showSaveIndicator" key="saved" class="autosave-saved">
                 <UIcon name="i-heroicons-check-circle" class="autosave-icon" />
                 Saved!
               </span>
@@ -349,6 +364,23 @@ function scrollToTop() {
   width: 0.875rem;
   height: 0.875rem;
   opacity: 0.7;
+}
+
+.autosave-failed {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #fca5a5;
+  font-weight: 600;
+}
+
+.autosave-status--failed {
+  border-color: #b91c1c;
+}
+
+:root:not(.dark) .autosave-failed,
+.light .autosave-failed {
+  color: #b91c1c;
 }
 
 .autosave-saved {
