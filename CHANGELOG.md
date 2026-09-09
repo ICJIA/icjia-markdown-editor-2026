@@ -5,6 +5,18 @@ All notable changes to ICJIA Markdown Editor 2.0 will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.1] - 2026-09-09
+
+### Changed
+
+- **The accessibility audit can point at the deployed site.** It was hardwired to `http://localhost:3000`, which is the one target that cannot see a production-only failure — 1.8.0 shipped with every icon missing because Nuxt Icon defaults to a server bundle a static deployment has no server to serve, and no amount of auditing `localhost` would have caught it. `yarn test:a11y:prod` audits `https://markdown.icjia.cloud`; `--url=` or `A11Y_TARGET_URL` points it anywhere else, a deploy preview included. The results file records the target that produced it, renaming `devServerUrl` to `targetUrl`, so a cached report cannot be mistaken for one taken against a different site.
+- **Production audited.** `https://markdown.icjia.cloud` reports zero axe-core violations at WCAG 2.1 AAA across dark and light modes at desktop, tablet and mobile widths, with keyboard navigation and ARIA landmarks passing. Lighthouse scores 100 for accessibility, best practices and SEO on both desktop and mobile, and 100 for performance on desktop. The checked-in `tests/a11y/a11y-results.json` is that run.
+
+### Fixed
+
+- **README corrections.** The guided tour was described as 25 steps in three places; it has 19, which the README's own progress example ("1 / 19") and its own numbered list already said. The unit-test count was frozen at "35 tests: markdown, table builder" and is now 216 across 10 files. Find & Replace was listed as not implemented, though `@codemirror/search` has provided it on Cmd/Ctrl+F all along. axe-core was cited as 4.10; it is 4.13. The project structure omitted a dozen files added since it was written, and still credited `useAccessibility` with a focus trap that 1.9.0 removed. Lighthouse optimisation and production deployment were both listed as pending.
+- **The accessibility section no longer implies the audit is exhaustive.** It now says what axe-core does not check — live regions that announce on every keystroke, and anything hidden behind `v-show` — since a clean report on both was exactly what hid three serious defects until 1.9.0.
+
 ## [1.9.0] - 2026-09-09
 
 ### Fixed
