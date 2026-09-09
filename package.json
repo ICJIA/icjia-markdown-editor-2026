@@ -1,6 +1,6 @@
 {
   "name": "icjia-markdown-editor",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "Accessible markdown editor for ICJIA researchers",
   "type": "module",
   "private": true,
@@ -17,6 +17,7 @@
     "test:run": "vitest run",
     "test:unit": "vitest run --config vitest.config.ts",
     "test:a11y": "tsx tests/a11y/accessibility-audit.ts",
+    "test:a11y:prod": "tsx tests/a11y/accessibility-audit.ts --fresh --url=https://markdown.icjia.cloud",
     "test:a11y:fresh": "tsx tests/a11y/accessibility-audit.ts --fresh",
     "test:a11y:review": "tsx tests/a11y/accessibility-audit.ts --review"
   },

@@ -34,7 +34,7 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 - **Footnote Support** - Full footnote syntax with automatic numbering and back-references
 - **Inline Formatting** - `~~strikethrough~~`, `==highlight==` and `++inserted++` alongside the usual bold and italic
 - **Math Support** - KaTeX-powered LaTeX rendering for inline and block math equations
-- **Guided Tour** - Interactive onboarding with markdown introduction slides and 25-step feature tour (runs once, restartable anytime)
+- **Guided Tour** - Interactive onboarding with markdown introduction slides and 19-step feature tour (runs once, restartable anytime)
 - **Undo/Redo** - Full history support with keyboard shortcuts (Cmd/Ctrl+Z)
 - **Security Hardened** - DOMPurify XSS sanitization narrowed to what a preview actually needs (no `<style>`, `<form>` or off-pane positioning from a document), a Content-Security-Policy behind it, code block language sanitization, file size limits, filename sanitization
 - **Accessibility First** - WCAG 2.1 Level AA compliant, and currently passing `yarn test:a11y` at Level AAA with zero violations, with full keyboard navigation, screen reader support, and proper ARIA attributes
@@ -101,7 +101,7 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 
 | Status | Feature                                                                 |
 | :----: | :---------------------------------------------------------------------- |
-|   ✅   | Guided tour/onboarding module (WCAG 2.1 AA compliant, 25 steps)         |
+|   ✅   | Guided tour/onboarding module (WCAG 2.1 AA compliant, 19 steps)         |
 |   ✅   | Welcome screen with ICJIA logo (first-time users + manual tour trigger) |
 |   ✅   | Tour progress indicator with modern pill design and WCAG AA contrast    |
 |   ✅   | Reusable tour module architecture for other projects                    |
@@ -130,12 +130,18 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 |   ✅   | Full accessibility audit (axe-core) — zero violations                   |
 |   ✅   | Fix Reka UI `aria-labelledby` mismatch in all modals                     |
 |   ✅   | Inert background content when modals are open (focus trap)               |
+|   ✅   | 1.9.0 — removed three live regions that announced on every keystroke     |
+|   ✅   | 1.9.0 — print/PDF exports readable (body text was 1.09:1 on paper)       |
+|   ✅   | 1.9.0 — auto-save no longer overwrites work with an empty document       |
+|   ✅   | 1.9.0 — cross-tab auto-save conflicts, and visible storage failure       |
+|   ✅   | 1.9.0 — document outline and word-count goals                            |
+|   ✅   | 1.9.0 — audit asserts the welcome modal is dismissed; can target prod    |
 |   ⬜   | Screen reader testing (VoiceOver, NVDA)                                 |
 |   ⬜   | Keyboard navigation refinement                                          |
 |   ⬜   | Help modal with shortcuts reference                                     |
 |   ⬜   | Image insertion modal with placeholder option                           |
 |   ⬜   | Link insertion modal with URL validation                                |
-|   ⬜   | Find & Replace functionality                                            |
+|   ✅   | Find & Replace (Cmd/Ctrl+F, via @codemirror/search)                     |
 |   ⬜   | Error handling improvements                                             |
 |   ⬜   | Loading state refinements                                               |
 
@@ -143,13 +149,13 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 
 | Status | Feature                                                   |
 | :----: | :-------------------------------------------------------- |
-|   ✅   | Unit tests for utilities (35 tests: markdown, table builder) |
+|   ✅   | Unit tests for utilities (216 tests across 10 files)         |
 |   ⬜   | Component tests                                           |
 |   ⬜   | E2E tests for critical paths                              |
 |   ⬜   | Cross-browser testing                                     |
 |   ⬜   | Performance optimization                                  |
-|   ⬜   | Lighthouse score optimization (target: 100 accessibility) |
-|   ⬜   | Production deployment documentation                       |
+|   ✅   | Lighthouse 100 on production (a11y, best practices, SEO, desktop perf) |
+|   ✅   | Production deployment (Netlify, https://markdown.icjia.cloud) |
 
 ## Tech Stack
 
@@ -201,14 +207,28 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 yarn test:run     # unit tests (vitest, jsdom)
 yarn typecheck    # vue-tsc
 yarn lint         # eslint, via @nuxt/eslint
-yarn test:a11y    # axe-core against a running dev server, at WCAG AAA
+yarn test:a11y      # axe-core against a running dev server, at WCAG AAA
+yarn test:a11y:prod # the same audit against https://markdown.icjia.cloud
 ```
 
 `yarn test:a11y` drives a real browser, so run `yarn playwright install chromium` once
 after installing or upgrading dependencies, and start `yarn dev` before running it. It
 audits dark and light mode across three viewports, dismissing the first-run welcome
-modal first — without that the modal makes the rest of the page `inert` and axe skips
-it, which is how an audit can report a clean sheet it never actually looked at.
+modal first — and asserting that it is gone. Without that the modal makes the rest of
+the page `inert` and axe skips it, which is how an audit can report a clean sheet it
+never actually looked at.
+
+Point it anywhere with `--url`, or the `A11Y_TARGET_URL` environment variable:
+
+```bash
+yarn test:a11y --fresh --url=https://deploy-preview-12--example.netlify.app
+```
+
+Auditing the deployed site is worth doing before a release, not only the dev server:
+1.8.0 shipped with every icon missing in production, because Nuxt Icon defaults to a
+server bundle that a static deployment has no server to serve — a class of bug no
+amount of auditing `localhost` can see. The results file records which target produced
+it, so a cached report cannot be mistaken for one taken against a different site.
 
 #### Clearing caches
 
@@ -304,17 +324,29 @@ This documentation enables better IDE intellisense, easier onboarding for new de
 
 ## Accessibility
 
-This project is committed to WCAG 2.1 Level AA compliance, with AAA compliance in key areas (status bar contrast, copy notifications). Key accessibility features include:
+This project is committed to WCAG 2.1 Level AA compliance, and currently clears Level AAA
+with zero axe-core violations — verified against the deployed site, not only the dev
+server, across dark and light modes at desktop, tablet and mobile widths. Lighthouse on
+production scores 100 for accessibility, best practices and SEO on both desktop and
+mobile.
+
+Note what those tools do not cover. axe-core has no rule for a live region that
+announces on every keystroke, so a page can score perfectly while being unusable with a
+screen reader; three such regions were found and removed in 1.9.0 by inspection, not by
+the audit. Panels hidden behind `v-show` are invisible to axe entirely and have to be
+checked with them open. A green report is a floor, not a finding.
+
+Key accessibility features include:
 
 - **Skip Link** - Jump directly to the editor
 - **Keyboard Navigation** - Full functionality without a mouse
 - **Screen Reader Support** - ARIA labels and live region announcements
 - **Focus Indicators** - Clear, visible focus states on all interactive elements
-- **Color Contrast** - 4.5:1 minimum for text (7:1+ in status bar), 3:1 for UI components
+- **Color Contrast** - 7:1+ for text throughout, including both status-bar panels, in light and dark modes; 3:1 for UI components. Printed and PDF exports are held to the same standard.
 - **Semantic HTML** - Proper `<a>` elements for links, correct ARIA roles throughout
 - **Reduced Motion** - Respects `prefers-reduced-motion` setting
 - **Guided Tour** - Accessible onboarding with keyboard navigation (Arrow keys, Escape)
-- **axe-core Audited** - Automated accessibility testing with axe-core 4.10
+- **axe-core Audited** - Automated accessibility testing with axe-core 4.13, run against the deployed site as well as the dev server
 
 ## Guided Tour / Onboarding
 
@@ -330,7 +362,7 @@ The application includes an interactive guided tour with a welcome screen that i
 
 ### Tour Steps
 
-The tour follows a logical left-to-right, top-to-bottom order covering 25 features:
+The tour follows a logical left-to-right, top-to-bottom order covering 19 features:
 
 #### Toolbar (left to right)
 
@@ -497,20 +529,24 @@ dist
 icjia-markdown-editor-2026/
 ├── app/
 │   ├── components/
-│   │   ├── editor/         # EditorPane, PreviewPane, EditorLayout
-│   │   ├── modals/         # TableBuilderModal, DownloadModal
+│   │   ├── editor/         # EditorPane, PreviewPane, EditorLayout,
+│   │   │                   # OutlinePanel, WordGoal, HeadingIssuesPanel
+│   │   ├── modals/         # TableBuilderModal, DownloadModal, ConversionToolsModal
 │   │   ├── toolbar/        # EditorToolbar, ToolbarButton, ToolbarDivider
 │   │   └── ui/             # AppHeader, ColorModeToggle, SkipLink
 │   ├── composables/        # Vue composables (fully documented with JSDoc)
-│   │   ├── useAccessibility.ts   # Screen reader announcements, focus trap
+│   │   ├── useAccessibility.ts   # Screen reader announcements
 │   │   ├── useAutoSave.ts        # localStorage persistence
+│   │   ├── useConversionToolsModal.ts # Conversion tools modal state
 │   │   ├── useDownloadModal.ts   # Download filename modal state
 │   │   ├── useEditor.ts          # Editor state and text manipulation
 │   │   ├── useExport.ts          # Copy/download functionality
 │   │   ├── useKeyboardShortcuts.ts # Global keyboard shortcuts
-│   │   ├── useMarkdown.ts        # Markdown rendering and stats
+│   │   ├── useMarkdown.ts        # Markdown rendering, stats, outline
 │   │   ├── useScrollSync.ts      # Editor/preview scroll sync
-│   │   └── useTableBuilderModal.ts # Table builder state
+│   │   ├── useTableBuilderModal.ts # Table builder state
+│   │   ├── useViewMode.ts        # Split / editor / preview view mode
+│   │   └── useWordGoal.ts        # Word-count target and progress
 │   ├── config/             # App configuration
 │   │   └── tour.ts         # Tour step definitions for this app
 │   ├── modules/            # Reusable modules
@@ -522,15 +558,22 @@ icjia-markdown-editor-2026/
 │   │       │   └── useTour.ts      # Tour state and navigation
 │   │       ├── components/
 │   │       │   ├── TourOverlay.vue # Main tour dialog UI
+│   │       │   ├── TourIntro.vue   # Markdown introduction slides
+│   │       │   ├── TourWelcome.vue # First-visit welcome modal
 │   │       │   └── TourTrigger.vue # Reusable trigger button
 │   │       └── styles/
 │   │           └── tour.css        # Highlight ring animations
 │   ├── pages/              # Nuxt pages
 │   └── utils/              # Utility functions (fully documented with JSDoc)
 │       ├── editor/         # CodeMirror config, themes, keymaps
-│       ├── markdown/       # markdown-it configuration
+│       ├── export/         # Self-contained HTML export template
+│       ├── markdown/       # markdown-it config, heading tokens, linter,
+│       │                   # outline, text stats
+│       ├── autosave.ts     # Auto-save decisions (testable without a runtime)
 │       ├── default-content.ts # Default tutorial content (extracted for maintainability)
-│       └── table-builder.ts # Table generation utilities
+│       ├── filename.ts     # Download filename sanitization
+│       ├── table-builder.ts # Table generation utilities
+│       └── word-goal.ts    # Word-goal parsing and progress
 ├── documentation/          # Project documentation
 ├── public/                 # Static assets
 ├── tests/                  # Test files

@@ -17,7 +17,35 @@ import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const RESULTS_FILE = join(__dirname, 'a11y-results.json')
-const DEV_SERVER_URL = 'http://localhost:3000'
+
+/** Where the audit points when nothing else is asked for. */
+const DEFAULT_TARGET_URL = 'http://localhost:3000'
+
+/**
+ * The site under test.
+ *
+ * Configurable because a dev-server-only audit cannot see the class of bug
+ * that only exists in a production build — 1.8.0 shipped with every icon
+ * missing, because Nuxt Icon defaults to a server bundle a static deployment
+ * has no server to serve, and no amount of auditing localhost would have
+ * caught it.
+ *
+ *   yarn test:a11y --fresh                      the local dev server
+ *   yarn test:a11y:prod                         the deployed site
+ *   yarn test:a11y --fresh --url=https://...    anywhere else
+ *
+ * The results file records which target produced it, so a cached report can
+ * never be mistaken for one taken against a different site.
+ */
+const TARGET_URL = (() => {
+  const flag = process.argv.slice(2).find(a => a.startsWith('--url='))
+  if (flag) return flag.slice('--url='.length).replace(/\/$/, '')
+  if (process.env.A11Y_TARGET_URL) return process.env.A11Y_TARGET_URL.replace(/\/$/, '')
+  return DEFAULT_TARGET_URL
+})()
+
+/** True when the target is this machine, which is the only case we can start. */
+const IS_LOCAL = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:|\/|$)/.test(TARGET_URL)
 
 interface ViolationResult {
   id: string
@@ -48,7 +76,7 @@ interface AuditResult {
 
 interface FullAuditReport {
   timestamp: string
-  devServerUrl: string
+  targetUrl: string
   summary: {
     totalViolations: number
     critical: number
@@ -131,7 +159,7 @@ function displayCachedResults(report: FullAuditReport): void {
   console.log('📋 CACHED ACCESSIBILITY AUDIT RESULTS')
   console.log('='.repeat(60))
   console.log(`\n   Audit performed: ${new Date(report.timestamp).toLocaleString()}`)
-  console.log(`   Server URL: ${report.devServerUrl}`)
+  console.log(`   Target URL: ${report.targetUrl}`)
   
   // Group violations by ID
   const allViolations = report.audits.flatMap(a => a.violations)
@@ -254,7 +282,7 @@ async function runAudit(page: Page, mode: 'dark' | 'light', viewport: { width: n
   await page.setViewportSize({ width: viewport.width, height: viewport.height })
   
   // Navigate to the app
-  await page.goto(DEV_SERVER_URL, { waitUntil: 'networkidle' })
+  await page.goto(TARGET_URL, { waitUntil: 'networkidle' })
   
   // Wait for editor to be ready
   await page.waitForSelector('.cm-editor', { timeout: 10000 })
@@ -307,7 +335,7 @@ async function runAudit(page: Page, mode: 'dark' | 'light', viewport: { width: n
 async function testKeyboardNavigation(page: Page): Promise<TestResult> {
   const issues: string[] = []
   
-  await page.goto(DEV_SERVER_URL, { waitUntil: 'networkidle' })
+  await page.goto(TARGET_URL, { waitUntil: 'networkidle' })
   await page.waitForSelector('.cm-editor', { timeout: 10000 })
   
   await dismissWelcomeDialog(page)
@@ -364,7 +392,7 @@ async function testKeyboardNavigation(page: Page): Promise<TestResult> {
 async function testLandmarks(page: Page): Promise<TestResult> {
   const issues: string[] = []
   
-  await page.goto(DEV_SERVER_URL, { waitUntil: 'networkidle' })
+  await page.goto(TARGET_URL, { waitUntil: 'networkidle' })
   await page.waitForSelector('.cm-editor', { timeout: 10000 })
   
   await dismissWelcomeDialog(page)
@@ -404,20 +432,24 @@ async function runFullAudit(): Promise<FullAuditReport> {
   console.log('   Includes: A, AA, AAA + Best Practices')
   console.log('='.repeat(60) + '\n')
   
-  console.log(`📡 Checking dev server at ${DEV_SERVER_URL}...`)
+  console.log(`📡 Checking ${IS_LOCAL ? 'dev server' : 'target'} at ${TARGET_URL}...`)
   
   const browser = await chromium.launch({ headless: true })
   const context = await browser.newContext()
   const page = await context.newPage()
   
   try {
-    await page.goto(DEV_SERVER_URL, { timeout: 5000 })
+    await page.goto(TARGET_URL, { timeout: 15000 })
   } catch {
     await browser.close()
-    throw new Error(`Dev server is not running at ${DEV_SERVER_URL}. Please start it with: yarn dev`)
+    throw new Error(
+      IS_LOCAL
+        ? `Dev server is not running at ${TARGET_URL}. Please start it with: yarn dev`
+        : `Could not reach ${TARGET_URL}.`,
+    )
   }
-  
-  console.log('✅ Dev server is running\n')
+
+  console.log(`✅ ${IS_LOCAL ? 'Dev server is running' : 'Target is reachable'}\n`)
   
   const allAudits: AuditResult[] = []
   
@@ -484,7 +516,7 @@ async function runFullAudit(): Promise<FullAuditReport> {
   
   const report: FullAuditReport = {
     timestamp: new Date().toISOString(),
-    devServerUrl: DEV_SERVER_URL,
+    targetUrl: TARGET_URL,
     summary: {
       totalViolations: allViolations.length,
       critical: criticalCount,
