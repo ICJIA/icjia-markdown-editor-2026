@@ -64,6 +64,61 @@ describe('wrapHtmlDocument', () => {
   })
 })
 
+function relativeLuminance(hex: string): number {
+  const n = hex.replace('#', '')
+  const full = n.length === 3 ? n.split('').map(c => c + c).join('') : n
+  const channels = [0, 2, 4].map((i) => {
+    const s = parseInt(full.slice(i, i + 2), 16) / 255
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4
+  }) as [number, number, number]
+  return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]
+}
+
+function contrast(a: string, b: string): number {
+  const [hi, lo] = [relativeLuminance(a), relativeLuminance(b)].sort((x, y) => y - x)
+  return (hi! + 0.05) / (lo! + 0.05)
+}
+
+describe('wrapHtmlDocument screen styling', () => {
+  /**
+   * The declarations of every rule whose selector is exactly `.markdown-body`,
+   * outside the print block, in document order — the base stylesheet's first,
+   * then the template's own. `<body>` carries that class, so these outrank the
+   * template's `body` rule, and among themselves the last declaration wins.
+   */
+  function markdownBodyRules(doc: string): string[] {
+    const at = doc.indexOf('@media print')
+    const screen = at === -1 ? doc : doc.slice(0, at)
+    return [...screen.matchAll(/(?:^|[}\s])\.markdown-body\s*\{([^}]*)\}/g)].map(m => m[1]!)
+  }
+
+  function lastDeclared(rules: string[], property: RegExp): string | undefined {
+    return rules.map(rule => rule.match(property)?.[1]).filter(Boolean).pop()
+  }
+
+  it('keeps the page background behind the text instead of making it transparent', async () => {
+    // 1.8.0 to 1.9.3 set `.markdown-body { background: transparent }`, which
+    // dropped the dark page onto the browser's white canvas under #f0f6fc text:
+    // every exported file opened at 1.09:1.
+    const rules = markdownBodyRules(await wrapHtmlDocument('<p>Body</p>'))
+    expect(rules.length, 'found no .markdown-body rule').toBeGreaterThan(0)
+    for (const rule of rules) {
+      expect(rule).not.toMatch(/\bbackground(?:-color)?\s*:\s*transparent/i)
+    }
+  })
+
+  it('shows body text at WCAG AA contrast against the page', async () => {
+    const rules = markdownBodyRules(await wrapHtmlDocument('<p>Body</p>'))
+    const fg = lastDeclared(rules, /(?:^|[;\s])color\s*:\s*(#[0-9a-f]{3,6})/i)
+    const bg = lastDeclared(rules, /\bbackground(?:-color)?\s*:\s*(#[0-9a-f]{3,6}|transparent)/i)
+    expect(fg, 'no screen text colour').toBeDefined()
+    expect(bg, 'no screen background').toBeDefined()
+    // A transparent page shows the browser's default white canvas.
+    const page = bg!.toLowerCase() === 'transparent' ? '#ffffff' : bg!
+    expect(contrast(fg!, page)).toBeGreaterThanOrEqual(4.5)
+  })
+})
+
 describe('wrapHtmlDocument print styling', () => {
   /** Pulls the body of the template's `@media print { ... }` block. */
   function printBlock(doc: string): string {
@@ -76,21 +131,6 @@ describe('wrapHtmlDocument print styling', () => {
       else if (doc[i] === '}' && --depth === 0) return doc.slice(open + 1, i)
     }
     return ''
-  }
-
-  function relativeLuminance(hex: string): number {
-    const n = hex.replace('#', '')
-    const full = n.length === 3 ? n.split('').map(c => c + c).join('') : n
-    const channels = [0, 2, 4].map((i) => {
-      const s = parseInt(full.slice(i, i + 2), 16) / 255
-      return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4
-    }) as [number, number, number]
-    return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]
-  }
-
-  function contrast(a: string, b: string): number {
-    const [hi, lo] = [relativeLuminance(a), relativeLuminance(b)].sort((x, y) => y - x)
-    return (hi! + 0.05) / (lo! + 0.05)
   }
 
   it('overrides the dark text colour at class specificity so print rules actually win', async () => {

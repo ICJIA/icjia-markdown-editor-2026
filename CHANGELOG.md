@@ -5,6 +5,20 @@ All notable changes to ICJIA Markdown Editor 2.0 will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.4] - 2026-09-16
+
+### Fixed
+
+- **Every file from *Download HTML* opened as a blank page.** Found by the health and accessibility checks of 16 September 2026. The export template set `body { background: #0d1117 }` and then `.markdown-body { background: transparent }` — but `<body>` *is* `.markdown-body`, and at class specificity the transparent rule won, while the inlined `github-markdown-dark.css` still coloured the text `#f0f6fc`. With nothing painting the page, the browser's white canvas showed through: body text measured **1.09:1**, headings 3.1:1, in a light- or dark-mode browser alike, since the stylesheet's `color-scheme: dark` sits on the body rather than the root. Only tables and code blocks, which bring their own backgrounds, stayed legible. It shipped in 1.8.0, the release that inlined the dark stylesheet and put *Download HTML* in the toolbar — before that the export function had no button — so affected files date from 8 September 2026. Anyone who sent one should send the Markdown, or print the HTML file to PDF: printing was fixed in 1.9.0 and was never affected.
+
+  The rule is gone; the embedded stylesheet's own `.markdown-body` background now paints the page. Verified by downloading a report with a heading, list, table, R code, inline math and a blockquote from a production build through the toolbar, and opening the file as a recipient would: page `rgb(13, 17, 23)` in both a light- and a dark-mode browser, body text and headings at **17.39:1**, printing unchanged at 15.8:1.
+
+  The existing export tests guarded print contrast only, which is how this passed them. Two new tests read the screen cascade the way a browser applies it — every `.markdown-body` rule in document order, last declaration winning — and fail if the page background is transparent or body text falls below 4.5:1. Both fail against 1.9.3's template and pass now. `yarn lint`, `yarn typecheck` and `yarn test:run` (218 tests) are clean.
+
+### Changed
+
+- **`softwareVersion` in the structured data had drifted to 1.8.0.** It and `dateModified` in `app/plugins/seo.ts` now match this release.
+
 ## [1.9.3] - 2026-09-09
 
 ### Changed

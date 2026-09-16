@@ -202,9 +202,10 @@ ${katexCss}
       background: #0d1117;
       color: #c9d1d9;
     }
-    .markdown-body {
-      background: transparent;
-    }
+    /* No background rule for .markdown-body belongs here. It is the same element
+       as body, and the embedded dark stylesheet gives it the page background at
+       class specificity. Overriding that with transparent (1.8.0 to 1.9.3) left
+       its #f0f6fc text on the browser's white canvas: 1.09:1, a blank page. */
     pre.hljs {
       padding: 1rem;
       border-radius: 0.5rem;
