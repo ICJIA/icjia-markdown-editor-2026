@@ -401,7 +401,7 @@ The **ICJIA Markdown Editor 2.0** is designed for researchers, writers, and anyo
 
 Delete this content and start writing your own document. Your work is automatically saved!
 
-**Need help?** Click the **Tour** button in the header for a guided walkthrough.
+**Need help?** Click the **Take Guided Tour** button in the status bar, at the bottom of the window, for a guided walkthrough.
 
 ---
 

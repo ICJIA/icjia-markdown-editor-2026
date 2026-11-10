@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Color Mode Toggle - Dark/Light mode switch
- * Respects prefers-color-scheme on first visit
+ * Dark on first visit (nuxt.config.ts sets preference and fallback to 'dark')
  * Persists preference to localStorage via Nuxt color mode
  */
 

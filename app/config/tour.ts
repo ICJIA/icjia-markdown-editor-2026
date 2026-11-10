@@ -134,7 +134,7 @@ export const tourConfig: TourConfig = {
       title: 'Tables & Links',
       content: 'Insert tables using the visual table builder, or add hyperlinks to reference external content.',
       shortcuts: [
-        { label: 'Table', mac: ['⌘', 'T'], win: ['Ctrl', 'T'] },
+        { label: 'Table', mac: ['⌘', '⌥', 'T'], win: ['Ctrl', 'Alt', 'T'] },
         { label: 'Link', mac: ['⌘', 'K'], win: ['Ctrl', 'K'] },
       ],
       position: 'bottom',
@@ -162,7 +162,7 @@ export const tourConfig: TourConfig = {
       content: 'Upload an existing Markdown file to continue editing, or download your work as a .md file to save permanently.',
       shortcuts: [
         { label: 'Upload', mac: ['⌘', 'O'], win: ['Ctrl', 'O'] },
-        { label: 'Download', mac: ['⌘', '⇧', 'S'], win: ['Ctrl', 'Shift', 'S'] },
+        { label: 'Download', mac: ['⌘', 'S'], win: ['Ctrl', 'S'] },
       ],
       position: 'bottom',
       icon: 'i-heroicons-arrow-down-tray'
@@ -188,7 +188,7 @@ export const tourConfig: TourConfig = {
       id: 'auto-save',
       target: '[data-tour="auto-save"]',
       title: 'Auto-Save (Browser Only)',
-      content: 'Your work is automatically saved to your browser\'s local storage every 30 seconds. Watch the countdown to see when the next save occurs.',
+      content: 'Your work is automatically saved to your browser\'s local storage a couple of seconds after you pause typing, and at least every 30 seconds. Watch the countdown to see when the next save occurs.',
       tip: 'This is NOT saved to a file on your computer. Use the Download button to save a permanent copy.',
       position: 'bottom',
       highlight: true,
@@ -287,8 +287,8 @@ export const tourConfig: TourConfig = {
       id: 'reset',
       target: '[data-tour="reset"]',
       title: 'Reset Content',
-      content: 'Clear your saved content and reset to the default welcome text. Useful for starting fresh or testing the editor.',
-      tip: 'This will delete all your current work from browser storage!',
+      content: 'Show the markdown tutorial in the editor again and restart this tour. Useful as a reference while you are learning the syntax.',
+      tip: 'Your saved draft is kept. Reload the page to get it back, as long as you have not edited the tutorial.',
       position: 'top',
       icon: 'i-heroicons-arrow-path'
     },

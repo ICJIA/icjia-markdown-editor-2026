@@ -107,6 +107,25 @@ async function loadKatexCss(): Promise<string> {
   return embedKatexFonts(css, Object.fromEntries(fonts))
 }
 
+/**
+ * The policy an exported file carries with it.
+ *
+ * The editor is protected by a Content-Security-Policy its server sends. An
+ * exported file has no server: it is opened from a disk or a mail client, where
+ * the only policy is one written into the file. The content is sanitized before
+ * it gets here, so this is the layer that holds if the sanitizer is ever wrong —
+ * the same reasoning as the deployed header, applied to the copy that travels.
+ *
+ * It is a deny-list rather than `default-src 'none'` on purpose. A report may
+ * sit beside the figures it references, and a relative `<img src="fig1.png">`
+ * must keep working when the file is opened from a folder; the directives below
+ * leave images, the embedded stylesheets and the embedded fonts alone and
+ * refuse exactly what a document has no business doing: running script, loading
+ * plugins or frames, opening connections, submitting forms, or repointing
+ * relative URLs with `<base>`.
+ */
+const EXPORT_CSP = "script-src 'none'; object-src 'none'; frame-src 'none'; connect-src 'none'; form-action 'none'; base-uri 'none'"
+
 /** Used when a document has no heading to take a name from. */
 const DEFAULT_TITLE = 'Exported Document'
 
@@ -186,6 +205,7 @@ export async function wrapHtmlDocument(content: string): Promise<string> {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="${EXPORT_CSP}">
   <title>${documentTitle(content)}</title>
   <style>
 ${baseCss}

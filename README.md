@@ -11,7 +11,27 @@
 
 A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. This is the **updated version** of the original ICJIA Markdown Editor, rebuilt from the ground up with modern web technologies. Full WCAG 2.1 AA compliance.
 
-**[Live Demo →](https://markdown.icjia.cloud)**
+"2.0" is the product generation, the rebuild that replaced the original editor. Releases of it are versioned separately; the current one is **1.10.0** (see the [changelog](./CHANGELOG.md)).
+
+**[Live Demo →](https://markdown.icjia.cloud)** · **[How it works, in plain language →](https://markdown.icjia.cloud/technical-details)**
+
+## Screenshots
+
+The editor: markdown on the left, the rendered document on the right, with the word count, outline, heading check and guided tour in the status bar.
+
+![The editor in split view, showing the built-in markdown tutorial](documentation/screenshots/editor.png)
+
+The [Technical Details](https://markdown.icjia.cloud/technical-details) page explains the editor to people who do not write software. Its panels run the editor's real code: the opening demo is the same parser and sanitizer the preview uses.
+
+![The Technical Details page: a live markdown demo under the heading "Plain text in. Finished document out."](documentation/screenshots/technical-details.png)
+
+It follows one short passage from keystroke to preview, including a line that should not be there:
+
+![The four-step pipeline: you type, the parser reads it, the sanitizer checks it, the preview shows it](documentation/screenshots/pipeline.png)
+
+And it lets a visitor replay the attacks from the November 2026 red/blue exercise against the copy of the editor running on the page:
+
+![The attack lab: a script-injection payload on the left, and what the editor keeps of it on the right](documentation/screenshots/attack-lab.png)
 
 ### SEO
 
@@ -20,7 +40,7 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 ## Features
 
 - **Real-time Preview** - See your formatted document as you type with synchronized scrolling
-- **Dark/Light Mode** - Easy on the eyes with dark mode default and system preference detection
+- **Dark/Light Mode** - Dark by default, with a light theme one click away; the choice is remembered
 - **ICJIA Branding** - Header features the ICJIA logo (clickable to scroll to top, with error fallback)
 - **Keyboard Shortcuts** - Speed up your workflow with comprehensive shortcuts
 - **Table Builder** - Visual table creation modal (Cmd/Ctrl+Alt+T) with copy feedback
@@ -29,18 +49,19 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 - **Auto-save** - Never lose your work (saves a couple of seconds after you pause typing, plus a 30-second safety interval with live countdown in header)
 - **Start Editing Button** - New users see a prominent button to clear the tutorial and start fresh
 - **Tutorial Reset** - Restore the markdown tutorial content anytime from the status bar
-- **Export Options** - Copy as Markdown, copy as HTML, or download either with a custom filename. HTML exports are fully self-contained: every stylesheet, and KaTeX's webfonts when the document contains math, is embedded, so an exported file renders correctly offline and fetches nothing from a CDN
+- **Export Options** - Copy as Markdown, copy as HTML, or download either (the toolbar asks for a filename; ⌘/Ctrl+S saves straight to `document.md`). HTML exports are fully self-contained: every stylesheet, and KaTeX's webfonts when the document contains math, is embedded, so an exported file renders correctly offline and fetches nothing from a CDN
 - **Copy Notifications** - High-contrast purple notifications appear in the header when content is copied
 - **Footnote Support** - Full footnote syntax with automatic numbering and back-references
 - **Inline Formatting** - `~~strikethrough~~`, `==highlight==` and `++inserted++` alongside the usual bold and italic
 - **Math Support** - KaTeX-powered LaTeX rendering for inline and block math equations
 - **Guided Tour** - Interactive onboarding with markdown introduction slides and 21-step feature tour (runs once, restartable anytime)
 - **Undo/Redo** - Full history support with keyboard shortcuts (Cmd/Ctrl+Z)
-- **Security Hardened** - DOMPurify XSS sanitization narrowed to what a preview actually needs (no `<style>`, `<form>` or off-pane positioning from a document), a Content-Security-Policy behind it, code block language sanitization, file size limits, filename sanitization
+- **Security Hardened** - DOMPurify XSS sanitization narrowed to what a preview actually needs (no `<style>`, `<form>`, media, off-pane positioning or network-fetching styles from a document), a Content-Security-Policy behind it and one embedded in every exported file, code block language sanitization, file size limits, filename sanitization. Red/blue tested in November 2026; see [Security](#security)
+- **Technical Details Page** - A plain-language, interactive explanation of how the editor works and why, at `/technical-details`, linked from the status bar
 - **Accessibility First** - WCAG 2.1 Level AA compliant, and currently passing `yarn test:a11y` at Level AAA with zero violations, with full keyboard navigation, screen reader support, and proper ARIA attributes
 - **Heading Linter** - Flags headings that skip a level or are empty, so published documents pass accessibility heading-order checks
 - **Static Deployment** - Deploy anywhere as a static site (Netlify-ready)
-- **Fully Documented** - Comprehensive JSDoc comments on all composables and utilities
+- **Fully Documented** - JSDoc comments on the composables and utilities
 - **Reusable Tour Module** - Copy the tour module to any Nuxt project for instant onboarding
 
 ## Documentation
@@ -55,6 +76,8 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 | [Troubleshooting](./documentation/TROUBLESHOOTING.md)                                     | Common issues and solutions                                   |
 | [Tour Module](./app/modules/tour/README.md)                                               | Reusable guided tour module documentation                     |
 | [Changelog](./CHANGELOG.md)                                                               | Version history and release notes                             |
+| [Technical Details](https://markdown.icjia.cloud/technical-details)                       | How the editor works, for non-technical readers (interactive) |
+| [Security](#security)                                                                     | Threat model, the November 2026 red/blue results, mitigations |
 
 ## Development Progress
 
@@ -65,7 +88,7 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 |   ✅   | Nuxt 4 project setup with Nuxt UI                                |
 |   ✅   | CodeMirror 6 integration with markdown syntax highlighting       |
 |   ✅   | Basic twin-pane layout (editor/preview)                          |
-|   ✅   | Dark/light mode theming with system preference detection         |
+|   ✅   | Dark/light mode theming (dark by default, choice remembered)     |
 |   ✅   | markdown-it configuration with footnotes and syntax highlighting |
 |   ✅   | Skip link and semantic HTML structure                            |
 |   ✅   | Focus indicators on all interactive elements                     |
@@ -90,7 +113,7 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 | :----: | :-------------------------------------------------------------------- |
 |   ✅   | Table builder modal with visual grid editor                           |
 |   ✅   | Footnote support via markdown-it-footnote                             |
-|   ✅   | Auto-save to localStorage (every 30 seconds with countdown in header) |
+|   ✅   | Auto-save to localStorage (2s after typing pauses, 30s safety interval, on blur/unload; countdown in header) |
 |   ✅   | Tutorial button to reset to markdown tutorial content                 |
 |   ✅   | Download modal with custom filename support                           |
 |   ✅   | HTML export with styled document wrapper                              |
@@ -136,6 +159,9 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 |   ✅   | 1.9.0 — cross-tab auto-save conflicts, and visible storage failure       |
 |   ✅   | 1.9.0 — document outline and word-count goals                            |
 |   ✅   | 1.9.0 — audit asserts the welcome modal is dismissed; can target prod    |
+|   ✅   | 1.10.0 — red/blue exercise: six findings fixed, two documented           |
+|   ✅   | 1.10.0 — "Display Markdown Tutorial" no longer overwrites the saved draft |
+|   ✅   | 1.10.0 — Technical Details page (`/technical-details`)                   |
 |   ⬜   | Screen reader testing (VoiceOver, NVDA)                                 |
 |   ⬜   | Keyboard navigation refinement                                          |
 |   ⬜   | Help modal with shortcuts reference                                     |
@@ -149,13 +175,29 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 
 | Status | Feature                                                   |
 | :----: | :-------------------------------------------------------- |
-|   ✅   | Unit tests for utilities (216 tests across 10 files)         |
+|   ✅   | Unit tests for utilities (238 tests across 10 files)         |
 |   ⬜   | Component tests                                           |
 |   ⬜   | E2E tests for critical paths                              |
 |   ⬜   | Cross-browser testing                                     |
 |   ⬜   | Performance optimization                                  |
 |   ✅   | Lighthouse 100 on production (a11y, best practices, SEO, desktop perf) |
 |   ✅   | Production deployment (Netlify, https://markdown.icjia.cloud) |
+
+## Roadmap
+
+Suggested next steps, most valuable first. The first four come out of the November 2026
+analysis and red/blue exercise.
+
+| Area | Improvement | Why |
+| ---- | ----------- | --- |
+| Reliability | **Render in a Web Worker with a time budget, and add a recovery mode** (a URL flag that opens the editor without restoring or rendering the saved draft) | Parsing, KaTeX and sanitizing all run on the main thread, so one pathological document freezes the tab, and auto-save restores it on every reload. This is finding 9. |
+| Security | **Hash-based CSP for inline scripts** (for example with `nuxt-security`'s static-site hashing) | Removes `'unsafe-inline'` from `script-src`, so the CSP would stop a sanitizer bypass on its own. |
+| Privacy | **Click-to-load for remote images** in documents opened from a file, and a visible **"Clear my draft from this browser"** control | Closes the accepted read-receipt risk (finding 8) and addresses drafts left behind on shared computers. |
+| Usability | **Rebind Block Quote on macOS.** It is documented as ⌘Q, which macOS reserves for quitting the browser, so the shortcut cannot work there and the tour teaches a keystroke that closes the window | A first-time author following the tour loses their window. |
+| Testing | **Browser-level regression tests** (Playwright) for the attacks in [Security](#security), the tutorial-reset draft, and export | jsdom has no CSS engine: the two position bypasses and the 1.8.0 `<style>` leak were all invisible to the unit tests. A CI workflow running lint, typecheck, tests and the a11y audit on every pull request would catch the rest. |
+| Accessibility | **Audit `/technical-details` in `yarn test:a11y`**, and complete the manual VoiceOver/NVDA pass | The script audits the editor only; the new page was audited by hand for 1.10.0. |
+| Features | Link and image insertion dialogs, a shortcuts reference, optional system colour-scheme detection, offline support (service worker), multiple named drafts, `.docx`/PDF export | The first two are listed as pending under Phase 4. |
+| Maintenance | **Upgrade Nuxt** past 4.6.3 and re-run `yarn audit`; lint for unused exports | Clears the remaining build-tooling advisories. |
 
 ## Tech Stack
 
@@ -176,7 +218,7 @@ The app includes Open Graph and Twitter Card meta tags for rich social previews.
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 22.19+ or 24.11+ (24 recommended; it is what `.nvmrc` and the Netlify build use)
 - Yarn 1.22.22+
 
 ### Installation
@@ -207,13 +249,17 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 yarn test:run     # unit tests (vitest, jsdom)
 yarn typecheck    # vue-tsc
 yarn lint         # eslint, via @nuxt/eslint
-yarn test:a11y      # axe-core against a running dev server, at WCAG AAA
-yarn test:a11y:prod # the same audit against https://markdown.icjia.cloud
+yarn test:a11y:fresh # axe-core against a running dev server, at WCAG AAA
+yarn test:a11y:prod  # the same audit against https://markdown.icjia.cloud
+yarn test:a11y       # show the last saved results (a fresh audit only if none are saved)
 ```
 
-`yarn test:a11y` drives a real browser, so run `yarn playwright install chromium` once
-after installing or upgrading dependencies, and start `yarn dev` before running it. It
-audits dark and light mode across three viewports, dismissing the first-run welcome
+The audit drives a real browser, so run `yarn playwright install chromium` once
+after installing or upgrading dependencies, and start `yarn dev` before running
+`yarn test:a11y:fresh`. Plain `yarn test:a11y` does not audit anything when
+`tests/a11y/a11y-results.json` exists, and it is checked in: it prints that file, which
+records the last production run. A fresh run audits dark and light mode across three
+viewports, dismissing the first-run welcome
 modal first — and asserting that it is gone. Without that the modal makes the rest of
 the page `inert` and axe skips it, which is how an audit can report a clean sheet it
 never actually looked at.
@@ -313,7 +359,7 @@ npx serve dist
 
 ## Code Documentation
 
-All composables and utility files include comprehensive JSDoc documentation:
+The composables and utility files carry JSDoc documentation:
 
 - **File-level documentation** with `@fileoverview` and `@module` tags
 - **Function documentation** with `@param`, `@returns`, and `@example` tags
@@ -328,7 +374,12 @@ This project is committed to WCAG 2.1 Level AA compliance, and currently clears 
 with zero axe-core violations — verified against the deployed site, not only the dev
 server, across dark and light modes at desktop, tablet and mobile widths. Lighthouse on
 production scores 100 for accessibility, best practices and SEO on both desktop and
-mobile.
+mobile. The checked-in production report dates from 9 September 2026 (the 1.9.2 build).
+The 1.10.0 build was audited locally before release, served with the production
+headers: the editor passes the same AAA run, and the Technical Details page reports zero
+axe-core violations at AAA (with best-practice rules on) at desktop and mobile widths
+and Lighthouse 100 in all four categories. Production should be re-audited with
+`yarn test:a11y:prod` once 1.10.0 is deployed.
 
 Note what those tools do not cover. axe-core has no rule for a live region that
 announces on every keystroke, so a page can score perfectly while being unusable with a
@@ -347,6 +398,76 @@ Key accessibility features include:
 - **Reduced Motion** - Respects `prefers-reduced-motion` setting
 - **Guided Tour** - Accessible onboarding with keyboard navigation (Arrow keys, Escape)
 - **axe-core Audited** - Automated accessibility testing with axe-core 4.13, run against the deployed site as well as the dev server
+
+## Security
+
+The editor has no server, no accounts and no API, so the question worth asking is narrow:
+**what can a document do to the person who opens it?** A researcher uploads, pastes or is
+sent a markdown file; markdown-it renders it with raw HTML enabled; the result is shown in
+the preview, copied as HTML, and exported as a standalone file that gets emailed on. The
+document is the untrusted input, and everything below is aimed at it.
+
+### Defences, in the order a document meets them
+
+| Layer | What it does | Where |
+| ----- | ------------ | ----- |
+| Sanitizer | DOMPurify, narrowed past its defaults: no `<style>`, forms or form controls, `<dialog>`, popovers, or media elements; only checkbox inputs; `rel="noopener noreferrer"` forced on every link with a `target` | `app/utils/markdown/config.ts` |
+| Style filter | Each `style` attribute is read one declaration at a time. `position` must be `static`, `relative` or `absolute`; `z-index` and anything that fetches (`url()`, `image-set()`) are dropped; a value containing a CSS escape is rejected whole | `sanitizeStyleAttribute` in the same file |
+| Containment | `contain: paint` on both preview panes, so a positioned element cannot leave the pane even if the two layers above are wrong | `PreviewPane.vue`, `TableBuilderModal.vue` |
+| Site headers | Content-Security-Policy (`connect-src 'self'`, `form-action 'none'`, no frames, plugins or `<base>`), HSTS, `Cross-Origin-Opener-Policy: same-origin`, clickjacking protection | `netlify.toml` |
+| Export policy | Every exported HTML file carries its own CSP `<meta>`: no script, plugins, frames, connections, form posts or `<base>` | `app/utils/export/html-template.ts` |
+| Input limits | 10 MB upload cap; download filenames stripped of path traversal, reserved characters and control characters | `useExport.ts`, `utils/filename.ts` |
+
+### Red/blue exercise, November 2026
+
+Run against 1.9.4. The red team attacked from the source and a local build: an
+independent reviewer ran about 45 payloads through the real render pipeline, and a second
+pass ran 18 more in headless Chromium against the running app, because jsdom has no CSS
+engine and cannot see a layout attack. No traffic was sent to the production site beyond
+reading its response headers. The blue team fixed what got through in 1.10.0 and re-ran
+every payload in the browser.
+
+**Nothing executed script, read a draft, or reached outside the preview pane.** What was found:
+
+| # | Finding | Severity | Outcome |
+| - | ------- | -------- | ------- |
+| 1 | **The `position:fixed` filter could be bypassed.** It was a pattern that looked for the words. CSS escapes (`pos\69tion:fixed`, `position:\66ixed`), custom properties (`--p:fixed; position:var(--p)`), a `var()` fallback and `-webkit-sticky` all computed to a fixed element with `z-index: 99999` in Chromium. `contain: paint` held, so the overlay stayed inside the preview. | Low | **Fixed.** Replaced with a declaration-by-declaration filter and an allowlist of positions; escapes are rejected rather than decoded. |
+| 2 | **Links to a named window kept `window.opener`.** `rel="noopener"` was forced only for `target="_blank"`; `<a target="report">` (and `<area>`) reached the DOM without it, so the page it opened could navigate the editor's tab elsewhere (reverse tabnabbing). | Medium | **Fixed.** `rel` is forced on any element with a `target`, and the site now sends `Cross-Origin-Opener-Policy: same-origin`. |
+| 3 | **Styles could phone home.** `style="background:url(https://…)"` sent a request the moment the preview rendered, a read receipt carrying the reader's IP address. | Low | **Fixed.** Declarations that fetch are stripped. |
+| 4 | **Media elements were accepted.** `<video>`, `<audio>`, `<source>` and `<track>` passed the sanitizer. The site's CSP already refused to load them, but an exported file has no server and would fetch them on open. | Low | **Fixed.** Forbidden in the sanitizer. |
+| 5 | **Exported files had no policy of their own.** The export's only protection was that its content had been sanitized. | Low | **Fixed.** Each export embeds a CSP `<meta>`. It is a deny-list rather than `default-src 'none'` so a report can still show a figure saved beside it. |
+| 6 | **The parser could be stalled.** markdown-it 14.3.1 had quadratic-time paths (a multi-line link reference definition took 306 ms at 156 KB, growing with the square of the size), and auto-save would restore the same document on reload. DOMPurify 3.4.15 also had open advisories, none in a mode this app uses. | Medium | **Fixed.** markdown-it 14.3.3 (the same input: 10 ms) and DOMPurify 3.4.17. |
+| 7 | **`<dialog>` and popover attributes were accepted.** Neither can open without script or a `<button>`, both of which are already removed, so this was not exploitable. | Info | **Hardened.** Removed anyway; they are the two routes to the browser's top layer, which `contain: paint` does not clip. |
+| 8 | **Remote images are a read receipt.** `![](https://…)` tells the image's host that the document was opened, in the preview and in an exported file. | Low | **Accepted.** Authors need to reference figures by URL, and the CSP allows `img-src https:` for that reason. Documented here and on the Technical Details page. A click-to-load option is on the roadmap. |
+| 9 | **A document of mostly inline math is slow.** 20,000 `$x$` (80 KB) took 2.6 s and produced 7.7 MB of HTML; auto-save brings it back on reload. KaTeX's macro-expansion limit held against a `\def` bomb. | Low | **Open.** Slow, not unsafe, and cleared by clearing site data. Rendering in a worker with a time budget is on the roadmap. |
+
+Attacks that the existing defences stopped, for the record: `<script>` and every event
+handler; `javascript:`, `data:text/html`, `vbscript:` and entity-encoded URL schemes, in
+HTML and in markdown link syntax; `<style>` (bare, and inside `<svg>` and `<math>`),
+`<link>`, `<meta http-equiv=refresh>`, `<base>`, `<iframe>`, `<object>`, `<embed>`; the
+direct spellings of `position:fixed` including `!important` and comment-splitting; forms
+and every form control; KaTeX `\href`, `\url`, `\htmlStyle` and `\includegraphics`
+(`trust` is off); SVG `xlink:href` and animated `href`; attribute injection through a code
+fence's language; table-builder cell injection; filename path traversal; DOM clobbering of
+the IDs the app looks up (its own elements come first in the document); regular-expression
+backtracking in the app's own patterns; and cross-tab auto-save overwrites.
+
+### Known limits
+
+- `script-src` and `style-src` still need `'unsafe-inline'`: Nuxt writes its hydration
+  payload inline, and KaTeX positions glyphs with inline styles. A sanitizer bypass would
+  therefore not be stopped by the CSP alone. Moving to hashed inline scripts is the next
+  hardening step.
+- Drafts are kept in `localStorage`, unencrypted, in the browser profile they were written
+  in. On a shared computer the next person to open the editor in that profile sees the
+  draft.
+- `yarn audit` still reports advisories in build and development tooling pulled in by Nuxt
+  (vite, nitropack, node-forge and others). None of that code is shipped to the browser:
+  the deployed site is static files. They affect a developer's machine, and are cleared by
+  upgrading Nuxt.
+
+To report a vulnerability, open an issue on the repository, or contact ICJIA directly for
+anything you would rather not disclose publicly.
 
 ## Guided Tour / Onboarding
 
@@ -491,8 +612,8 @@ onMounted(() => {
 | Property           | Type         | Default | Description                                 |
 | ------------------ | ------------ | ------- | ------------------------------------------- |
 | `version`          | `number`     | -       | Increment to reset completion for all users |
-| `autoStart`        | `boolean`    | `true`  | Auto-start for first-time visitors          |
-| `autoStartDelay`   | `number`     | `800`   | Delay (ms) before auto-starting             |
+| `autoStart`        | `boolean`    | -       | Required. Auto-start for first-time visitors |
+| `autoStartDelay`   | `number`     | -       | Required. Delay (ms) before auto-starting; this app uses `1000` |
 | `storageKeyPrefix` | `string`     | -       | LocalStorage key prefix                     |
 | `steps`            | `TourStep[]` | -       | Array of tour step definitions              |
 
@@ -507,7 +628,9 @@ onMounted(() => {
 | `tip`      | `string`                                 | -          | Optional tip shown in highlighted box   |
 | `position` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'bottom'` | Popover position                        |
 | `icon`     | `string`                                 | -          | Iconify icon name                       |
-| `shortcut` | `string[]`                               | -          | Keyboard shortcut to display            |
+| `shortcuts` | `{ label: string; mac: string[]; win: string[] }[]` | - | Keyboard shortcuts to display, per platform (the older `shortcut: string[]` is deprecated) |
+| `align`    | `'start' \| 'center' \| 'end'`           | `'center'` | Popover alignment along the target's edge |
+| `highlight` | `boolean`                               | `true`     | Draw the highlight ring around the target |
 
 See `app/modules/tour/README.md` for complete documentation.
 
@@ -530,10 +653,13 @@ dist
 ```
 icjia-markdown-editor-2026/
 ├── app/
+│   ├── app.vue             # Root component: skip link, live region, page outlet
+│   ├── assets/css/         # main.css (global styles), technical-details.css
 │   ├── components/
 │   │   ├── editor/         # EditorPane, PreviewPane, EditorLayout,
 │   │   │                   # OutlinePanel, WordGoal, HeadingIssuesPanel
 │   │   ├── modals/         # TableBuilderModal, DownloadModal, ConversionToolsModal
+│   │   ├── technical/      # Interactive panels for the Technical Details page
 │   │   ├── toolbar/        # EditorToolbar, ToolbarButton, ToolbarDivider
 │   │   └── ui/             # AppHeader, ColorModeToggle, SkipLink
 │   ├── composables/        # Vue composables (fully documented with JSDoc)
@@ -565,7 +691,8 @@ icjia-markdown-editor-2026/
 │   │       │   └── TourTrigger.vue # Reusable trigger button
 │   │       └── styles/
 │   │           └── tour.css        # Highlight ring animations
-│   ├── pages/              # Nuxt pages
+│   ├── pages/              # index.vue (the editor), technical-details.vue
+│   ├── plugins/            # seo.ts: canonical URL, social image, structured data
 │   └── utils/              # Utility functions (fully documented with JSDoc)
 │       ├── editor/         # CodeMirror config, themes, keymaps
 │       ├── export/         # Self-contained HTML export template
@@ -576,11 +703,17 @@ icjia-markdown-editor-2026/
 │       ├── filename.ts     # Download filename sanitization
 │       ├── table-builder.ts # Table generation utilities
 │       └── word-goal.ts    # Word-goal parsing and progress
-├── documentation/          # Project documentation
-├── public/                 # Static assets
+├── documentation/          # Project documentation, and screenshots/ for this README
+├── docs/superpowers/       # Design spec and plan for the heading linter
+├── public/                 # Static assets, robots.txt, llms.txt
 ├── tests/                  # Test files
 │   ├── unit/              # Unit tests (vitest + jsdom)
-│   └── a11y/              # Accessibility audit (axe-core + Playwright)
+│   └── a11y/              # Accessibility audit (axe-core + Playwright) and its
+│                          # last saved results, a11y-results.json
+├── netlify.toml            # Build settings and security headers
+├── nuke.sh                 # Cache-clearing script (yarn nuke)
+├── vitest.config.ts        # Unit test configuration
+├── eslint.config.mjs       # Lint configuration (via @nuxt/eslint)
 └── nuxt.config.ts          # Nuxt configuration
 ```
 

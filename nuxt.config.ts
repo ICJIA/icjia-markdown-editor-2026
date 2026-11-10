@@ -55,6 +55,9 @@ export default defineNuxtConfig({
     families: [
       { name: 'Inter', provider: 'google', weights: [400, 500, 600, 700] },
       { name: 'JetBrains Mono', provider: 'google', weights: [400, 500, 600] },
+      // Display face for the Technical Details page's headings only. Like the
+      // two above it is downloaded at build time and served from this origin.
+      { name: 'Bricolage Grotesque', provider: 'google', weights: [600, 800] },
     ],
   },
   
@@ -127,5 +130,6 @@ export default defineNuxtConfig({
   // Route rules for static generation
   routeRules: {
     '/': { prerender: true },
+    '/technical-details': { prerender: true },
   },
 })

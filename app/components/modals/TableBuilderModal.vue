@@ -854,6 +854,9 @@ onUnmounted(() => {
 .html-preview-content {
   padding: 1.5rem;
   min-height: 120px;
+  /* Same containment as the main preview: this pane renders sanitized HTML too,
+     and nothing positioned inside it should be able to leave it. */
+  contain: paint;
 }
 
 /* Style the rendered table in preview */

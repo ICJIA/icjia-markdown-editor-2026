@@ -4,7 +4,21 @@
  * First focusable element on the page, allows keyboard users to skip navigation
  */
 
+// The editor is not the only page: on any other route the target is that
+// page's <main id="main-content">, and the link says so.
+const route = useRoute()
+const onEditor = computed(() => route.path === '/')
+
 function skipToMain() {
+  if (!onEditor.value) {
+    const main = document.getElementById('main-content')
+    if (main) {
+      main.focus()
+      main.scrollIntoView()
+    }
+    return
+  }
+
   // Try to focus the CodeMirror scroller first (the actual editable area)
   const scroller = document.getElementById('main-editor-scroller')
   if (scroller) {
@@ -23,11 +37,11 @@ function skipToMain() {
 
 <template>
   <a 
-    href="#main-editor-scroller" 
+    :href="onEditor ? '#main-editor-scroller' : '#main-content'"
     class="skip-link"
     @click.prevent="skipToMain"
   >
-    Skip to editor
+    {{ onEditor ? 'Skip to editor' : 'Skip to main content' }}
   </a>
 </template>
 
