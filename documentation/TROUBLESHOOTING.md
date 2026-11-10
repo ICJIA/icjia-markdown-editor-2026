@@ -73,6 +73,32 @@ taskkill /PID <PID> /F
 
 ## Runtime Issues
 
+### The Editor Hangs or Will Not Load With My Draft
+
+Open the editor in **recovery mode** by adding `?recover` to the address:
+
+```
+https://markdown.icjia.cloud/?recover
+```
+
+In recovery mode the saved draft is not opened and not rendered, and nothing is saved, so
+a draft that is stopping the editor from working cannot stop you getting it back. A banner
+at the top offers three choices: **Download the draft** (writes the stored text straight
+to `recovered-draft.md`), **Open it in the editor** (leaves recovery mode and loads it
+normally), or **Delete the draft**.
+
+Since 1.11.0 the preview is prepared in a background worker with a time limit, so a slow
+document should pause the preview ("Preview paused") rather than the editor. Recovery mode
+is the fallback for anything that gets past that.
+
+### "Preview paused"
+
+The preview shows this when a document takes more than ten seconds to prepare, or its
+formatted version is too large to display as you type (more than about 4 MB, which in
+practice means tens of thousands of formulas). Your text is safe and still being saved.
+Keep writing, use Download Markdown, or split the document; the preview comes back by
+itself when the document changes.
+
 ### Editor Not Loading / Blank Screen
 
 **Symptoms:** White or black screen, editor never appears.

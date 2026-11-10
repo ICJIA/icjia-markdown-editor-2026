@@ -251,7 +251,7 @@ function setupScrollSync(): void {
           text="How this editor works, in plain language"
           :content="{ side: 'top', sideOffset: 8, avoidCollisions: true }"
         >
-          <NuxtLink to="/technical-details" class="github-link how-link" aria-label="How this editor works">
+          <NuxtLink to="/technical-details" class="github-link how-link" aria-label="How it works: a plain-language guide to this editor">
             <UIcon name="i-heroicons-information-circle" class="github-icon" />
             <span class="how-text">How it works</span>
           </NuxtLink>

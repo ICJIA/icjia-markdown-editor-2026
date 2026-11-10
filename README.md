@@ -11,7 +11,7 @@
 
 A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. This is the **updated version** of the original ICJIA Markdown Editor, rebuilt from the ground up with modern web technologies. Full WCAG 2.1 AA compliance.
 
-"2.0" is the product generation, the rebuild that replaced the original editor. Releases of it are versioned separately; the current one is **1.10.0** (see the [changelog](./CHANGELOG.md)).
+"2.0" is the product generation, the rebuild that replaced the original editor. Releases of it are versioned separately; the current one is **1.11.0** (see the [changelog](./CHANGELOG.md)).
 
 **[Live Demo →](https://markdown.icjia.cloud)** · **[How it works, in plain language →](https://markdown.icjia.cloud/technical-details)**
 
@@ -57,7 +57,7 @@ And it lets a visitor replay the attacks from the November 2026 red/blue exercis
 
 ### Writing
 
-- **Live preview** beside the editor, with synchronized scrolling and split, editor-only and preview-only views
+- **Live preview** beside the editor, with synchronized scrolling and split, editor-only and preview-only views. The document is parsed in a Web Worker with a time budget, so no document can freeze the editor: one that takes too long, or renders to more than the preview can show, pauses the preview and says so
 - **Formatting toolbar and keyboard shortcuts** for bold, italic, code, headings, quotes, lists, links and rules, with undo/redo and find and replace
 - **Table builder** - a visual grid that writes the markdown table for you (⌘/Ctrl+Alt+T)
 - **Research notation** - footnotes with automatic numbering and back-references, KaTeX math (inline and block), `~~strikethrough~~`, `==highlight==`, `++inserted++`, task lists, and syntax highlighting for 18 languages including R, Stata, SAS, SQL and Python
@@ -72,6 +72,7 @@ And it lets a visitor replay the attacks from the November 2026 red/blue exercis
 ### Keeping and sharing your work
 
 - **Auto-save** to this browser's storage a couple of seconds after you pause typing, with a 30-second safety interval and a live countdown in the header
+- **Recovery mode** - open the editor as `/?recover` and the saved draft is neither opened nor rendered, and nothing is saved; a banner lets you download the draft, open it normally, or delete it. The way back in if a draft ever stops the editor from loading
 - **Open** an existing `.md`, `.markdown` or `.txt` file (up to 10 MB)
 - **Export** - copy as Markdown or HTML, or download either. The toolbar asks for a filename; ⌘/Ctrl+S saves straight to `document.md`. HTML downloads are self-contained: every stylesheet, and KaTeX's fonts when the document contains math, is embedded, so the file renders correctly offline and fetches nothing from a CDN
 - **Private by construction** - no account and no server; a document never leaves the browser it was written in
@@ -116,12 +117,25 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ```bash
 yarn test:run     # unit tests (vitest, jsdom)
+yarn generate && yarn test:browser  # browser tests (Playwright) against the production build
 yarn typecheck    # vue-tsc
 yarn lint         # eslint, via @nuxt/eslint
 yarn test:a11y:fresh # axe-core against a running dev server, at WCAG AAA
 yarn test:a11y:prod  # the same audit against https://markdown.icjia.cloud
 yarn test:a11y       # show the last saved results (a fresh audit only if none are saved)
 ```
+
+`yarn test:browser` runs against `dist/`, served by `scripts/serve-dist.mjs` with the same
+headers Netlify sends, so the Content-Security-Policy, the render worker and a real CSS
+engine are all part of what is tested. It replays the red/blue attacks, checks that the
+saved draft survives a tutorial reset, exercises recovery mode and the HTML export, and
+runs axe-core on the Technical Details page. `yarn serve:dist` starts that server on its
+own, which is the honest way to preview a build: `npx serve dist` sends no security
+headers, so a page can work there and be broken in production by its own policy.
+
+All of this runs in CI on every pull request and on `main`
+(`.github/workflows/ci.yml`): lint, typecheck, unit tests, build, browser tests and the
+accessibility audit, plus a check for high or critical advisories.
 
 The audit drives a real browser, so run `yarn playwright install chromium` once
 after installing or upgrading dependencies, and start `yarn dev` before running
@@ -274,10 +288,11 @@ document is the untrusted input, and everything below is aimed at it.
 
 | Layer | What it does | Where |
 | ----- | ------------ | ----- |
+| Render worker | Parsing runs off the main thread under a 10-second budget; output larger than 4 MB is not displayed. A hostile or pathological document can pause the preview, never the editor | `app/workers/markdown.worker.ts`, `utils/markdown/render-queue.ts` |
 | Sanitizer | DOMPurify, narrowed past its defaults: no `<style>`, forms or form controls, `<dialog>`, popovers, or media elements; only checkbox inputs; `rel="noopener noreferrer"` forced on every link with a `target` | `app/utils/markdown/config.ts` |
 | Style filter | Each `style` attribute is read one declaration at a time. `position` must be `static`, `relative` or `absolute`; `z-index` and anything that fetches (`url()`, `image-set()`) are dropped; a value containing a CSS escape is rejected whole | `sanitizeStyleAttribute` in the same file |
 | Containment | `contain: paint` on both preview panes, so a positioned element cannot leave the pane even if the two layers above are wrong | `PreviewPane.vue`, `TableBuilderModal.vue` |
-| Site headers | Content-Security-Policy (`connect-src 'self'`, `form-action 'none'`, no frames, plugins or `<base>`), HSTS, `Cross-Origin-Opener-Policy: same-origin`, clickjacking protection | `netlify.toml` |
+| Site headers | Content-Security-Policy with **no `'unsafe-inline'` for scripts**: the three small scripts Nuxt writes into each page are allowed by SHA-256 hash, computed at build time, so an injected `<script>` or `onerror=` is refused by the browser. Also `connect-src 'self'`, `form-action 'none'`, no frames, plugins or `<base>`; HSTS; `Cross-Origin-Opener-Policy: same-origin`; clickjacking protection | `scripts/csp.mjs` (the policy), `netlify.toml` (the rest) |
 | Export policy | Every exported HTML file carries its own CSP `<meta>`: no script, plugins, frames, connections, form posts or `<base>` | `app/utils/export/html-template.ts` |
 | Input limits | 10 MB upload cap; download filenames stripped of path traversal, reserved characters and control characters | `useExport.ts`, `utils/filename.ts` |
 
@@ -302,7 +317,7 @@ every payload in the browser.
 | 6 | **The parser could be stalled.** markdown-it 14.3.1 had quadratic-time paths (a multi-line link reference definition took 306 ms at 156 KB, growing with the square of the size), and auto-save would restore the same document on reload. DOMPurify 3.4.15 also had open advisories, none in a mode this app uses. | Medium | **Fixed.** markdown-it 14.3.3 (the same input: 10 ms) and DOMPurify 3.4.17. |
 | 7 | **`<dialog>` and popover attributes were accepted.** Neither can open without script or a `<button>`, both of which are already removed, so this was not exploitable. | Info | **Hardened.** Removed anyway; they are the two routes to the browser's top layer, which `contain: paint` does not clip. |
 | 8 | **Remote images are a read receipt.** `![](https://…)` tells the image's host that the document was opened, in the preview and in an exported file. | Low | **Accepted.** Authors need to reference figures by URL, and the CSP allows `img-src https:` for that reason. Documented here and on the Technical Details page. A click-to-load option is on the roadmap. |
-| 9 | **A document of mostly inline math is slow.** 20,000 `$x$` (80 KB) took 2.6 s and produced 7.7 MB of HTML; auto-save brings it back on reload. KaTeX's macro-expansion limit held against a `\def` bomb. | Low | **Open.** Slow, not unsafe, and cleared by clearing site data. Rendering in a worker with a time budget is on the roadmap. |
+| 9 | **A document of mostly inline math is slow.** 20,000 `$x$` (80 KB) took 2.6 s and produced 7.7 MB of HTML; auto-save brings it back on reload. KaTeX's macro-expansion limit held against a `\def` bomb. | Low | **Fixed in 1.11.0.** Rendering moved to a Web Worker with a time budget and an output cap, and `/?recover` opens the editor without touching the draft. |
 
 Attacks that the existing defences stopped, for the record: `<script>` and every event
 handler; `javascript:`, `data:text/html`, `vbscript:` and entity-encoded URL schemes, in
@@ -317,17 +332,27 @@ backtracking in the app's own patterns; and cross-tab auto-save overwrites.
 
 ### Known limits
 
-- `script-src` and `style-src` still need `'unsafe-inline'`: Nuxt writes its hydration
-  payload inline, and KaTeX positions glyphs with inline styles. A sanitizer bypass would
-  therefore not be stopped by the CSP alone. Moving to hashed inline scripts is the next
-  hardening step.
+- `style-src` still needs `'unsafe-inline'`: Nuxt inlines its critical CSS, and KaTeX
+  positions every glyph with an inline style attribute. Styles cannot run code, and the
+  sanitizer strips the declarations that could mislead. `script-src` no longer has it
+  (1.11.0).
+- Chromium reports a Content-Security-Policy violation when *any* parser creates an inline
+  event-handler attribute, including the inert document the sanitizer parses into. So a
+  document containing `onerror=` logs a console error as it is sanitized. Nothing ran:
+  that message is the policy refusing a handler the sanitizer was already removing.
+- Copy HTML and Download HTML still render on the main thread. They are one-off actions
+  the author asks for, but on a document that pauses the preview they will be slow.
 - Drafts are kept in `localStorage`, unencrypted, in the browser profile they were written
   in. On a shared computer the next person to open the editor in that profile sees the
   draft.
-- `yarn audit` still reports advisories in build and development tooling pulled in by Nuxt
-  (vite, nitropack, node-forge and others). None of that code is shipped to the browser:
-  the deployed site is static files. They affect a developer's machine, and are cleared by
-  upgrading Nuxt.
+- `yarn audit` reports 11 advisories, all low or moderate, none high or critical (it was
+  185 before the 1.11.0 upgrade to Nuxt 4.6). All but one are in build and development
+  tooling that never reaches the browser (nitropack's `glob` and `deepmerge`, ESLint's
+  `minimatch`, a Windows-only `esbuild` dev-server issue) and have no fixed release in
+  range. The one in shipped code is KaTeX's low-severity advisory, which needs an
+  existing prototype pollution to matter and is fixed only in 0.18, a release the
+  markdown-it KaTeX plugin does not yet support. CI fails if a high or critical advisory
+  appears in a runtime dependency.
 
 To report a vulnerability, open an issue on the repository, or contact ICJIA directly for
 anything you would rather not disclose publicly.
@@ -590,9 +615,14 @@ icjia-markdown-editor-2026/
 ├── public/                 # Static assets, robots.txt, llms.txt
 ├── tests/                  # Test files
 │   ├── unit/              # Unit tests (vitest + jsdom)
+│   ├── browser/           # Browser tests (Playwright) against the production build
 │   └── a11y/              # Accessibility audit (axe-core + Playwright) and its
 │                          # last saved results, a11y-results.json
-├── netlify.toml            # Build settings and security headers
+├── .github/workflows/      # CI: lint, typecheck, unit, build, browser, accessibility
+├── scripts/                # csp.mjs (writes the CSP into dist/_headers after a build),
+│                           # serve-dist.mjs (serves dist/ with Netlify's headers)
+├── netlify.toml            # Build settings and security headers (all but the CSP)
+├── playwright.config.ts    # Browser test configuration
 ├── nuke.sh                 # Cache-clearing script (yarn nuke)
 ├── vitest.config.ts        # Unit test configuration
 ├── eslint.config.mjs       # Lint configuration (via @nuxt/eslint)
@@ -627,19 +657,18 @@ This documentation enables better IDE intellisense, easier onboarding for new de
 
 ## Roadmap
 
-Suggested next steps, most valuable first. The first four come out of the November 2026
-analysis and red/blue exercise.
+Suggested next steps, most valuable first. The worker, the hash-based CSP, the browser
+tests and CI that led this list after the November 2026 red/blue exercise shipped in 1.11.0.
 
 | Area | Improvement | Why |
 | ---- | ----------- | --- |
-| Reliability | **Render in a Web Worker with a time budget, and add a recovery mode** (a URL flag that opens the editor without restoring or rendering the saved draft) | Parsing, KaTeX and sanitizing all run on the main thread, so one pathological document freezes the tab, and auto-save restores it on every reload. This is finding 9. |
-| Security | **Hash-based CSP for inline scripts** (for example with `nuxt-security`'s static-site hashing) | Removes `'unsafe-inline'` from `script-src`, so the CSP would stop a sanitizer bypass on its own. |
 | Privacy | **Click-to-load for remote images** in documents opened from a file, and a visible **"Clear my draft from this browser"** control | Closes the accepted read-receipt risk (finding 8) and addresses drafts left behind on shared computers. |
+| Performance | **Render Copy HTML and Download HTML in the worker too** | They still parse on the main thread, so they are slow on exactly the documents that pause the preview. |
 | Usability | **Rebind Block Quote on macOS.** It is documented as ⌘Q, which macOS reserves for quitting the browser, so the shortcut cannot work there and the tour teaches a keystroke that closes the window | A first-time author following the tour loses their window. |
-| Testing | **Browser-level regression tests** (Playwright) for the attacks in [Security](#security), the tutorial-reset draft, and export | jsdom has no CSS engine: the `position` bypasses and the 1.8.0 `<style>` leak were all invisible to the unit tests. A CI workflow running lint, typecheck, tests and the a11y audit on every pull request would catch the rest. |
-| Accessibility | **Audit `/technical-details` in `yarn test:a11y`**, and complete the manual VoiceOver/NVDA pass | The script audits the editor only; the new page was audited by hand for 1.10.0. |
+| Testing | **Run the browser tests in Firefox and WebKit as well**, and add a test that renders past the worker's time budget in a real browser | They run in Chromium only. The time budget itself is unit-tested against a fake worker; no real document slow enough to hit it is known since markdown-it 14.3.3. |
+| Accessibility | **Complete the manual VoiceOver/NVDA pass** | Automated checks cover the editor (`yarn test:a11y`) and the Technical Details page (browser tests); neither replaces listening to it. |
 | Features | Link and image insertion dialogs, a shortcuts reference, optional system colour-scheme detection, offline support (service worker), multiple named drafts, `.docx`/PDF export | The first two are listed as pending under Phase 4. |
-| Maintenance | **Upgrade Nuxt** past 4.6.3 and re-run `yarn audit`; lint for unused exports | Clears the remaining build-tooling advisories. |
+| Maintenance | **Move to KaTeX 0.18** once the markdown-it plugin supports it; lint for unused exports | Clears the last advisory in shipped code. |
 
 ## Development Progress
 
@@ -730,6 +759,8 @@ A phase-by-phase record of what has been built. For what changed in each release
 |   ✅   | 1.10.0 — red/blue exercise: six findings fixed, one hardened, one accepted, one open |
 |   ✅   | 1.10.0 — "Display Markdown Tutorial" no longer overwrites the saved draft |
 |   ✅   | 1.10.0 — Technical Details page (`/technical-details`)                   |
+|   ✅   | 1.11.0 — Web Worker rendering with a time budget; recovery mode (`/?recover`) |
+|   ✅   | 1.11.0 — hash-based CSP (no `'unsafe-inline'` scripts); CI and browser tests |
 |   ⬜   | Screen reader testing (VoiceOver, NVDA)                                 |
 |   ⬜   | Keyboard navigation refinement                                          |
 |   ⬜   | Help modal with shortcuts reference                                     |
@@ -743,9 +774,9 @@ A phase-by-phase record of what has been built. For what changed in each release
 
 | Status | Feature                                                   |
 | :----: | :-------------------------------------------------------- |
-|   ✅   | Unit tests for utilities (238 tests across 10 files)         |
+|   ✅   | Unit tests for utilities (262 tests across 12 files)         |
 |   ⬜   | Component tests                                           |
-|   ⬜   | E2E tests for critical paths                              |
+|   ✅   | Browser tests for critical paths (38, Playwright, in CI)  |
 |   ⬜   | Cross-browser testing                                     |
 |   ⬜   | Performance optimization                                  |
 |   ✅   | Lighthouse 100 on production (a11y, best practices, SEO, desktop perf) |

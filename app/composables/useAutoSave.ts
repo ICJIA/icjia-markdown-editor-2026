@@ -43,6 +43,7 @@ import {
   isTutorialOverwrite,
   shouldAdoptExternalSave,
   secondsUntilNextSave,
+  type SavedRecord,
 } from '~/utils/autosave'
 
 /**
@@ -111,6 +112,37 @@ const showSaveIndicator = ref(false)
 const lastSaveRefused = ref(false)
 
 /**
+ * True when the page was opened in recovery mode (`/?recover`).
+ *
+ * Recovery mode is the way back in when a saved draft is the thing stopping the
+ * editor from working: the draft is neither opened nor rendered, and nothing is
+ * written to storage, so it stays exactly as it was until the author decides
+ * what to do with it. The render worker should make this unnecessary; it exists
+ * because "should" is not a recovery plan.
+ */
+const isRecoveryMode = ref(false)
+
+/**
+ * Whether this page load asked for recovery mode.
+ *
+ * Reads the URL the browser actually navigated to, from the Navigation Timing
+ * entry, rather than `location.search`. While Nuxt hydrates a prerendered page
+ * its router briefly rewrites the address bar to the prerendered path — without
+ * the query string — and puts it back a moment later. Auto-save initializes
+ * inside that window, so `location.search` is empty exactly when it is read.
+ * The navigation entry is fixed for the life of the page.
+ */
+function openedInRecoveryMode(): boolean {
+  const entry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
+  const url = entry?.name || window.location.href
+  try {
+    return new URL(url).searchParams.has('recover')
+  } catch {
+    return false
+  }
+}
+
+/**
  * What this tab last wrote to storage. Compared against the live content to
  * tell "this tab has unsaved edits" from "this tab is idle", which is what
  * decides whether another tab's save may be adopted.
@@ -176,6 +208,8 @@ export function useAutoSave() {
    */
   function save(): boolean {
     if (!storageAvailable.value) return false
+    // Recovery mode never writes: the stored draft is what is being recovered.
+    if (isRecoveryMode.value) return false
 
     try {
       isSaving.value = true
@@ -302,6 +336,21 @@ export function useAutoSave() {
   }
 
   /**
+   * Reads the stored draft without opening it in the editor.
+   * Used by recovery mode to describe the draft and to download it.
+   *
+   * @returns {SavedRecord | null} The stored record, or null if there is none
+   */
+  function getSavedDraft(): SavedRecord | null {
+    try {
+      const record = parseSavedRecord(localStorage.getItem(STORAGE_KEY))
+      return record && record.content.trim() ? record : null
+    } catch {
+      return null
+    }
+  }
+
+  /**
    * Clears all saved content from localStorage.
    * Resets the lastSaveTime to null.
    *
@@ -400,6 +449,14 @@ export function useAutoSave() {
     if (!storageAvailable.value) {
       // Storage not available - still initialize with default
       initializeWithDefault()
+      return
+    }
+
+    isRecoveryMode.value = openedInRecoveryMode()
+    if (isRecoveryMode.value) {
+      // Show the tutorial, leave the draft untouched, and start no timers.
+      initializeWithDefault()
+      announce('Recovery mode. Your saved draft was not opened.')
       return
     }
 
@@ -527,6 +584,8 @@ export function useAutoSave() {
     hasRestoredFromStorage: readonly(hasRestoredFromStorage),
     storageAvailable: readonly(storageAvailable),
     lastSaveRefused: readonly(lastSaveRefused),
+    isRecoveryMode: readonly(isRecoveryMode),
+    getSavedDraft,
     isContentReady,
   }
 }

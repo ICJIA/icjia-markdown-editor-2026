@@ -246,7 +246,7 @@ const mobileMenuSections = [
         class="hamburger-button"
         :aria-expanded="isMobileMenuOpen"
         aria-controls="mobile-menu"
-        aria-label="Toggle formatting menu"
+        aria-label="Format menu"
         @click="toggleMobileMenu"
       >
         <UIcon :name="isMobileMenuOpen ? 'i-heroicons-x-mark' : 'i-heroicons-bars-3'" class="hamburger-icon" />

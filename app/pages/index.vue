@@ -110,6 +110,9 @@ const isAnyModalOpen = computed(() => isToolsModalOpen.value || isDownloadModalO
     <!-- Header landmark -->
     <AppHeader :inert="isAnyModalOpen || undefined" />
 
+    <!-- Shown only when the page was opened as /?recover -->
+    <RecoveryBanner :inert="isAnyModalOpen || undefined" />
+
     <!-- Main content landmark -->
     <main class="main-content" role="main" :inert="isAnyModalOpen || undefined">
       <EditorLayout />
