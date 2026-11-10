@@ -374,12 +374,13 @@ This project is committed to WCAG 2.1 Level AA compliance, and currently clears 
 with zero axe-core violations — verified against the deployed site, not only the dev
 server, across dark and light modes at desktop, tablet and mobile widths. Lighthouse on
 production scores 100 for accessibility, best practices and SEO on both desktop and
-mobile. The checked-in production report dates from 9 September 2026 (the 1.9.2 build).
-The 1.10.0 build was audited locally before release, served with the production
-headers: the editor passes the same AAA run, and the Technical Details page reports zero
-axe-core violations at AAA (with best-practice rules on) at desktop and mobile widths
-and Lighthouse 100 in all four categories. Production should be re-audited with
-`yarn test:a11y:prod` once 1.10.0 is deployed.
+mobile (measured in September 2026, on 1.9.2). The checked-in axe-core report is the
+production run of 10 November 2026, against the deployed 1.10.0: zero violations in the
+editor, with keyboard navigation and landmarks passing. The Technical Details page, which
+that script does not cover, was audited on production the same day and reports zero
+axe-core violations at AAA (with best-practice rules on) at desktop and mobile widths.
+Its Lighthouse scores, 100 in all four categories on desktop, were taken before release
+on a production build served locally with the production headers.
 
 Note what those tools do not cover. axe-core has no rule for a live region that
 announces on every keystroke, so a page can score perfectly while being unusable with a

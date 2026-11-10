@@ -46,7 +46,7 @@ Fifteen regression tests cover the fixes. Every payload was confirmed in Chromiu
 ### Notes
 
 - `yarn audit` still reports advisories in build and development tooling that Nuxt pulls in (vite, nitropack, node-forge and others). None of it ships to the browser — the deployed site is static files — but it runs on a developer's machine. Upgrading Nuxt past 4.6.3 clears it and is on the roadmap rather than in this release, to keep a security release from also being a framework upgrade.
-- The checked-in `tests/a11y/a11y-results.json` is still the production run of 9 September. This build passed the same audit locally; re-run `yarn test:a11y:prod` after deploying.
+- The checked-in `tests/a11y/a11y-results.json` is the production run of 10 November, taken against this release once it was deployed: zero violations at AAA. The Technical Details page, which the script does not cover, was audited on production separately the same day with the same result.
 - Block Quote is bound to ⌘Q, which macOS reserves for quitting the browser. Not changed here; it is on the roadmap.
 
 ## [1.9.4] - 2026-09-16
