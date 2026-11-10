@@ -12,7 +12,7 @@
  * @requires @traptitech/markdown-it-katex
  * 
  * Features:
- * - Syntax highlighting for 190+ languages via highlight.js
+ * - Syntax highlighting for the 18 registered languages via highlight.js (core build)
  * - Footnote support via markdown-it-footnote
  * - Heading anchors for navigation
  * - External link security (rel="noopener noreferrer")
@@ -262,6 +262,19 @@ export function getMarkdownIt(): MarkdownIt {
  *   - `button` / `select` / `textarea` / `option` / `fieldset` / `legend`
  *               never produced by markdown; allowing them only supplies parts
  *               for a convincing fake UI.
+ *   - `dialog`, and the `popover` attribute with its invokers
+ *               (`popovertarget`, `command`, `commandfor`)
+ *               the ways HTML can ask for the browser's top layer, which sits
+ *               above everything and is not clipped by `contain: paint`. The
+ *               invokers only work on a `<button>`, which is already forbidden,
+ *               so nothing here can open today; they are removed so that stays
+ *               true whatever a future browser lets them attach to.
+ *   - `audio` / `video` / `source` / `track`
+ *               markdown has no syntax for media, the deployed
+ *               Content-Security-Policy already refuses to load it, and in an
+ *               exported file — which has no policy from a server — each one is
+ *               a request to a host of the document's choosing the moment the
+ *               file is opened.
  *
  * `input` is deliberately NOT forbidden: markdown-it-task-lists renders real
  * `<input type="checkbox">` elements. The `uponSanitizeElement` hook below drops
@@ -275,46 +288,85 @@ const PURIFY_CONFIG = {
     'loading',
   ],
   ADD_TAGS: ['math', 'mrow', 'mi', 'mo', 'mn', 'msup', 'msub', 'mfrac', 'mspace', 'mtext', 'annotation', 'semantics'],
-  FORBID_TAGS: ['style', 'form', 'button', 'select', 'textarea', 'option', 'fieldset', 'legend'],
+  FORBID_TAGS: [
+    'style', 'form', 'button', 'select', 'textarea', 'option', 'fieldset', 'legend',
+    'dialog', 'audio', 'video', 'source', 'track',
+  ],
+  FORBID_ATTR: ['popover', 'popovertarget', 'popovertargetaction', 'command', 'commandfor'],
   RETURN_TRUSTED_TYPE: false,
 }
 
 /**
- * CSS declarations that let an element escape the preview pane and cover the
- * application. Stripped from `style` attributes on the way through.
+ * The only `position` values a document may ask for.
+ *
+ * This is an allowlist because the value does not have to be spelled out for a
+ * browser to honour it. `position: var(--p)` with `--p: fixed` declared beside
+ * it, or `position: var(--undefined, fixed)`, both compute to `fixed` while
+ * containing nothing a search for the word would find at the right place — and
+ * both passed the pattern this replaces (red/blue exercise, November 2026).
+ * Naming what is allowed leaves no value to be clever with. KaTeX needs
+ * `relative`; `absolute` stays inside the preview, which is a containing block.
+ */
+const ALLOWED_POSITIONS = new Set(['static', 'relative', 'absolute'])
+
+/**
+ * Functions that make a browser fetch something. In a `style` attribute that is
+ * a request to a host the document chose, sent the moment the preview renders —
+ * a read receipt carrying the reader's IP address. Nothing the renderer emits
+ * uses one.
+ */
+const FETCHING_CSS = /(?:url|image-set|image|cross-fade|element)\s*\(/i
+
+/**
+ * Removes from one `style` attribute value the declarations that let an element
+ * escape the preview pane, cover the application, or call out to the network.
  *
  * The whole `style` attribute cannot simply be forbidden: KaTeX positions every
  * glyph with inline `height` / `top` / `vertical-align` / `position:relative`,
- * and markdown tables carry `text-align` for column alignment. So this removes
- * the two declarations that matter — `position:fixed` (or `sticky`), which
- * escapes any containing block, and `z-index`, which lifts the result above the
- * UI — and leaves every other declaration untouched.
+ * and markdown tables carry `text-align` for column alignment. So the value is
+ * read the way a browser reads it — one declaration at a time — and only three
+ * things are dropped: a `position` outside {@link ALLOWED_POSITIONS}, any
+ * `z-index`, and any declaration that fetches.
  *
- * Each alternative runs to the next `;` rather than ending at the value. An
- * earlier version anchored the `position` branch immediately after
- * `fixed`/`sticky`, so `position:fixed !important` — ordinary CSS a browser
- * honours — did not match and passed through intact. (`z-index` was unaffected
- * only because its `[^;]*` already swallowed the `!important`.) Matching the
- * whole declaration removes that whole class of near-miss.
- */
-const ESCAPING_CSS = /(?:^|;)\s*(?:position\s*:\s*(?:fixed|sticky)\b[^;]*|z-index\s*:[^;]*)/gi
-
-/**
- * Removes the escaping declarations from one `style` attribute value.
+ * Three ways of hiding a declaration from that reading are closed first:
  *
- * Comments are stripped first. CSS permits a comment between any two tokens, so
- * `position:/**\/fixed` is a fixed element to a browser while being invisible to
- * a pattern that expects the value to follow the colon. Removing comments before
- * matching closes every place one could hide rather than guessing at positions.
+ *   - Comments. CSS permits one between any two tokens, so `position:/**\/fixed`
+ *     is a fixed element to a browser. They are removed before anything else.
+ *   - Escapes. `pos\69tion:fixed` and `position:\66ixed` are both ordinary CSS
+ *     for `position:fixed`, and every pattern written against the readable
+ *     spelling misses them. No renderer here emits a backslash in a style, so a
+ *     value containing one is rejected whole rather than decoded: decoding would
+ *     mean reimplementing the browser's tokenizer and trusting the copy.
+ *   - `!important`, case and whitespace, which are normalized before comparing.
+ *
+ * Splitting on every `;` is stricter than a browser, which ignores one inside a
+ * string or parentheses. That can only produce more pieces than the browser
+ * sees, never fewer, so a declaration the browser honours always begins at a
+ * boundary this function also examines.
  *
  * @param {string} style - Raw `style` attribute value
- * @returns {string} The value with escaping declarations removed
+ * @returns {string} The value with unsafe declarations removed; empty if nothing is left
  */
-function stripEscapingCss(style: string): string {
+export function sanitizeStyleAttribute(style: string): string {
+  if (style.includes('\\')) return ''
+
   return style
     .replace(/\/\*[\s\S]*?\*\//g, '')
-    .replace(ESCAPING_CSS, '')
-    .replace(/^\s*;+/, '')
+    .split(';')
+    .filter((declaration) => {
+      const colon = declaration.indexOf(':')
+      if (colon === -1) return declaration.trim() !== ''
+
+      const property = declaration.slice(0, colon).trim().toLowerCase()
+      const value = declaration.slice(colon + 1).trim().toLowerCase()
+
+      if (property === 'z-index') return false
+      if (property === 'position') {
+        return ALLOWED_POSITIONS.has(value.replace(/\s*!\s*important$/, '').trim())
+      }
+      return !FETCHING_CSS.test(value)
+    })
+    .join(';')
     .trim()
 }
 
@@ -334,10 +386,11 @@ function registerHooks(): void {
     }
   })
 
-  // Drop only the declarations that would let content overlay the application.
+  // Drop only the declarations that would let content overlay the application
+  // or call out to the network.
   DOMPurify.addHook('uponSanitizeAttribute', (_node, data) => {
     if (data.attrName !== 'style' || !data.attrValue) return
-    const cleaned = stripEscapingCss(data.attrValue)
+    const cleaned = sanitizeStyleAttribute(data.attrValue)
     if (cleaned) {
       data.attrValue = cleaned
     } else {
@@ -346,9 +399,14 @@ function registerHooks(): void {
   })
 
   // markdown-authored links get rel from the link_open renderer, but a raw-HTML
-  // `<a target="_blank">` arrives without one. Guarantee it after sanitization.
+  // link arrives without one. Guarantee it after sanitization — for every
+  // `target`, not only `_blank`. Browsers imply `noopener` for `_blank` alone: a
+  // link to a *named* window (`target="report"`) hands the page it opens a live
+  // `window.opener`, which that page can use to navigate this tab somewhere
+  // else while the author is reading the new one. `<area>` and SVG `<a>` take
+  // `target` too, so the check is on the attribute rather than the tag name.
   DOMPurify.addHook('afterSanitizeAttributes', (node) => {
-    if (node.tagName === 'A' && node.getAttribute('target') === '_blank') {
+    if (node.hasAttribute?.('target')) {
       node.setAttribute('rel', 'noopener noreferrer')
     }
   })

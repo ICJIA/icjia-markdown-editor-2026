@@ -40,6 +40,7 @@ import {
   AUTOSAVE_VERSION,
   parseSavedRecord,
   isDestructiveSave,
+  isTutorialOverwrite,
   shouldAdoptExternalSave,
   secondsUntilNextSave,
 } from '~/utils/autosave'
@@ -146,7 +147,7 @@ let mountedInstances = 0
  * @returns {Object} Auto-save state and methods
  */
 export function useAutoSave() {
-  const { content, setContent, initializeWithDefault, markContentReady, isContentReady } = useEditor()
+  const { content, setContent, initializeWithDefault, markContentReady, isContentReady, getDefaultContent } = useEditor()
   const { announce } = useAccessibility()
 
   /**
@@ -183,7 +184,13 @@ export function useAutoSave() {
       // The blur and beforeunload handlers save unconditionally, so without this
       // a select-all-delete followed by switching tabs empties the record, and
       // the next load has nothing to restore.
-      if (isDestructiveSave(content.value, parseSavedRecord(localStorage.getItem(STORAGE_KEY)))) {
+      // The same goes for the tutorial: showing it must not cost the author
+      // the draft the reset dialog has just told them is safe.
+      const stored = parseSavedRecord(localStorage.getItem(STORAGE_KEY))
+      if (
+        isDestructiveSave(content.value, stored)
+        || isTutorialOverwrite(content.value, getDefaultContent(), stored)
+      ) {
         lastSaveRefused.value = true
         return false
       }

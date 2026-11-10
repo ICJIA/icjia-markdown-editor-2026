@@ -113,6 +113,37 @@ export function isDestructiveSave(next: string, stored: SavedRecord | null): boo
 }
 
 /**
+ * Whether a save would replace the author's stored draft with the tutorial.
+ *
+ * "Display Markdown Tutorial" swaps the editor's content for the built-in
+ * tutorial and tells the author their saved draft is preserved and a reload
+ * restores it. That was untrue: the tutorial is non-empty content like any
+ * other, so the change watcher saved it over the draft two seconds later — and
+ * the reload the dialog recommends fired `beforeunload`, which saved it again.
+ * Either way the draft was gone by the time the page came back.
+ *
+ * The tutorial never needs persisting: with nothing stored, the editor shows it
+ * anyway. So an exact match is refused whenever it would cost something, and
+ * the moment the author changes a character it is their document and saves
+ * normally.
+ *
+ * @param {string} next - Content about to be written
+ * @param {string} tutorial - The built-in tutorial content
+ * @param {SavedRecord | null} stored - The record it would replace
+ * @returns {boolean} True when the write would replace a draft with the tutorial
+ *
+ * @example
+ * ```typescript
+ * isTutorialOverwrite(TUTORIAL, TUTORIAL, parseSavedRecord(saved))  // true — refuse
+ * isTutorialOverwrite(TUTORIAL + 'x', TUTORIAL, parseSavedRecord(saved))  // false
+ * ```
+ */
+export function isTutorialOverwrite(next: string, tutorial: string, stored: SavedRecord | null): boolean {
+  if (next !== tutorial) return false
+  return stored !== null && stored.content !== tutorial && stored.content.trim().length > 0
+}
+
+/**
  * Whether a save made by another tab should replace what this tab shows.
  *
  * Two tabs share one storage key, so without this the last writer wins and the

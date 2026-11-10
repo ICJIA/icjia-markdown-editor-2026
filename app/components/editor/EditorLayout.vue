@@ -27,7 +27,7 @@ function handleStartTour() {
  * Note: The user's auto-saved content is preserved in localStorage.
  */
 function handleReset() {
-  if (confirm('Reset to markdown tutorial?\n\nThis will show the tutorial content and restart the onboarding tour.\n\nYour auto-saved content is preserved. Reload the page to restore it.')) {
+  if (confirm('Reset to markdown tutorial?\n\nThis will show the tutorial content and restart the onboarding tour.\n\nYour auto-saved draft is kept until you edit the tutorial. Reload the page to restore it.')) {
     resetContent()
     resetTour()
     announce('Content reset to markdown tutorial. Welcome tour will appear.')
@@ -246,6 +246,15 @@ function setupScrollSync(): void {
             <UIcon name="i-heroicons-arrow-path" class="reset-icon" />
             <span class="reset-text">Display Markdown Tutorial</span>
           </button>
+        </UTooltip>
+        <UTooltip
+          text="How this editor works, in plain language"
+          :content="{ side: 'top', sideOffset: 8, avoidCollisions: true }"
+        >
+          <NuxtLink to="/technical-details" class="github-link how-link" aria-label="How this editor works">
+            <UIcon name="i-heroicons-information-circle" class="github-icon" />
+            <span class="how-text">How it works</span>
+          </NuxtLink>
         </UTooltip>
         <UTooltip
           text="View source code on GitHub (opens in new tab)"
@@ -593,6 +602,18 @@ function setupScrollSync(): void {
 
 .github-text {
   /* Hide on very small screens */
+}
+
+/* The status bar is already full at laptop widths, so the newest link gives up
+   its label first and keeps its icon, tooltip and accessible name. */
+.how-link {
+  white-space: nowrap;
+}
+
+@media (max-width: 1279px) {
+  .how-text {
+    display: none;
+  }
 }
 
 /* Light mode GitHub link */

@@ -34,6 +34,12 @@ NUXT_PUBLIC_SITE_URL = "https://markdown.icjia.cloud"
 #                        no framed content, no plugins, and no way for injected
 #                        markup to repoint relative URLs via <base>.
 #   frame-ancestors      clickjacking protection; the modern X-Frame-Options.
+#
+# Cross-Origin-Opener-Policy is the header-level backstop for links. A preview
+# link is a link to wherever the document says; `same-origin` means a page opened
+# from this one never receives a `window.opener` pointing back at the editor,
+# whatever `target` or `rel` the link carried. The sanitizer already forces
+# `rel="noopener"` on every targeted link; this holds if that is ever bypassed.
 [[headers]]
 for = "/*"
 [headers.values]
@@ -42,6 +48,7 @@ X-Content-Type-Options = "nosniff"
 Referrer-Policy = "strict-origin-when-cross-origin"
 Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+Cross-Origin-Opener-Policy = "same-origin"
 Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; form-action 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"
 
 # Cache static assets

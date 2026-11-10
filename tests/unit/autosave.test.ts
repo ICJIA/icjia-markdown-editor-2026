@@ -3,6 +3,7 @@ import {
   AUTOSAVE_VERSION,
   parseSavedRecord,
   isDestructiveSave,
+  isTutorialOverwrite,
   shouldAdoptExternalSave,
   secondsUntilNextSave,
 } from '~/utils/autosave'
@@ -135,5 +136,31 @@ describe('secondsUntilNextSave', () => {
 
   it('rounds up so it never claims a save is due while one is still pending', () => {
     expect(secondsUntilNextSave(10_000, 10_001, INTERVAL)).toBe(30)
+  })
+})
+
+describe('isTutorialOverwrite', () => {
+  const TUTORIAL = '## Welcome\n\nThis is the tutorial.'
+  const record = (content: string) => ({ content, savedAt: 1, version: 1 })
+
+  it('refuses to replace a stored draft with the tutorial', () => {
+    expect(isTutorialOverwrite(TUTORIAL, TUTORIAL, record('# My report'))).toBe(true)
+  })
+
+  it('allows the write once the author has changed the tutorial', () => {
+    expect(isTutorialOverwrite(`${TUTORIAL} `, TUTORIAL, record('# My report'))).toBe(false)
+  })
+
+  it('has nothing to protect when no draft is stored', () => {
+    expect(isTutorialOverwrite(TUTORIAL, TUTORIAL, null)).toBe(false)
+    expect(isTutorialOverwrite(TUTORIAL, TUTORIAL, record('   '))).toBe(false)
+  })
+
+  it('does not refuse when the stored record already is the tutorial', () => {
+    expect(isTutorialOverwrite(TUTORIAL, TUTORIAL, record(TUTORIAL))).toBe(false)
+  })
+
+  it('never interferes with ordinary content', () => {
+    expect(isTutorialOverwrite('# Other', TUTORIAL, record('# My report'))).toBe(false)
   })
 })

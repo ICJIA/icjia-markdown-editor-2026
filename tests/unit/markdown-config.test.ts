@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { createMarkdownIt, renderMarkdown } from '~/utils/markdown/config'
+import { createMarkdownIt, renderMarkdown, sanitizeStyleAttribute } from '~/utils/markdown/config'
 
 describe('createMarkdownIt', () => {
   const md = createMarkdownIt()
@@ -233,5 +233,100 @@ describe('escaping-CSS stripping resists ordinary CSS syntax', () => {
     const html = renderMarkdown('<div style="position:fixed !important;text-align:center;height:2em">x</div>')
     expect(html).toMatch(/text-align\s*:\s*center/i)
     expect(html).toMatch(/height\s*:\s*2em/i)
+  })
+})
+
+// Red/blue exercise, November 2026. Every payload below was confirmed in
+// Chromium against 1.9.4 before the fix: the element computed to
+// `position: fixed`, or the request left the browser, or the link reached the
+// DOM without `rel`. jsdom has no CSS engine, so these assert on the markup the
+// sanitizer returns — which is the thing the fix changed.
+describe('style attributes cannot hide a declaration from the sanitizer', () => {
+  const fixedByAnotherName = [
+    ['an escaped property name', 'pos\\69tion:fixed;top:0'],
+    ['an escaped value', 'position:\\66ixed;top:0'],
+    ['a custom property', '--p:fixed;position:var(--p);top:0'],
+    ['a var() fallback', 'position:var(--undefined,fixed);top:0'],
+    ['a vendor keyword', 'position:-webkit-sticky;top:0'],
+  ] as const
+
+  for (const [label, style] of fixedByAnotherName) {
+    it(`does not let position through as ${label}`, () => {
+      const html = renderMarkdown(`<div style="${style}">overlay</div>`)
+      expect(html).not.toMatch(/pos[^;"]*tion\s*:/i)
+    })
+  }
+
+  it('removes an escaped z-index', () => {
+    const html = renderMarkdown('<div style="z-\\69ndex:99999;color:red">x</div>')
+    expect(html).not.toContain('99999')
+  })
+
+  it('rejects any style value containing a CSS escape', () => {
+    expect(sanitizeStyleAttribute('color:\\72 ed')).toBe('')
+  })
+
+  it('keeps relative and absolute positioning, which stay inside the preview', () => {
+    expect(sanitizeStyleAttribute('position:relative;top:1em')).toBe('position:relative;top:1em')
+    expect(sanitizeStyleAttribute('position: absolute !important')).toBe('position: absolute !important')
+  })
+
+  it('removes declarations that fetch from the network', () => {
+    const fetching = [
+      'background:url(https://tracker.example/pixel.png)',
+      "background-image: URL( 'https://tracker.example/p.png' )",
+      'list-style-image:url(//tracker.example/p.png)',
+      "background:image-set('https://tracker.example/p.png' 1x)",
+      '--bg:url(https://tracker.example/p.png);background:var(--bg)',
+    ]
+    for (const style of fetching) {
+      const html = renderMarkdown(`<div style="${style};color:red">x</div>`)
+      expect(html).not.toContain('tracker.example')
+      expect(html).toContain('color:red')
+    }
+  })
+})
+
+describe('links cannot hand the opened page a window.opener', () => {
+  it('adds rel to a link with a named target', () => {
+    const html = renderMarkdown('<a href="https://example.com" target="report">x</a>')
+    expect(html).toContain('rel="noopener noreferrer"')
+  })
+
+  it('overrides a rel the document supplied', () => {
+    const html = renderMarkdown('<a href="https://example.com" target="report" rel="opener">x</a>')
+    expect(html).toContain('rel="noopener noreferrer"')
+    expect(html).not.toContain('rel="opener"')
+  })
+
+  it('covers image-map areas, which take target too', () => {
+    const html = renderMarkdown(
+      '<map name="m"><area shape="rect" coords="0,0,5,5" href="https://example.com" target="report"></map>',
+    )
+    expect(html).toMatch(/<area[^>]*rel="noopener noreferrer"/)
+  })
+
+  it('leaves untargeted links alone', () => {
+    expect(renderMarkdown('<a href="https://example.com">x</a>')).not.toContain('rel=')
+  })
+})
+
+describe('tags and attributes with no place in a rendered document', () => {
+  it('strips media elements, which fetch as soon as they render', () => {
+    const html = renderMarkdown(
+      '<video src="https://tracker.example/v.mp4" autoplay></video>'
+      + '<audio><source src="https://tracker.example/a.mp3"></audio>',
+    )
+    expect(html).not.toMatch(/<(video|audio|source)/)
+    expect(html).not.toContain('tracker.example')
+  })
+
+  it('strips dialog and popover, the two routes to the top layer', () => {
+    expect(renderMarkdown('<dialog open>x</dialog>')).not.toContain('<dialog')
+    expect(renderMarkdown('<div popover="manual">x</div>')).not.toContain('popover')
+    const invoker = renderMarkdown(
+      '<div id="p" popover>x</div><a href="#" popovertarget="p" commandfor="p" command="show-popover">open</a>',
+    )
+    expect(invoker).not.toMatch(/popover|command/)
   })
 })
