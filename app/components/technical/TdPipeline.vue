@@ -18,6 +18,8 @@ Arrests fell **12%** in 2025.
 const mounted = ref(false)
 onMounted(() => { mounted.value = true })
 
+const current = ref(0)
+
 /** Drops the bookkeeping attributes the editor adds for scroll sync and anchors. */
 function tidy(html: string): string {
   return html
@@ -27,7 +29,12 @@ function tidy(html: string): string {
 }
 
 const parsed = computed(() => (mounted.value ? tidy(getMarkdownIt().render(SAMPLE)) : ''))
-const sanitized = computed(() => (mounted.value ? renderMarkdown(SAMPLE) : ''))
+// Sanitized only once the visitor reaches the step that shows it. Chromium
+// reports a Content-Security-Policy violation whenever a parser creates an
+// inline event-handler attribute — even in the inert document the sanitizer
+// parses into, where nothing can run — so sanitizing this sample on page load
+// would log a console error on every visit for an attack that was stopped.
+const sanitized = computed(() => (mounted.value && current.value >= 2 ? renderMarkdown(SAMPLE) : ''))
 
 const stages = [
   {
@@ -38,7 +45,7 @@ const stages = [
   {
     name: 'The parser reads it',
     title: 'Marks become structure',
-    body: 'About a sixth of a second after you pause, a parser reads the text and writes the web code a browser understands: a real heading, a real paragraph, real bold. The pasted snippet is passed through untouched, including the part that tries to run a command.',
+    body: 'About a sixth of a second after you pause, a parser reads the text and writes the web code a browser understands: a real heading, a real paragraph, real bold. This happens in the background, so even an enormous document cannot make the editor stutter. The pasted snippet is passed through untouched, including the part that tries to run a command.',
   },
   {
     name: 'The sanitizer checks it',
@@ -52,7 +59,6 @@ const stages = [
   },
 ] as const
 
-const current = ref(0)
 const stage = computed(() => stages[current.value]!)
 
 const code = computed(() => {

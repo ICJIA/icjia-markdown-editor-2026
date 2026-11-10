@@ -20,11 +20,11 @@
  * linted nor listed.
  *
  * @module utils/markdown/heading-tokens
- * @requires ~/utils/markdown/config
+ * @requires ~/utils/markdown/parser
  */
 
 import type Token from 'markdown-it/lib/token.mjs'
-import { getMarkdownIt } from '~/utils/markdown/config'
+import { getMarkdownIt } from '~/utils/markdown/parser'
 
 /** One heading, as both the linter and the outline see it. */
 export interface ParsedHeading {
@@ -130,7 +130,20 @@ export function headingText(inline: Token | undefined): string {
  * ```
  */
 export function parseHeadings(markdown: string): ParsedHeading[] {
-  const tokens = getMarkdownIt().parse(markdown, {})
+  return headingsFromTokens(getMarkdownIt().parse(markdown, {}))
+}
+
+/**
+ * Extracts the headings from an already-parsed token stream.
+ *
+ * Split out from {@link parseHeadings} for the render worker, which parses a
+ * document once and needs both its HTML and its headings from that one parse.
+ * Call it before rendering the tokens: the renderer adds attributes to them.
+ *
+ * @param {Token[]} tokens - Block tokens from `markdown-it`'s `parse()`
+ * @returns {ParsedHeading[]} One entry per heading, in source order
+ */
+export function headingsFromTokens(tokens: Token[]): ParsedHeading[] {
   const headings: ParsedHeading[] = []
 
   for (let i = 0; i < tokens.length; i++) {

@@ -11,7 +11,7 @@
  * @requires ~/utils/markdown/heading-tokens
  */
 
-import { parseHeadings } from '~/utils/markdown/heading-tokens'
+import { parseHeadings, type ParsedHeading } from '~/utils/markdown/heading-tokens'
 
 /** Shown in place of a label for a heading that renders nothing. */
 const EMPTY_LABEL = '(empty heading)'
@@ -43,7 +43,18 @@ export interface OutlineEntry {
  * ```
  */
 export function buildOutline(markdown: string): OutlineEntry[] {
-  return parseHeadings(markdown).map(({ line, level, text, hasVisibleContent }) => ({
+  return outlineFromHeadings(parseHeadings(markdown))
+}
+
+/**
+ * Builds the outline from headings that have already been parsed (the live
+ * editor receives them from the render worker).
+ *
+ * @param {ParsedHeading[]} headings - Headings in source order
+ * @returns {OutlineEntry[]} One entry per heading
+ */
+export function outlineFromHeadings(headings: ParsedHeading[]): OutlineEntry[] {
+  return headings.map(({ line, level, text, hasVisibleContent }) => ({
     line,
     level,
     text: hasVisibleContent && text ? text : EMPTY_LABEL,

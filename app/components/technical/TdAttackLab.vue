@@ -23,9 +23,9 @@ const attacks: Attack[] = [
   {
     name: 'Run a hidden command',
     goal: 'Make the editor run the attacker’s code as soon as the document is opened: the classic way to steal what someone is working on.',
-    payload: `<script>send(document.body.innerText)</${'script'}>\n<img src="x" onerror="send(localStorage)">`,
+    payload: `<script>send(document.body.innerText)</${'script'}>\n<a href="javascript:send(localStorage)">Open the report</a>`,
     outcome: 'held',
-    verdict: 'Nothing survives but a harmless broken image. The command and the trigger are both removed before anything is displayed.',
+    verdict: 'The script is removed outright, and the link is left with nowhere to go. Since 1.11.0 the site also tells the browser to refuse any script that did not come with the editor, so this attack would fail even if the filter missed it.',
   },
   {
     name: 'Show a fake sign-in box',

@@ -6,7 +6,7 @@
  */
 
 const { cycleViewMode, viewModeIcon, viewModeLabel } = useViewMode()
-const { showSaveIndicator, countdownToSave, storageAvailable } = useAutoSave()
+const { showSaveIndicator, countdownToSave, storageAvailable, isRecoveryMode } = useAutoSave()
 const { openModal: openConversionTools } = useConversionToolsModal()
 const { copyStatusMessage } = useExport()
 
@@ -92,11 +92,15 @@ function scrollToTop() {
           -->
           <div
             class="autosave-status"
-            :class="{ 'autosave-status--failed': !storageAvailable }"
+            :class="{ 'autosave-status--failed': !storageAvailable || isRecoveryMode }"
             data-tour="auto-save"
           >
             <Transition name="fade" mode="out-in">
-              <span v-if="!storageAvailable" key="unavailable" class="autosave-failed">
+              <span v-if="isRecoveryMode" key="recovery" class="autosave-failed">
+                <UIcon name="i-heroicons-lifebuoy" class="autosave-icon" />
+                <span class="autosave-text">Recovery mode — not saving</span>
+              </span>
+              <span v-else-if="!storageAvailable" key="unavailable" class="autosave-failed">
                 <UIcon name="i-heroicons-exclamation-triangle" class="autosave-icon" />
                 <span class="autosave-text">Not saving — download your work</span>
               </span>

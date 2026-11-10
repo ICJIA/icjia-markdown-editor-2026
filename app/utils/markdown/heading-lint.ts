@@ -34,7 +34,7 @@
  * @requires ~/utils/markdown/heading-tokens
  */
 
-import { parseHeadings } from '~/utils/markdown/heading-tokens'
+import { parseHeadings, type ParsedHeading } from '~/utils/markdown/heading-tokens'
 
 /** The rules this linter enforces. */
 export type HeadingRule = 'heading-order' | 'empty-heading'
@@ -65,6 +65,19 @@ export interface HeadingIssue {
  * ```
  */
 export function lintHeadings(markdown: string): HeadingIssue[] {
+  return lintParsedHeadings(parseHeadings(markdown))
+}
+
+/**
+ * Lints headings that have already been parsed.
+ *
+ * The live editor parses in a worker and receives the headings as data; this is
+ * the half of {@link lintHeadings} that runs on what comes back.
+ *
+ * @param {ParsedHeading[]} headings - Headings in source order
+ * @returns {HeadingIssue[]} Every heading problem found, empty when clean
+ */
+export function lintParsedHeadings(headings: ParsedHeading[]): HeadingIssue[] {
   const issues: HeadingIssue[] = []
 
   // The first heading sets the baseline, whatever its level. axe-core's
@@ -73,7 +86,7 @@ export function lintHeadings(markdown: string): HeadingIssue[] {
   // does not presume to know it either.
   let prevLevel: number | null = null
 
-  for (const { line, level, hasVisibleContent } of parseHeadings(markdown)) {
+  for (const { line, level, hasVisibleContent } of headings) {
     if (!hasVisibleContent) {
       issues.push({
         line,

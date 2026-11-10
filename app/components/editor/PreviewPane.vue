@@ -5,7 +5,27 @@
  * Uses aria-live for content updates
  */
 
-const { renderedHtml, showRenderingIndicator } = useMarkdown()
+const { renderedHtml, showRenderingIndicator, previewStatus } = useMarkdown()
+
+/**
+ * Shown in place of the preview when it cannot display the current document.
+ * Each says what happened, that the text is safe, and what still works.
+ */
+const PAUSED: Record<string, { title: string, body: string }> = {
+  'timeout': {
+    title: 'Preview paused',
+    body: 'This document is taking too long to display, so the preview has stopped trying. Your text is safe: keep writing, or use Download Markdown. The preview will try again when the document changes.',
+  },
+  'too-large': {
+    title: 'Preview paused',
+    body: 'The formatted version of this document is too large to display as you type. Your text is safe, and Download Markdown still works. Splitting the document into smaller files will bring the preview back.',
+  },
+  'error': {
+    title: 'Preview unavailable',
+    body: 'The preview could not display this document. Your text is safe: keep writing, or use Download Markdown.',
+  },
+}
+const paused = computed(() => PAUSED[previewStatus.value])
 const { isContentReady } = useEditor()
 const previewRef = ref<HTMLElement | null>(null)
 
@@ -74,10 +94,23 @@ defineExpose({
         Rendering...
       </div>
       
-      <!-- eslint-disable vue/no-v-html -- renderedHtml is the return value of
-           renderMarkdown(), which sanitizes with DOMPurify before returning it
-           (see utils/markdown/config.ts). This is the intended sink: a preview
-           cannot show formatted output any other way. -->
+      <!--
+        role="status": unlike the preview itself, this is an event. It appears
+        once, when the preview stops, and an author who cannot see the pane
+        needs to be told that it has.
+      -->
+      <div v-if="paused" class="preview-paused" role="status">
+        <UIcon name="i-heroicons-pause-circle" class="preview-paused-icon" />
+        <div>
+          <p class="preview-paused-title">{{ paused.title }}</p>
+          <p>{{ paused.body }}</p>
+        </div>
+      </div>
+
+      <!-- eslint-disable vue/no-v-html -- renderedHtml is parser output that
+           useMarkdown has passed through sanitizeHtml() (DOMPurify) before
+           assigning it (see utils/markdown/config.ts). This is the intended
+           sink: a preview cannot show formatted output any other way. -->
       <!--
         Deliberately NOT a live region. `v-html` replaces this whole subtree on
         every debounce tick, so with aria-live="polite" a screen reader queued
@@ -118,6 +151,32 @@ defineExpose({
   height: 100%;
   color: var(--color-text-muted, #cbd5e1);
   font-size: 0.875rem;
+}
+
+.preview-paused {
+  display: flex;
+  gap: 0.75rem;
+  margin: 1rem 1.5rem 0;
+  padding: 1rem 1.25rem;
+  background: var(--color-surface, #1e293b);
+  border: 1px solid var(--color-border, #334155);
+  border-left: 4px solid var(--color-warning, #f59e0b);
+  border-radius: 0.5rem;
+  color: var(--color-text, #f1f5f9);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.preview-paused-icon {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0.125rem;
+}
+
+.preview-paused-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
 }
 
 .rendering-indicator {

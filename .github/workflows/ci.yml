@@ -1,0 +1,97 @@
+name: CI
+
+# Runs on every pull request and on main. Everything here is also runnable
+# locally with the same commands; see "Checks" in the README.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint, types, unit, build, browser, accessibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Typecheck
+        run: yarn typecheck
+
+      - name: Unit tests
+        run: yarn test:run
+
+      # The production build, including the Content-Security-Policy that
+      # scripts/csp.mjs writes into dist/_headers. Everything below runs
+      # against this, served with the headers Netlify sends.
+      - name: Build
+        run: yarn generate
+
+      - name: Install Chromium
+        run: yarn playwright install --with-deps chromium
+
+      # Real CSS engine, real worker, real CSP: the attacks from the red/blue
+      # exercise, the saved-draft guarantees, recovery mode and the export.
+      - name: Browser tests
+        run: yarn test:browser
+
+      # The project's own WCAG AAA audit of the editor (the Technical Details
+      # page is audited by the browser tests above).
+      - name: Accessibility audit
+        run: |
+          node scripts/serve-dist.mjs 4173 &
+          for i in $(seq 1 30); do curl -sf http://localhost:4173/ > /dev/null && break; sleep 1; done
+          yarn test:a11y --fresh --url=http://localhost:4173
+
+      - name: Upload browser test traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7
+
+  audit:
+    name: No high or critical advisories in shipped dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      # `yarn audit` exits with a bitmask of the severities it found
+      # (1 info, 2 low, 4 moderate, 8 high, 16 critical), whatever --level is
+      # set to. Only high and critical fail the job: the remaining low and
+      # moderate advisories are in build tooling with no fixed release, and are
+      # listed under "Known limits" in the README.
+      - name: Audit runtime dependencies
+        run: |
+          set +e
+          yarn audit --groups dependencies
+          code=$?
+          set -e
+          if [ $((code & 24)) -ne 0 ]; then
+            echo "::error::yarn audit reports a high or critical advisory in a runtime dependency."
+            exit 1
+          fi

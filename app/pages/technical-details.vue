@@ -30,7 +30,7 @@ useSeoMeta({
 // release time; the changelog entry for a release records the run.
 const facts = [
   { figure: '0', label: 'servers that ever receive your text' },
-  { figure: '238', label: 'automated tests run before every release' },
+  { figure: '300', label: 'automated tests run on every change, 38 of them in a real browser' },
   { figure: '0', label: 'accessibility violations at the strictest level, AAA' },
   { figure: '2 s', label: 'after you stop typing, your work is saved' },
   { figure: '18', label: 'programming languages colour-coded in code samples' },
@@ -52,10 +52,11 @@ const findings = [
   { name: 'Links to a named window kept a line back to the editor', severity: 'Medium', status: 'Fixed', detail: 'A page opened that way could redirect the editor’s tab. Every outgoing link is now cut off, and the site instructs browsers to enforce it.' },
   { name: 'Styling could call out to the internet', severity: 'Low', status: 'Fixed', detail: 'A hidden request could report that a document was opened. Styling can no longer fetch anything.' },
   { name: 'Sound and video elements were accepted', severity: 'Low', status: 'Fixed', detail: 'The live site already refused to load them; exported files did not. They are now removed from documents.' },
+  { name: 'The site’s own script rule was looser than it needed to be', severity: 'Low', status: 'Fixed', detail: 'It allowed any script written into the page. Since 1.11.0 it allows only the exact scripts the editor ships with, so a smuggled one is refused by the browser even if the filter misses it.' },
   { name: 'Exported files carried no protection of their own', severity: 'Low', status: 'Fixed', detail: 'A file opened from a disk has no website to protect it. Each export now carries its own rule forbidding scripts.' },
   { name: 'The parser could be made to stall', severity: 'Medium', status: 'Fixed', detail: 'A crafted file could freeze the preview, and auto-save would bring it back on reload. The parser was updated to a version without the flaw.' },
   { name: 'Images from web addresses', severity: 'Low', status: 'Accepted', detail: 'Kept on purpose; see below.' },
-  { name: 'Very large documents of mostly equations are slow', severity: 'Low', status: 'Planned', detail: 'Slow, not unsafe. Moving rendering off the main thread is on the roadmap.' },
+  { name: 'Very large documents of mostly equations froze the page', severity: 'Low', status: 'Fixed', detail: 'Slow rather than unsafe, but auto-save brought the freeze back on reload. Since 1.11.0 the preview is prepared in the background under a time limit, so it can pause without the editor ever stopping.' },
 ]
 </script>
 
