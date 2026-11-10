@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test'
-import { openEditorWith, seedDraft, watchForProblems } from './helpers'
+import { test, expect, openEditorWith, seedDraft, watchForProblems } from './helpers'
 
 /**
  * The Content-Security-Policy, as the browser enforces it.

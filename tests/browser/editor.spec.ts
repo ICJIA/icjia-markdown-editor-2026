@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs'
-import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
-import { openEditorWith, seedDraft, storedDraft } from './helpers'
+import { test, expect, openEditorWith, seedDraft, storedDraft } from './helpers'
 
 const WCAG_AAA = ['wcag2a', 'wcag2aa', 'wcag2aaa', 'wcag21a', 'wcag21aa', 'wcag21aaa', 'wcag22aa', 'best-practice']
 const DRAFT = '# My irreplaceable report\n\nSix hours of work.\n'

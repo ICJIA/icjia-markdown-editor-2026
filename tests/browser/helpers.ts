@@ -1,4 +1,27 @@
-import type { Page, ConsoleMessage } from '@playwright/test'
+import { test as base, type Page, type ConsoleMessage } from '@playwright/test'
+
+/**
+ * `test`, with one difference: requests for Netlify's deploy-preview toolbar
+ * are blocked.
+ *
+ * Netlify injects `/.netlify/scripts/cdp` into deploy previews, and only into
+ * previews. It frames app.netlify.com, which this site's policy refuses
+ * (`frame-src 'none'`), so on a preview it logs a console error and stalls a
+ * reload — neither of which happens in production, where the script is not
+ * injected. Blocking it makes a run against a preview test what production
+ * serves. Against a local build the route never matches.
+ */
+export const test = base.extend({
+  page: async ({ page }, use) => {
+    // Answered with an empty script rather than aborted: an aborted request is
+    // itself a console error, which is what the tests are listening for.
+    await page.route('**/.netlify/scripts/**', route =>
+      route.fulfill({ status: 200, contentType: 'text/javascript', body: '' }))
+    await use(page)
+  },
+})
+
+export { expect } from '@playwright/test'
 
 export const AUTOSAVE_KEY = 'icjia-markdown-editor-autosave'
 const TOUR_KEY = 'icjia-markdown-editor-tour-v8'

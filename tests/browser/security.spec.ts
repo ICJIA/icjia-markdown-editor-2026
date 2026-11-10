@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test'
-import { openEditorWith } from './helpers'
+import { test, expect, openEditorWith } from './helpers'
 
 /**
  * The attacks from the November 2026 red/blue exercise, replayed in a real

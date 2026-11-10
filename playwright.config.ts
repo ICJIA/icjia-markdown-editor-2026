@@ -11,8 +11,15 @@ import { defineConfig, devices } from '@playwright/test'
  * past them.
  *
  * Run `yarn generate` first; `yarn test:browser` does not build.
+ *
+ * To run the same tests against a deployed site — a Netlify deploy preview is
+ * the place the real headers can be checked before production — set
+ * PLAYWRIGHT_BASE_URL and no local server is started:
+ *
+ *   PLAYWRIGHT_BASE_URL=https://deploy-preview-12--example.netlify.app yarn test:browser
  */
 const PORT = 4173
+const REMOTE = process.env.PLAYWRIGHT_BASE_URL
 
 export default defineConfig({
   testDir: 'tests/browser',
@@ -21,15 +28,17 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['github'], ['list']] : 'list',
   use: {
-    baseURL: `http://localhost:${PORT}`,
+    baseURL: REMOTE ?? `http://localhost:${PORT}`,
     trace: 'retain-on-failure',
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
   ],
-  webServer: {
-    command: `node scripts/serve-dist.mjs ${PORT}`,
-    url: `http://localhost:${PORT}`,
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: REMOTE
+    ? undefined
+    : {
+        command: `node scripts/serve-dist.mjs ${PORT}`,
+        url: `http://localhost:${PORT}`,
+        reuseExistingServer: !process.env.CI,
+      },
 })
