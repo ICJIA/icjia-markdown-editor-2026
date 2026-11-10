@@ -15,6 +15,26 @@ A modern, accessible markdown editor built with Nuxt 4 and CodeMirror 6. This is
 
 **[Live Demo →](https://markdown.icjia.cloud)** · **[How it works, in plain language →](https://markdown.icjia.cloud/technical-details)**
 
+## Contents
+
+- [Screenshots](#screenshots)
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [Keyboard Shortcuts](#keyboard-shortcuts)
+- [Accessibility](#accessibility)
+- [Security](#security)
+- [Guided Tour / Onboarding](#guided-tour--onboarding)
+- [Deployment](#deployment)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Code Documentation](#code-documentation)
+- [Documentation](#documentation)
+- [Roadmap](#roadmap)
+- [Development Progress](#development-progress)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
+
 ## Screenshots
 
 The editor: markdown on the left, the rendered document on the right, with the word count, outline, heading check and guided tour in the status bar.
@@ -33,186 +53,37 @@ And it lets a visitor replay the attacks from the November 2026 red/blue exercis
 
 ![The attack lab: a script-injection payload on the left, and what the editor keeps of it on the right](documentation/screenshots/attack-lab.png)
 
-### SEO
-
-The app includes Open Graph and Twitter Card meta tags for rich social previews. The `og-image.png` (1200×630) in `public/` is used when the page is shared. Set `NUXT_PUBLIC_SITE_URL` in your deployment environment (e.g. `https://markdown.icjia.cloud`) so social platforms receive absolute image URLs. See `netlify.toml` for the production configuration.
-
 ## Features
 
-- **Real-time Preview** - See your formatted document as you type with synchronized scrolling
-- **Dark/Light Mode** - Dark by default, with a light theme one click away; the choice is remembered
-- **ICJIA Branding** - Header features the ICJIA logo (clickable to scroll to top, with error fallback)
-- **Keyboard Shortcuts** - Speed up your workflow with comprehensive shortcuts
-- **Table Builder** - Visual table creation modal (Cmd/Ctrl+Alt+T) with copy feedback
-- **Document Outline** - Status-bar panel listing every heading, indented by level; click one to jump to its line, with the section you are in marked
-- **Word-Count Goals** - Click the word count to set a target; progress shows inline as you write
-- **Auto-save** - Never lose your work (saves a couple of seconds after you pause typing, plus a 30-second safety interval with live countdown in header)
-- **Start Editing Button** - New users see a prominent button to clear the tutorial and start fresh
-- **Tutorial Reset** - Restore the markdown tutorial content anytime from the status bar
-- **Export Options** - Copy as Markdown, copy as HTML, or download either (the toolbar asks for a filename; ⌘/Ctrl+S saves straight to `document.md`). HTML exports are fully self-contained: every stylesheet, and KaTeX's webfonts when the document contains math, is embedded, so an exported file renders correctly offline and fetches nothing from a CDN
-- **Copy Notifications** - High-contrast purple notifications appear in the header when content is copied
-- **Footnote Support** - Full footnote syntax with automatic numbering and back-references
-- **Inline Formatting** - `~~strikethrough~~`, `==highlight==` and `++inserted++` alongside the usual bold and italic
-- **Math Support** - KaTeX-powered LaTeX rendering for inline and block math equations
-- **Guided Tour** - Interactive onboarding with markdown introduction slides and 21-step feature tour (runs once, restartable anytime)
-- **Undo/Redo** - Full history support with keyboard shortcuts (Cmd/Ctrl+Z)
-- **Security Hardened** - DOMPurify XSS sanitization narrowed to what a preview actually needs (no `<style>`, `<form>`, media, off-pane positioning or network-fetching styles from a document), a Content-Security-Policy behind it and one embedded in every exported file, code block language sanitization, file size limits, filename sanitization. Red/blue tested in November 2026; see [Security](#security)
-- **Technical Details Page** - A plain-language, interactive explanation of how the editor works and why, at `/technical-details`, linked from the status bar
-- **Accessibility First** - WCAG 2.1 Level AA compliant, and currently passing `yarn test:a11y` at Level AAA with zero violations, with full keyboard navigation, screen reader support, and proper ARIA attributes
-- **Heading Linter** - Flags headings that skip a level or are empty, so published documents pass accessibility heading-order checks
-- **Static Deployment** - Deploy anywhere as a static site (Netlify-ready)
-- **Fully Documented** - JSDoc comments on the composables and utilities
-- **Reusable Tour Module** - Copy the tour module to any Nuxt project for instant onboarding
+### Writing
 
-## Documentation
+- **Live preview** beside the editor, with synchronized scrolling and split, editor-only and preview-only views
+- **Formatting toolbar and keyboard shortcuts** for bold, italic, code, headings, quotes, lists, links and rules, with undo/redo and find and replace
+- **Table builder** - a visual grid that writes the markdown table for you (⌘/Ctrl+Alt+T)
+- **Research notation** - footnotes with automatic numbering and back-references, KaTeX math (inline and block), `~~strikethrough~~`, `==highlight==`, `++inserted++`, task lists, and syntax highlighting for 18 languages including R, Stata, SAS, SQL and Python
+- **Guided tour** - introduction slides and a 21-step walkthrough, run once for a new visitor and restartable at any time; the built-in tutorial can be cleared with one button and brought back from the status bar
 
-| Document                                                                                  | Description                                                   |
-| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| [Design Document](./documentation/icjia-markdown-editor-design-doc.md)                    | Features, UX requirements, user personas, accessibility gates |
-| [Technical Architecture](./documentation/icjia-markdown-editor-technical-architecture.md) | Implementation details, code examples, component specs        |
-| [Accessibility Checklist](./documentation/ACCESSIBILITY_CHECKLIST.md)                     | Manual testing procedures for WCAG 2.1 AA                     |
-| [Quick Start Guide](./documentation/QUICK_START.md)                                       | Getting started in 5 minutes                                  |
-| [Browser Support](./documentation/BROWSER_SUPPORT.md)                                     | Supported browsers and screen readers                         |
-| [Troubleshooting](./documentation/TROUBLESHOOTING.md)                                     | Common issues and solutions                                   |
-| [Tour Module](./app/modules/tour/README.md)                                               | Reusable guided tour module documentation                     |
-| [Changelog](./CHANGELOG.md)                                                               | Version history and release notes                             |
-| [Technical Details](https://markdown.icjia.cloud/technical-details)                       | How the editor works, for non-technical readers (interactive) |
-| [Security](#security)                                                                     | Threat model, the November 2026 red/blue results, mitigations |
+### Staying oriented in a long document
 
-## Development Progress
+- **Document outline** - every heading, indented by level; click one to jump to its line, with the section you are in marked
+- **Heading check** - flags headings that skip a level or are empty, so published documents pass accessibility heading-order checks
+- **Word count and goals** - words, characters and reading time; click the count to set a target and see progress as you write
 
-### ✅ Phase 1: Foundation — COMPLETE
+### Keeping and sharing your work
 
-| Status | Feature                                                          |
-| :----: | :--------------------------------------------------------------- |
-|   ✅   | Nuxt 4 project setup with Nuxt UI                                |
-|   ✅   | CodeMirror 6 integration with markdown syntax highlighting       |
-|   ✅   | Basic twin-pane layout (editor/preview)                          |
-|   ✅   | Dark/light mode theming (dark by default, choice remembered)     |
-|   ✅   | markdown-it configuration with footnotes and syntax highlighting |
-|   ✅   | Skip link and semantic HTML structure                            |
-|   ✅   | Focus indicators on all interactive elements                     |
-|   ✅   | `useAccessibility` composable with screen reader announcements   |
+- **Auto-save** to this browser's storage a couple of seconds after you pause typing, with a 30-second safety interval and a live countdown in the header
+- **Open** an existing `.md`, `.markdown` or `.txt` file (up to 10 MB)
+- **Export** - copy as Markdown or HTML, or download either. The toolbar asks for a filename; ⌘/Ctrl+S saves straight to `document.md`. HTML downloads are self-contained: every stylesheet, and KaTeX's fonts when the document contains math, is embedded, so the file renders correctly offline and fetches nothing from a CDN
+- **Private by construction** - no account and no server; a document never leaves the browser it was written in
 
-### ✅ Phase 2: Core Features — COMPLETE
+### Built in
 
-| Status | Feature                                                        |
-| :----: | :------------------------------------------------------------- |
-|   ✅   | Formatting toolbar with all buttons (Bold, Italic, Code, etc.) |
-|   ✅   | Keyboard shortcuts (Cmd+B, Cmd+I, Cmd+1-6, etc.)               |
-|   ✅   | Scroll synchronization between editor and preview              |
-|   ✅   | Copy Markdown to clipboard                                     |
-|   ✅   | Copy HTML to clipboard                                         |
-|   ✅   | Download as Markdown file                                      |
-|   ✅   | Upload Markdown file                                           |
-|   ✅   | Word count and character count in status bar                   |
-
-### ✅ Phase 3: Advanced Features — COMPLETE
-
-| Status | Feature                                                               |
-| :----: | :-------------------------------------------------------------------- |
-|   ✅   | Table builder modal with visual grid editor                           |
-|   ✅   | Footnote support via markdown-it-footnote                             |
-|   ✅   | Auto-save to localStorage (2s after typing pauses, 30s safety interval, on blur/unload; countdown in header) |
-|   ✅   | Tutorial button to reset to markdown tutorial content                 |
-|   ✅   | Download modal with custom filename support                           |
-|   ✅   | HTML export with styled document wrapper                              |
-|   ✅   | Comprehensive JSDoc documentation for all composables and utilities   |
-|   ✅   | Save indicator with visual feedback                                   |
-
-### 🔄 Phase 4: Accessibility & Polish — IN PROGRESS
-
-| Status | Feature                                                                 |
-| :----: | :---------------------------------------------------------------------- |
-|   ✅   | Guided tour/onboarding module (WCAG 2.1 AA compliant, 21 steps)         |
-|   ✅   | Welcome screen with ICJIA logo (first-time users + manual tour trigger) |
-|   ✅   | Tour progress indicator with modern pill design and WCAG AA contrast    |
-|   ✅   | Reusable tour module architecture for other projects                    |
-|   ✅   | Safari localStorage compatibility fix                                   |
-|   ✅   | WCAG 1.4.12 text spacing compliance for code blocks                     |
-|   ✅   | CodeMirror v6 type compatibility fixes (undo/redo functions)            |
-|   ✅   | Cursor pointer styling for all interactive tour buttons                 |
-|   ✅   | ICJIA logo in header (clickable to scroll to top, with error fallback)  |
-|   ✅   | "Start Editing" button to clear tutorial content for new users          |
-|   ✅   | High-contrast purple copy notifications (WCAG AAA compliant)            |
-|   ✅   | Memory leak fix: cleanup timeouts on component unmount (useExport)       |
-|   ✅   | Table builder copy feedback with visual confirmation                     |
-|   ✅   | Form label associations (for/id) in table builder modal                  |
-|   ✅   | Named constants for time thresholds in auto-save                         |
-|   ✅   | Default content extracted to separate module for maintainability         |
-|   ✅   | Editor aria-describedby with keyboard shortcut instructions              |
-|   ✅   | DOMPurify XSS sanitization on rendered markdown HTML output              |
-|   ✅   | Bounded scroll sync retry with timeout cleanup on unmount                |
-|   ✅   | Code block language attribute sanitization (prevent XSS injection)        |
-|   ✅   | File upload size limit (10 MB) to prevent browser crashes                |
-|   ✅   | Download filename sanitization (path traversal, invalid chars, length)   |
-|   ✅   | WCAG AAA contrast compliance globally — `--color-text-muted` 7:1+ ratio  |
-|   ✅   | Semantic `<a>` elements for tool cards (replaces `<article role="button">`) |
-|   ✅   | Auto-save graceful degradation on localStorage quota exceeded            |
-|   ✅   | Race condition fixes: composable-scoped timers in useExport and EditorLayout |
-|   ✅   | Full accessibility audit (axe-core) — zero violations                   |
-|   ✅   | Fix Reka UI `aria-labelledby` mismatch in all modals                     |
-|   ✅   | Inert background content when modals are open (focus trap)               |
-|   ✅   | 1.9.0 — removed three live regions that announced on every keystroke     |
-|   ✅   | 1.9.0 — print/PDF exports readable (body text was 1.09:1 on paper)       |
-|   ✅   | 1.9.0 — auto-save no longer overwrites work with an empty document       |
-|   ✅   | 1.9.0 — cross-tab auto-save conflicts, and visible storage failure       |
-|   ✅   | 1.9.0 — document outline and word-count goals                            |
-|   ✅   | 1.9.0 — audit asserts the welcome modal is dismissed; can target prod    |
-|   ✅   | 1.10.0 — red/blue exercise: six findings fixed, two documented           |
-|   ✅   | 1.10.0 — "Display Markdown Tutorial" no longer overwrites the saved draft |
-|   ✅   | 1.10.0 — Technical Details page (`/technical-details`)                   |
-|   ⬜   | Screen reader testing (VoiceOver, NVDA)                                 |
-|   ⬜   | Keyboard navigation refinement                                          |
-|   ⬜   | Help modal with shortcuts reference                                     |
-|   ⬜   | Image insertion modal with placeholder option                           |
-|   ⬜   | Link insertion modal with URL validation                                |
-|   ✅   | Find & Replace (Cmd/Ctrl+F, via @codemirror/search)                     |
-|   ⬜   | Error handling improvements                                             |
-|   ⬜   | Loading state refinements                                               |
-
-### ⬜ Phase 5: Testing & Launch — PENDING
-
-| Status | Feature                                                   |
-| :----: | :-------------------------------------------------------- |
-|   ✅   | Unit tests for utilities (238 tests across 10 files)         |
-|   ⬜   | Component tests                                           |
-|   ⬜   | E2E tests for critical paths                              |
-|   ⬜   | Cross-browser testing                                     |
-|   ⬜   | Performance optimization                                  |
-|   ✅   | Lighthouse 100 on production (a11y, best practices, SEO, desktop perf) |
-|   ✅   | Production deployment (Netlify, https://markdown.icjia.cloud) |
-
-## Roadmap
-
-Suggested next steps, most valuable first. The first four come out of the November 2026
-analysis and red/blue exercise.
-
-| Area | Improvement | Why |
-| ---- | ----------- | --- |
-| Reliability | **Render in a Web Worker with a time budget, and add a recovery mode** (a URL flag that opens the editor without restoring or rendering the saved draft) | Parsing, KaTeX and sanitizing all run on the main thread, so one pathological document freezes the tab, and auto-save restores it on every reload. This is finding 9. |
-| Security | **Hash-based CSP for inline scripts** (for example with `nuxt-security`'s static-site hashing) | Removes `'unsafe-inline'` from `script-src`, so the CSP would stop a sanitizer bypass on its own. |
-| Privacy | **Click-to-load for remote images** in documents opened from a file, and a visible **"Clear my draft from this browser"** control | Closes the accepted read-receipt risk (finding 8) and addresses drafts left behind on shared computers. |
-| Usability | **Rebind Block Quote on macOS.** It is documented as ⌘Q, which macOS reserves for quitting the browser, so the shortcut cannot work there and the tour teaches a keystroke that closes the window | A first-time author following the tour loses their window. |
-| Testing | **Browser-level regression tests** (Playwright) for the attacks in [Security](#security), the tutorial-reset draft, and export | jsdom has no CSS engine: the two position bypasses and the 1.8.0 `<style>` leak were all invisible to the unit tests. A CI workflow running lint, typecheck, tests and the a11y audit on every pull request would catch the rest. |
-| Accessibility | **Audit `/technical-details` in `yarn test:a11y`**, and complete the manual VoiceOver/NVDA pass | The script audits the editor only; the new page was audited by hand for 1.10.0. |
-| Features | Link and image insertion dialogs, a shortcuts reference, optional system colour-scheme detection, offline support (service worker), multiple named drafts, `.docx`/PDF export | The first two are listed as pending under Phase 4. |
-| Maintenance | **Upgrade Nuxt** past 4.6.3 and re-run `yarn audit`; lint for unused exports | Clears the remaining build-tooling advisories. |
-
-## Tech Stack
-
-| Technology   | Version | Purpose                  |
-| ------------ | ------- | ------------------------ |
-| Nuxt         | 4.x     | Application framework    |
-| Vue          | 3.5+    | Reactive UI              |
-| TypeScript   | 5.x     | Type safety              |
-| Nuxt UI      | 4.x     | Component library        |
-| CodeMirror   | 6.x     | Text editor engine       |
-| markdown-it  | 14.x    | Markdown parsing         |
-| highlight.js | 11.x    | Code syntax highlighting |
-| DOMPurify    | 3.x     | XSS sanitization         |
-| KaTeX        | 0.16.x  | Math/LaTeX rendering     |
-| VueUse       | 14.x    | Vue composable utilities |
+- **Accessibility** - WCAG 2.1 Level AA compliant, and passing the project's axe-core audit at Level AAA with zero violations on the deployed site (`yarn test:a11y:prod`); full keyboard operation, screen reader announcements, visible focus, reduced-motion support. See [Accessibility](#accessibility)
+- **Security** - a narrowed DOMPurify sanitizer, a Content-Security-Policy behind it and one embedded in every exported file, plus filename and upload limits. Red/blue tested in November 2026. See [Security](#security)
+- **Technical Details page** - a plain-language, interactive explanation of how the editor works and why, at `/technical-details`, linked from the status bar
+- **Dark and light themes** - dark by default; the choice is remembered
+- **Static deployment** - builds to plain files that any static host can serve (Netlify configuration included)
+- **Reusable tour module** - the guided tour is self-contained and can be copied into another Nuxt project
 
 ## Getting Started
 
@@ -231,8 +102,6 @@ cd icjia-markdown-editor-2026
 # Install dependencies
 yarn install
 ```
-
-**Note:** If you encounter TypeScript errors related to CodeMirror during build, the project includes type compatibility fixes for CodeMirror v6 commands (undo/redo).
 
 ### Development
 
@@ -349,6 +218,10 @@ npx serve dist
 | Find / Replace  | ⌘ + F         | Ctrl + F         |
 | Scroll Sync     | ⌘ + \           | Ctrl + \           |
 
+Block Quote's ⌘Q does not work on macOS, where the system reserves it for quitting the
+browser; use the toolbar button there. Ctrl+Q works on Windows and Linux. Rebinding it is
+on the [roadmap](#roadmap).
+
 ### Tour Navigation
 
 | Action        | Key             |
@@ -356,17 +229,6 @@ npx serve dist
 | Next Step     | → (Arrow Right) |
 | Previous Step | ← (Arrow Left)  |
 | Cancel Tour   | Esc             |
-
-## Code Documentation
-
-The composables and utility files carry JSDoc documentation:
-
-- **File-level documentation** with `@fileoverview` and `@module` tags
-- **Function documentation** with `@param`, `@returns`, and `@example` tags
-- **Type documentation** for interfaces, types, and constants
-- **WCAG compliance notes** in theme files with color contrast ratios
-
-This documentation enables better IDE intellisense, easier onboarding for new developers, and serves as inline reference for the codebase.
 
 ## Accessibility
 
@@ -649,6 +511,25 @@ yarn generate
 dist
 ```
 
+### SEO
+
+The app includes Open Graph and Twitter Card meta tags for rich social previews. The `og-image.png` (1200×630) in `public/` is used when the page is shared. Set `NUXT_PUBLIC_SITE_URL` in your deployment environment (e.g. `https://markdown.icjia.cloud`) so social platforms receive absolute image URLs. See `netlify.toml` for the production configuration.
+
+## Tech Stack
+
+| Technology   | Version | Purpose                  |
+| ------------ | ------- | ------------------------ |
+| Nuxt         | 4.x     | Application framework    |
+| Vue          | 3.5+    | Reactive UI              |
+| TypeScript   | 5.x     | Type safety              |
+| Nuxt UI      | 4.x     | Component library        |
+| CodeMirror   | 6.x     | Text editor engine       |
+| markdown-it  | 14.x    | Markdown parsing         |
+| highlight.js | 11.x    | Code syntax highlighting |
+| DOMPurify    | 3.x     | XSS sanitization         |
+| KaTeX        | 0.16.x  | Math/LaTeX rendering     |
+| VueUse       | 14.x    | Vue composable utilities |
+
 ## Project Structure
 
 ```
@@ -717,6 +598,160 @@ icjia-markdown-editor-2026/
 ├── eslint.config.mjs       # Lint configuration (via @nuxt/eslint)
 └── nuxt.config.ts          # Nuxt configuration
 ```
+
+## Code Documentation
+
+The composables and utility files carry JSDoc documentation:
+
+- **File-level documentation** with `@fileoverview` and `@module` tags
+- **Function documentation** with `@param`, `@returns`, and `@example` tags
+- **Type documentation** for interfaces, types, and constants
+- **WCAG compliance notes** in theme files with color contrast ratios
+
+This documentation enables better IDE intellisense, easier onboarding for new developers, and serves as inline reference for the codebase.
+
+## Documentation
+
+| Document                                                                                  | Description                                                   |
+| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| [Design Document](./documentation/icjia-markdown-editor-design-doc.md)                    | Features, UX requirements, user personas, accessibility gates |
+| [Technical Architecture](./documentation/icjia-markdown-editor-technical-architecture.md) | Implementation details, code examples, component specs        |
+| [Accessibility Checklist](./documentation/ACCESSIBILITY_CHECKLIST.md)                     | Manual testing procedures for WCAG 2.1 AA                     |
+| [Quick Start Guide](./documentation/QUICK_START.md)                                       | Getting started in 5 minutes                                  |
+| [Browser Support](./documentation/BROWSER_SUPPORT.md)                                     | Supported browsers and screen readers                         |
+| [Troubleshooting](./documentation/TROUBLESHOOTING.md)                                     | Common issues and solutions                                   |
+| [Tour Module](./app/modules/tour/README.md)                                               | Reusable guided tour module documentation                     |
+| [Changelog](./CHANGELOG.md)                                                               | Version history and release notes                             |
+| [Technical Details](https://markdown.icjia.cloud/technical-details)                       | How the editor works, for non-technical readers (interactive) |
+| [Security](#security)                                                                     | Threat model, the November 2026 red/blue results, mitigations |
+
+## Roadmap
+
+Suggested next steps, most valuable first. The first four come out of the November 2026
+analysis and red/blue exercise.
+
+| Area | Improvement | Why |
+| ---- | ----------- | --- |
+| Reliability | **Render in a Web Worker with a time budget, and add a recovery mode** (a URL flag that opens the editor without restoring or rendering the saved draft) | Parsing, KaTeX and sanitizing all run on the main thread, so one pathological document freezes the tab, and auto-save restores it on every reload. This is finding 9. |
+| Security | **Hash-based CSP for inline scripts** (for example with `nuxt-security`'s static-site hashing) | Removes `'unsafe-inline'` from `script-src`, so the CSP would stop a sanitizer bypass on its own. |
+| Privacy | **Click-to-load for remote images** in documents opened from a file, and a visible **"Clear my draft from this browser"** control | Closes the accepted read-receipt risk (finding 8) and addresses drafts left behind on shared computers. |
+| Usability | **Rebind Block Quote on macOS.** It is documented as ⌘Q, which macOS reserves for quitting the browser, so the shortcut cannot work there and the tour teaches a keystroke that closes the window | A first-time author following the tour loses their window. |
+| Testing | **Browser-level regression tests** (Playwright) for the attacks in [Security](#security), the tutorial-reset draft, and export | jsdom has no CSS engine: the `position` bypasses and the 1.8.0 `<style>` leak were all invisible to the unit tests. A CI workflow running lint, typecheck, tests and the a11y audit on every pull request would catch the rest. |
+| Accessibility | **Audit `/technical-details` in `yarn test:a11y`**, and complete the manual VoiceOver/NVDA pass | The script audits the editor only; the new page was audited by hand for 1.10.0. |
+| Features | Link and image insertion dialogs, a shortcuts reference, optional system colour-scheme detection, offline support (service worker), multiple named drafts, `.docx`/PDF export | The first two are listed as pending under Phase 4. |
+| Maintenance | **Upgrade Nuxt** past 4.6.3 and re-run `yarn audit`; lint for unused exports | Clears the remaining build-tooling advisories. |
+
+## Development Progress
+
+A phase-by-phase record of what has been built. For what changed in each release, see the
+[changelog](./CHANGELOG.md); for what comes next, the [roadmap](#roadmap).
+
+<details>
+<summary>Show the full checklist (phases 1 to 5)</summary>
+
+### ✅ Phase 1: Foundation — COMPLETE
+
+| Status | Feature                                                          |
+| :----: | :--------------------------------------------------------------- |
+|   ✅   | Nuxt 4 project setup with Nuxt UI                                |
+|   ✅   | CodeMirror 6 integration with markdown syntax highlighting       |
+|   ✅   | Basic twin-pane layout (editor/preview)                          |
+|   ✅   | Dark/light mode theming (dark by default, choice remembered)     |
+|   ✅   | markdown-it configuration with footnotes and syntax highlighting |
+|   ✅   | Skip link and semantic HTML structure                            |
+|   ✅   | Focus indicators on all interactive elements                     |
+|   ✅   | `useAccessibility` composable with screen reader announcements   |
+
+### ✅ Phase 2: Core Features — COMPLETE
+
+| Status | Feature                                                        |
+| :----: | :------------------------------------------------------------- |
+|   ✅   | Formatting toolbar with all buttons (Bold, Italic, Code, etc.) |
+|   ✅   | Keyboard shortcuts (Cmd+B, Cmd+I, Cmd+1-6, etc.)               |
+|   ✅   | Scroll synchronization between editor and preview              |
+|   ✅   | Copy Markdown to clipboard                                     |
+|   ✅   | Copy HTML to clipboard                                         |
+|   ✅   | Download as Markdown file                                      |
+|   ✅   | Upload Markdown file                                           |
+|   ✅   | Word count and character count in status bar                   |
+
+### ✅ Phase 3: Advanced Features — COMPLETE
+
+| Status | Feature                                                               |
+| :----: | :-------------------------------------------------------------------- |
+|   ✅   | Table builder modal with visual grid editor                           |
+|   ✅   | Footnote support via markdown-it-footnote                             |
+|   ✅   | Auto-save to localStorage (2s after typing pauses, 30s safety interval, on blur/unload; countdown in header) |
+|   ✅   | Tutorial button to reset to markdown tutorial content                 |
+|   ✅   | Download modal with custom filename support                           |
+|   ✅   | HTML export with styled document wrapper                              |
+|   ✅   | JSDoc documentation for the composables and utilities                 |
+|   ✅   | Save indicator with visual feedback                                   |
+
+### 🔄 Phase 4: Accessibility & Polish — IN PROGRESS
+
+| Status | Feature                                                                 |
+| :----: | :---------------------------------------------------------------------- |
+|   ✅   | Guided tour/onboarding module (WCAG 2.1 AA compliant, 21 steps)         |
+|   ✅   | Welcome screen with ICJIA logo (first-time users + manual tour trigger) |
+|   ✅   | Tour progress indicator with modern pill design and WCAG AA contrast    |
+|   ✅   | Reusable tour module architecture for other projects                    |
+|   ✅   | Safari localStorage compatibility fix                                   |
+|   ✅   | WCAG 1.4.12 text spacing compliance for code blocks                     |
+|   ✅   | CodeMirror v6 type compatibility fixes (undo/redo functions)            |
+|   ✅   | Cursor pointer styling for all interactive tour buttons                 |
+|   ✅   | ICJIA logo in header (clickable to scroll to top, with error fallback)  |
+|   ✅   | "Start Editing" button to clear tutorial content for new users          |
+|   ✅   | High-contrast purple copy notifications (WCAG AAA compliant)            |
+|   ✅   | Memory leak fix: cleanup timeouts on component unmount (useExport)       |
+|   ✅   | Table builder copy feedback with visual confirmation                     |
+|   ✅   | Form label associations (for/id) in table builder modal                  |
+|   ✅   | Named constants for time thresholds in auto-save                         |
+|   ✅   | Default content extracted to separate module for maintainability         |
+|   ✅   | Editor aria-describedby with keyboard shortcut instructions              |
+|   ✅   | DOMPurify XSS sanitization on rendered markdown HTML output              |
+|   ✅   | Bounded scroll sync retry with timeout cleanup on unmount                |
+|   ✅   | Code block language attribute sanitization (prevent XSS injection)        |
+|   ✅   | File upload size limit (10 MB) to prevent browser crashes                |
+|   ✅   | Download filename sanitization (path traversal, invalid chars, length)   |
+|   ✅   | WCAG AAA contrast compliance globally — `--color-text-muted` 7:1+ ratio  |
+|   ✅   | Semantic `<a>` elements for tool cards (replaces `<article role="button">`) |
+|   ✅   | Auto-save graceful degradation on localStorage quota exceeded            |
+|   ✅   | Race condition fixes: composable-scoped timers in useExport and EditorLayout |
+|   ✅   | Full accessibility audit (axe-core) — zero violations                   |
+|   ✅   | Fix Reka UI `aria-labelledby` mismatch in all modals                     |
+|   ✅   | Inert background content when modals are open (focus trap)               |
+|   ✅   | 1.9.0 — removed three live regions that announced on every keystroke     |
+|   ✅   | 1.9.0 — print/PDF exports readable (body text was 1.09:1 on paper)       |
+|   ✅   | 1.9.0 — auto-save no longer overwrites work with an empty document       |
+|   ✅   | 1.9.0 — cross-tab auto-save conflicts, and visible storage failure       |
+|   ✅   | 1.9.0 — document outline and word-count goals                            |
+|   ✅   | 1.9.0 — audit asserts the welcome modal is dismissed; can target prod    |
+|   ✅   | 1.10.0 — red/blue exercise: six findings fixed, one hardened, one accepted, one open |
+|   ✅   | 1.10.0 — "Display Markdown Tutorial" no longer overwrites the saved draft |
+|   ✅   | 1.10.0 — Technical Details page (`/technical-details`)                   |
+|   ⬜   | Screen reader testing (VoiceOver, NVDA)                                 |
+|   ⬜   | Keyboard navigation refinement                                          |
+|   ⬜   | Help modal with shortcuts reference                                     |
+|   ⬜   | Image insertion modal with placeholder option                           |
+|   ⬜   | Link insertion modal with URL validation                                |
+|   ✅   | Find & Replace (Cmd/Ctrl+F, via @codemirror/search)                     |
+|   ⬜   | Error handling improvements                                             |
+|   ⬜   | Loading state refinements                                               |
+
+### ⬜ Phase 5: Testing & Launch — PENDING
+
+| Status | Feature                                                   |
+| :----: | :-------------------------------------------------------- |
+|   ✅   | Unit tests for utilities (238 tests across 10 files)         |
+|   ⬜   | Component tests                                           |
+|   ⬜   | E2E tests for critical paths                              |
+|   ⬜   | Cross-browser testing                                     |
+|   ⬜   | Performance optimization                                  |
+|   ✅   | Lighthouse 100 on production (a11y, best practices, SEO, desktop perf) |
+|   ✅   | Production deployment (Netlify, https://markdown.icjia.cloud) |
+
+</details>
 
 ## Contributing
 
